@@ -43,11 +43,12 @@ jobs:
           environment-file: environment.yml
           use-only-tar-bz2: true
       - run: conda env export > releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
-      - uses: actions/upload-artifact@v3
-        with:
-          name: release ${{ github.event.release.tag_name }}
-          path: releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           file_pattern: releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
           commit_message: release ${{ github.event.release.tag_name }}
+      - uses: svenstaro/upload-release-action@2
+        with:
+          file: releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
+
+
