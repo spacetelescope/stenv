@@ -1,4 +1,4 @@
-name: spacetelescope-env
+name: spacetelescope-env-latest
 
 channels:
   - conda-forge
