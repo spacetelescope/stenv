@@ -15,8 +15,8 @@ env:
   RELEASE_ENV_FILENAME: releases/spacetelescope-env-${{ github.event.release.tag_name }}.yml
 
 jobs:
-  build:
-    name: build environment
+  build_export:
+    name: build and export environment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.2
