@@ -23,10 +23,11 @@ jobs:
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/test
+            /usr/share/miniconda/envs/spacetelescope-latest-env
           key: conda-${{ runner.os }}-${{ hashFiles('${{ env.LATEST_ENV_FILENAME }}') }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
+          activate-environment: spacetelescope-latest-env
           environment-file: ${{ env.LATEST_ENV_FILENAME }}
           use-only-tar-bz2: true
   test:
@@ -58,10 +59,11 @@ jobs:
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/test
+            /usr/share/miniconda/envs/spacetelescope-env-latest
           key: conda-${{ runner.os }}-${{ hashFiles('${{ env.LATEST_ENV_FILENAME }}') }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
+          activate-environment: spacetelescope-latest-env
           environment-file: ${{ env.LATEST_ENV_FILENAME }}
           use-only-tar-bz2: true
       - run: pip install pytest-xdist
@@ -77,14 +79,15 @@ jobs:
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/test
+            /usr/share/miniconda/envs/spacetelescope-env-latest
           key: conda-${{ runner.os }}-${{ hashFiles('${{ env.LATEST_ENV_FILENAME }}') }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-${{ github.event.release.tag_name }}
+          activate-environment: spacetelescope-env-latest
           environment-file: ${{ env.LATEST_ENV_FILENAME }}
           use-only-tar-bz2: true
       - run: conda env export > spacetelescope-env-${{ github.event.release.tag_name }}.yml
+      - run: sed -i "s/spacetelescope-env-latest/spacetelescope-env-${{ github.event.release.tag_name }}/g" spacetelescope-env-${{ github.event.release.tag_name }}.yml
       - run: cat spacetelescope-env-${{ github.event.release.tag_name }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
         with:
