@@ -1,0 +1,30 @@
+name: spacetelescope-env
+
+channels:
+  - conda-forge
+
+dependencies:
+  - fitsverify
+  - hstcal
+  - pip
+  - python==3.9
+  - pip:
+      - acstools
+      - calcos
+      - ccdproc
+      - costools
+      - crds
+      - drizzlepac
+      - ginga
+      - ipython
+      - jupyter
+      - nictools
+      - pysynphot
+      - pytest
+      - reftools
+      - sphinx
+      - stistools
+      - stsynphot
+      - synphot
+      - wfc3tools
+      - wfpc2tools

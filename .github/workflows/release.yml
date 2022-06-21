@@ -1,0 +1,53 @@
+name: release
+
+on:
+  release:
+    types:
+      - published
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  build:
+    name: build environment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            /usr/share/miniconda/envs/test
+          key:
+            conda-${{ github.event.release.tag_nam }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+      - uses: conda-incubator/setup-miniconda@v2e
+        with:
+          environment-file: environment.yml
+          use-only-tar-bz2: true
+  export:
+    name: export environment to YAML
+    needs: [ export ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            /usr/share/miniconda/envs/test
+          key:
+            conda-${{ github.event.release.tag_nam }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+      - uses: conda-incubator/setup-miniconda@v2e
+        with:
+          environment-file: environment.yml
+          use-only-tar-bz2: true
+      - run: conda env export > releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release ${{ github.event.release.tag_name }}
+          path: releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          file_pattern: releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
+          commit_message: release ${{ github.event.release.tag_name }}
