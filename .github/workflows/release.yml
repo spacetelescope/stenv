@@ -9,10 +9,6 @@ defaults:
   run:
     shell: bash -l {0}
 
-env:
-  RELEASE_ENV_NAME: spacetelescope-env-${{ github.event.release.tag_name }}
-  LATEST_ENV_FILENAME: spacetelescope-env-latest.yml
-
 jobs:
   build:
     name: build environment
@@ -24,11 +20,11 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-latest-env
-          key: conda-${{ runner.os }}-${{ hashFiles('${{ env.LATEST_ENV_FILENAME }}') }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ env.GITHUB_SHA }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-latest-env
-          environment-file: ${{ env.LATEST_ENV_FILENAME }}
+          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
   test:
     name: test environment
@@ -61,11 +57,11 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('${{ env.LATEST_ENV_FILENAME }}') }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ env.GITHUB_SHA }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-latest-env
-          environment-file: ${{ env.LATEST_ENV_FILENAME }}
+          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: pip install pytest-xdist
       - run: pytest -n auto --pyargs ${{ matrix.package }}
@@ -81,11 +77,11 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('${{ env.LATEST_ENV_FILENAME }}') }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ env.GITHUB_SHA }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
-          environment-file: ${{ env.LATEST_ENV_FILENAME }}
+          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: conda env export > spacetelescope-env-${{ github.event.release.tag_name }}.yml
       - run: sed -i "s/spacetelescope-env-latest/spacetelescope-env-${{ github.event.release.tag_name }}/g" spacetelescope-env-${{ github.event.release.tag_name }}.yml
