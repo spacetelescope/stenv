@@ -10,7 +10,10 @@ defaults:
     shell: bash -l {0}
 
 env:
-  RELEASE_ENVIRONMENT_FILE: releases/spacetelescope_env_${{ github.event.release.tag_name }}.yml
+  LATEST_ENV_NAME: spacetelescope-env-latest
+  RELEASE_ENV_NAME: spacetelescope-env-${{ github.event.release.tag_name }}
+  LATEST_ENV_FILENAME: releases/${{ env.LATEST_ENV_NAME }}.yml
+  RELEASE_ENV_FILENAME: releases/${{ env.RELEASE_ENV_NAME }}.yml
 
 jobs:
   build:
@@ -24,37 +27,19 @@ jobs:
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/test
           key:
-            conda-${{ github.event.release.tag_name }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+            conda-${{ github.event.release.tag_name }}-${{ runner.os }}-${{ hashFiles('${{ env.LATEST_ENV_FILENAME }}') }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-${{ github.event.release.tag_name }}
-          environment-file: environment.yml
+          environment-file: ${{ env.LATEST_ENV_FILENAME }}
           use-only-tar-bz2: true
-  export:
-    name: export environment to YAML
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2.4.2
-      - uses: actions/cache@v3.0.4
-        with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/test
-          key:
-            conda-${{ github.event.release.tag_name }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
-        with:
-          activate-environment: spacetelescope-env-${{ github.event.release.tag_name }}
-          environment-file: environment.yml
-          use-only-tar-bz2: true
-      - run: conda env export > ${{ env.RELEASE_ENVIRONMENT_FILE }}
+      - run: conda env export > ${{ env.RELEASE_ENV_FILENAME }}
       - uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
-          file_pattern: ${{ env.RELEASE_ENVIRONMENT_FILE }}
+          file_pattern: ${{ env.RELEASE_ENV_FILENAME }}
           commit_message: release ${{ github.event.release.tag_name }}
       - uses: svenstaro/upload-release-action@2.3.0
         with:
-          file: ${{ env.RELEASE_ENVIRONMENT_FILE }}
+          file: ${{ env.RELEASE_ENV_FILENAME }}
 
 
