@@ -20,7 +20,7 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-latest-env
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ env.GITHUB_SHA }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-latest-env
@@ -57,7 +57,7 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ env.GITHUB_SHA }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-latest-env
@@ -77,7 +77,7 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ env.GITHUB_SHA }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
