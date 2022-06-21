@@ -22,7 +22,7 @@ jobs:
             /usr/share/miniconda/envs/test
           key:
             conda-${{ github.event.release.tag_nam }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
-      - uses: conda-incubator/setup-miniconda@v2e
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           environment-file: environment.yml
           use-only-tar-bz2: true
@@ -38,7 +38,7 @@ jobs:
             /usr/share/miniconda/envs/test
           key:
             conda-${{ github.event.release.tag_nam }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
-      - uses: conda-incubator/setup-miniconda@v2e
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           environment-file: environment.yml
           use-only-tar-bz2: true
