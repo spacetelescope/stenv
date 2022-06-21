@@ -39,7 +39,7 @@ jobs:
       matrix:
         package:
           - acstools
-          - crds
+          - calcos
           - ccdproc
           - costools
           - crds
