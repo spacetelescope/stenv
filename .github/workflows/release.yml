@@ -33,9 +33,10 @@ jobs:
           environment-file: ${{ env.LATEST_ENV_FILENAME }}
           use-only-tar-bz2: true
       - run: conda env export > ${{ env.RELEASE_ENV_FILENAME }}
+      - run: cat ${{ env.RELEASE_ENV_FILENAME }}
       - uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
-          file_pattern: ${{ env.RELEASE_ENV_FILENAME }}
+          file_pattern: "${{ env.RELEASE_ENV_FILENAME }}"
           commit_message: release ${{ github.event.release.tag_name }}
       - uses: svenstaro/upload-release-action@2.3.0
         with:
