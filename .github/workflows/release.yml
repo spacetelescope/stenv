@@ -12,13 +12,14 @@ defaults:
 env:
   LATEST_ENV_NAME: spacetelescope-env-latest
   RELEASE_ENV_NAME: spacetelescope-env-${{ github.event.release.tag_name }}
-  LATEST_ENV_FILENAME: releases/${{ env.LATEST_ENV_NAME }}.yml
-  RELEASE_ENV_FILENAME: releases/${{ env.RELEASE_ENV_NAME }}.yml
 
 jobs:
   build:
     name: build environment
     runs-on: ubuntu-latest
+    env:
+      LATEST_ENV_FILENAME: releases/${{ env.LATEST_ENV_NAME }}.yml
+      RELEASE_ENV_FILENAME: releases/${{ env.RELEASE_ENV_NAME }}.yml
     steps:
       - uses: actions/checkout@v2.4.2
       - uses: actions/cache@v3.0.4
