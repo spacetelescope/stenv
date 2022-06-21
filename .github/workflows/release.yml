@@ -21,7 +21,7 @@ jobs:
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/test
           key:
-            conda-${{ github.event.release.tag_nam }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+            conda-${{ github.event.release.tag_name }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           environment-file: environment.yml
@@ -37,7 +37,7 @@ jobs:
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/test
           key:
-            conda-${{ github.event.release.tag_nam }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+            conda-${{ github.event.release.tag_name }}-${{ runner.os }}-${{ hashFiles('environment.yml') }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           environment-file: environment.yml
