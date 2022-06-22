@@ -48,37 +48,53 @@ jobs:
       matrix:
         include:
           - package: acstools
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: calcos
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: ccdproc
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: costools
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: crds
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: drizzlepac
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           #- package: fitsverify
           #  extras: []
+          #  extra_packages: []
           - package: hstcal
             extras: [ ]
+            extra_packages: [ ci-watson ]
           #- package: nictools
-          #  extras: []
+          #  extras: [test]
+          #  extra_packages: []
           - package: pysynphot
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: reftools
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: stistools
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: stsynphot
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           - package: synphot
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
           #- package: wfc3tools
-          #  extras: []
+          #  extras: [test]
+          #  extra_packages: []
           - package: wfpc2tools
-            extras: [ ]
+            extras: [ test ]
+            extra_packages: [ ]
     steps:
       - uses: actions/checkout@v2.4.2
       - uses: mtkennerly/dunamai-action@v1.1.0
@@ -102,7 +118,8 @@ jobs:
         with:
           repository: ${{ matrix.repository }}
           path: ${{ matrix.package }}
-      - run: pip install pytest-xdist ${{ join(matrix.extras, ' ') }}
+      - run: pip install ${{ matrix.package }}[${{ join(matrix.extras, ',') }}]
+      - run: pip install pytest-xdist ${{ join(matrix.extra_packages, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
   export:
     name: export environment
