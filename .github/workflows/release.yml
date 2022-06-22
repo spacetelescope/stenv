@@ -81,16 +81,12 @@ jobs:
             repository: spacetelescope/wfpc2tools
     steps:
       - uses: actions/checkout@v2.4.2
-        with:
-          path: spacetelescope-env-distribution
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
-        with:
-          args: 'spacetelescope-env-distribution'
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version_semver
         with:
-          args: 'spacetelescope-env-distribution --style semver --no-metadata'
+          args: '--style semver --no-metadata'
       - uses: actions/checkout@v2.4.2
         with:
           repository: ${{ matrix.repository }}
