@@ -23,11 +23,11 @@ jobs:
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-latest-env
+            /usr/share/miniconda/envs/spacetelescope-env-current
           key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-latest-env
+          activate-environment: spacetelescope-env-current
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: conda env export > spacetelescope-env-${{ github.sha }}.yml
@@ -70,11 +70,11 @@ jobs:
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-latest
+            /usr/share/miniconda/envs/spacetelescope-env-current
           key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-latest-env
+          activate-environment: spacetelescope-env-current
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ci-watson pytest-astropy-header
@@ -94,15 +94,15 @@ jobs:
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-latest
+            /usr/share/miniconda/envs/spacetelescope-env-current
           key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-latest
+          activate-environment: spacetelescope-env-current
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: conda env export > spacetelescope-env-${{ github.event.release.tag_name }}.yml
-      - run: sed -i "s/spacetelescope-env-latest/spacetelescope-env-${{ github.event.release.tag_name }}/g" spacetelescope-env-${{ github.event.release.tag_name }}.yml
+      - run: sed -i "s/spacetelescope-env-current/spacetelescope-env-${{ github.event.release.tag_name }}/g" spacetelescope-env-${{ github.event.release.tag_name }}.yml
       - run: cat spacetelescope-env-${{ github.event.release.tag_name }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
         with:
