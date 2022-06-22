@@ -48,53 +48,37 @@ jobs:
       matrix:
         include:
           - package: acstools
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
           - package: calcos
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ ci_watson ]
           - package: ccdproc
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ pytest-astropy,memory_profiler ]
           - package: costools
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ ]
           - package: crds
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ lockfile, mock, nose, pylint ]
           - package: drizzlepac
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ ci_watson,crds,pytest-remotedata ]
           #- package: fitsverify
-          #  extras: []
-          #  extra_packages: []
+          #  dependencies: []
           - package: hstcal
-            extras: [ ]
-            extra_packages: [ ci-watson ]
+            dependencies: [ ci-watson ]
           #- package: nictools
-          #  extras: [test]
-          #  extra_packages: []
+          #  dependencies: []
           - package: pysynphot
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ pytest-remotedata ]
           - package: reftools
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ pytest-remotedata,pytest-astropy-header ]
           - package: stistools
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ six ]
           - package: stsynphot
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ pytest-astropy,ci-watson ]
           - package: synphot
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ pytest-astropy ]
           #- package: wfc3tools
-          #  extras: [test]
-          #  extra_packages: []
+          #  dependencies: []
           - package: wfpc2tools
-            extras: [ test ]
-            extra_packages: [ ]
+            dependencies: [ ]
     steps:
       - uses: actions/checkout@v2.4.2
       - uses: mtkennerly/dunamai-action@v1.1.0
@@ -118,8 +102,7 @@ jobs:
         with:
           repository: ${{ matrix.repository }}
           path: ${{ matrix.package }}
-      - run: pip install ${{ matrix.package }}[${{ join(matrix.extras, ',') }}]
-      - run: pip install pytest-xdist ${{ join(matrix.extra_packages, ' ') }}
+      - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
   export:
     name: export environment
