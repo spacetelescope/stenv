@@ -25,15 +25,15 @@ jobs:
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-current
+            /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version_semver.outputs.version }}
           key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version_semver.outputs.version }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-current
+          activate-environment: spacetelescope-env-${{ steps.version_semver.outputs.version }}
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: conda env export > spacetelescope-env-${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-current/spacetelescope-env-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ steps.version.outputs.version }}.yml
+      - run: sed -i "s/spacetelescope-env-${{ steps.version_semver.outputs.version }}/spacetelescope-env-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - run: cat spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
         with:
@@ -83,25 +83,27 @@ jobs:
       - uses: actions/checkout@v2.4.2
         with:
           path: spacetelescope-env-distribution
+      - uses: mtkennerly/dunamai-action@v1.1.0
+        id: version
+        with:
+          args: 'spacetelescope-env-distribution'
+      - uses: mtkennerly/dunamai-action@v1.1.0
+        id: version_semver
+        with:
+          args: 'spacetelescope-env-distribution --style semver --no-metadata'
       - uses: actions/checkout@v2.4.2
         with:
           repository: ${{ matrix.repository }}
           path: ${{ matrix.package }}
-      - uses: mtkennerly/dunamai-action@v1.1.0
-        id: version
-      - uses: mtkennerly/dunamai-action@v1.1.0
-        id: version_semver
-        with:
-          args: '--style semver --no-metadata'
       - uses: actions/cache@v3.0.4
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-current
+            /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version_semver.outputs.version }}
           key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version_semver.outputs.version }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-current
+          activate-environment: spacetelescope-env-${{ steps.version_semver.outputs.version }}
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ci-watson pytest-astropy-header
