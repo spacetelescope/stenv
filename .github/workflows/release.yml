@@ -1,4 +1,4 @@
-name: release
+name: build
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
           - package: calcos
             dependencies: [ ci_watson ]
           - package: ccdproc
-            dependencies: [ pytest-astropy, memory_profiler ]
+            dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
             dependencies: [ ]
           - package: crds
@@ -72,7 +72,7 @@ jobs:
           - package: stistools
             dependencies: [ six ]
           - package: stsynphot
-            dependencies: [ pytest-astropy, ci-watson ]
+            dependencies: [ ci-watson, pytest-astropy ]
           - package: synphot
             dependencies: [ pytest-astropy ]
           #- package: wfc3tools
