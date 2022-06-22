@@ -44,23 +44,45 @@ jobs:
       matrix:
         include:
           - package: acstools
+            repository: https://github.com/spacetelescope/acstools.git
           - package: calcos
+            repository: https://github.com/spacetelescope/calcos.git
           - package: ccdproc
+            repository: https://github.com/astropy/ccdproc.git
           - package: costools
+            repository: https://github.com/spacetelescope/costools.git
           - package: crds
+            repository: https://github.com/spacetelescope/crds.git
           - package: drizzlepac
+            repository: https://github.com/spacetelescope/drizzlepac.git
           #- package: fitsverify
+          #  repository:
           - package: hstcal
+            repository: https://github.com/spacetelescope/hstcal.git
           #- package: nictools
+          #  repository: https://github.com/spacetelescope/nictools.git
           - package: pysynphot
+            repository: https://github.com/spacetelescope/pysynphot.git
           - package: reftools
+            repository: https://github.com/spacetelescope/reftools.git
           - package: stistools
+            repository: https://github.com/spacetelescope/stistools.git
           - package: stsynphot
+            repository: https://github.com/spacetelescope/stsynphot.git
           - package: synphot
+            repository: https://github.com/spacetelescope/synphot.git
           #- package: wfc3tools
+          #  repository: https://github.com/spacetelescope/wfc3tools.git
           - package: wfpc2tools
+            repository: https://github.com/spacetelescope/wfpc2tools.git
     steps:
       - uses: actions/checkout@v2.4.2
+        with:
+          path: spacetelescope-env-distribution
+      - uses: actions/checkout@v2.4.2
+        with:
+          repository: ${{ matrix.repository }}
+          path: ${{ matrix.package }}
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
       - uses: actions/cache@v3.0.4
@@ -75,7 +97,9 @@ jobs:
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ci-watson pytest-astropy-header
-      - run: pytest -n auto --pyargs ${{ matrix.package }}
+      - run: |
+          cd ${{ matrix.package }}
+          pytest -n auto .
   export:
     name: export environment
     needs: [ test ]
