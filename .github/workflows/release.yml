@@ -48,37 +48,37 @@ jobs:
       matrix:
         include:
           - package: acstools
-            extras: []
+            extras: [ ]
           - package: calcos
-            extras: []
+            extras: [ ]
           - package: ccdproc
-            extras: []
+            extras: [ ]
           - package: costools
-            extras: []
+            extras: [ ]
           - package: crds
-            extras: []
+            extras: [ ]
           - package: drizzlepac
-            extras: []
+            extras: [ ]
           #- package: fitsverify
           #  extras: []
           - package: hstcal
-            extras: []
+            extras: [ ]
           #- package: nictools
           #  extras: []
           - package: pysynphot
-            extras: []
+            extras: [ ]
           - package: reftools
-            extras: []
+            extras: [ ]
           - package: stistools
-            extras: []
+            extras: [ ]
           - package: stsynphot
-            extras: []
+            extras: [ ]
           - package: synphot
-            extras: []
+            extras: [ ]
           #- package: wfc3tools
           #  extras: []
           - package: wfpc2tools
-            extras: []
+            extras: [ ]
     steps:
       - uses: actions/checkout@v2.4.2
       - uses: mtkennerly/dunamai-action@v1.1.0
@@ -102,7 +102,7 @@ jobs:
         with:
           repository: ${{ matrix.repository }}
           path: ${{ matrix.package }}
-      - run: pip install pytest-xdist ${{ matrix.extras }}
+      - run: pip install pytest-xdist ${{ join(matrix.extras, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
   export:
     name: export environment
