@@ -32,6 +32,7 @@ jobs:
           activate-environment: spacetelescope-env-${{ steps.version_semver.outputs.version }}
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
+      - run: conda update --all
       - run: conda env export > spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - run: sed -i "s/spacetelescope-env-${{ steps.version_semver.outputs.version }}/spacetelescope-env-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - run: cat spacetelescope-env-${{ steps.version.outputs.version }}.yml
