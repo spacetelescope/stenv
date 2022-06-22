@@ -19,9 +19,11 @@ jobs:
         id: version
       - uses: actions/cache@v3.0.4
         with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version.outputs.version }}
+          path: ~/conda_pkgs_dir
+          key: conda-packages-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}
+      - uses: actions/cache@v3.0.4
+        with:
+          path: /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version.outputs.version }}
           key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version.outputs.version }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -82,9 +84,11 @@ jobs:
         id: version
       - uses: actions/cache@v3.0.4
         with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version.outputs.version }}
+          path: ~/conda_pkgs_dir
+          key: conda-packages-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}
+      - uses: actions/cache@v3.0.4
+        with:
+          path: /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version.outputs.version }}
           key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version.outputs.version }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
