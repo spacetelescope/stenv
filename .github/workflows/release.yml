@@ -30,6 +30,12 @@ jobs:
           activate-environment: spacetelescope-latest-env
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
+      - run: conda env export > spacetelescope-env-${{ github.sha }}.yml
+      - run: cat spacetelescope-env-${{ github.sha }}.yml
+      - uses: actions/upload-artifact@v3.1.0
+        with:
+          name: spacetelescope-env-${{ github.sha }}.yml
+          path: spacetelescope-env-${{ github.sha }}.yml
   test:
     name: test environment
     needs: [ build ]
