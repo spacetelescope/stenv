@@ -1,12 +1,13 @@
 # Space Telescope Environment Distribution
 
-This repository stores YAML files that define frozen environments (sets of packages at specific versions) for an
-Anaconda installation. The `releases/` folder contains YAML files for each release.
+This repository builds YAML files that define frozen environments (sets of packages at specific versions) for an
+Anaconda installation. The [Releases page](https://github.com/spacetelescope/spacetelescope-env-distribution/releases)
+contains YAML files for each release.
 
 ## Installation
 
 1. install Anaconda - https://docs.conda.io/en/latest/miniconda.html
-2. pick a release from the [Releases](https://github.com/spacetelescope/spacetelescope-env-distribution/releases) page
+2. pick a release from the [Releases page](https://github.com/spacetelescope/spacetelescope-env-distribution/releases)
    and download the accompanying YAML file
 3. create a new Anaconda environment from the YAML file
    ```shell
