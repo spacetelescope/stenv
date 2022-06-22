@@ -71,7 +71,7 @@ jobs:
           activate-environment: spacetelescope-latest-env
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
-      - run: pip install pytest-xdist
+      - run: pip install pytest-xdist ci-watson pytest-astropy-header
       - run: pytest -n auto --pyargs ${{ matrix.package }}
   export:
     name: export environment
