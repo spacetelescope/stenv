@@ -15,12 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.2
+      - uses: WyriHaximus/github-action-get-previous-tag@v1
+        id: tag
+        with:
+          fallback: 0.0.0
       - uses: actions/cache@v3.0.4
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-latest-env
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-latest-env
@@ -52,12 +56,16 @@ jobs:
           - wfpc2tools
     steps:
       - uses: actions/checkout@v2.4.2
+      - uses: WyriHaximus/github-action-get-previous-tag@v1
+        id: tag
+        with:
+          fallback: 0.0.0
       - uses: actions/cache@v3.0.4
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-latest-env
@@ -72,12 +80,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.2
+      - uses: WyriHaximus/github-action-get-previous-tag@v1
+        id: tag
+        with:
+          fallback: 0.0.0
       - uses: actions/cache@v3.0.4
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
