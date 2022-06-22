@@ -15,27 +15,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.2
-      - uses: WyriHaximus/github-action-get-previous-tag@v1
-        id: tag
-        with:
-          fallback: 0.0.0
+      - uses: mtkennerly/dunamai-action@v1.1.0
+        id: version
       - uses: actions/cache@v3.0.4
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-current
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version.outputs.version }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-current
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
-      - run: conda env export > spacetelescope-env-${{ github.sha }}.yml
-      - run: cat spacetelescope-env-${{ github.sha }}.yml
+      - run: conda env export > spacetelescope-env-${{ steps.version.outputs.version }}.yml
+      - run: sed -i "s/spacetelescope-env-current/spacetelescope-env-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ steps.version.outputs.version }}.yml
+      - run: cat spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
         with:
-          name: spacetelescope-env-${{ github.sha }}.yml
-          path: spacetelescope-env-${{ github.sha }}.yml
+          name: spacetelescope-env-${{ steps.version.outputs.version }}.yml
+          path: spacetelescope-env-${{ steps.version.outputs.version }}.yml
   test:
     name: test environment
     needs: [ build ]
@@ -62,16 +61,14 @@ jobs:
           - package: wfpc2tools
     steps:
       - uses: actions/checkout@v2.4.2
-      - uses: WyriHaximus/github-action-get-previous-tag@v1
-        id: tag
-        with:
-          fallback: 0.0.0
+      - uses: mtkennerly/dunamai-action@v1.1.0
+        id: version
       - uses: actions/cache@v3.0.4
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-current
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version.outputs.version }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-current
@@ -85,25 +82,10 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.2
-      - uses: WyriHaximus/github-action-get-previous-tag@v1
-        id: tag
+      - uses: dawidd6/action-download-artifact@v2.21.1
         with:
-          fallback: 0.0.0
-      - uses: actions/cache@v3.0.4
-        with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-current
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.tag.outputs.tag }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
-        with:
-          activate-environment: spacetelescope-env-current
-          environment-file: spacetelescope-env-latest.yml
-          use-only-tar-bz2: true
-      - run: conda env export > spacetelescope-env-${{ github.event.release.tag_name }}.yml
-      - run: sed -i "s/spacetelescope-env-current/spacetelescope-env-${{ github.event.release.tag_name }}/g" spacetelescope-env-${{ github.event.release.tag_name }}.yml
-      - run: cat spacetelescope-env-${{ github.event.release.tag_name }}.yml
+          name: spacetelescope-env-${{ steps.version.outputs.version }}.yml
+          path: spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
         with:
-          file: spacetelescope-env-${{ github.event.release.tag_name }}.yml
+          file: spacetelescope-env-${{ steps.version.outputs.version }}.yml
