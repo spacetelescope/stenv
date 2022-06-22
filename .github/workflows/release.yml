@@ -44,37 +44,37 @@ jobs:
       matrix:
         include:
           - package: acstools
-            repository: https://github.com/spacetelescope/acstools.git
+            repository: spacetelescope/acstools
           - package: calcos
-            repository: https://github.com/spacetelescope/calcos.git
+            repository: spacetelescope/calcos
           - package: ccdproc
-            repository: https://github.com/astropy/ccdproc.git
+            repository: astropy/ccdproc
           - package: costools
-            repository: https://github.com/spacetelescope/costools.git
+            repository: spacetelescope/costools
           - package: crds
-            repository: https://github.com/spacetelescope/crds.git
+            repository: spacetelescope/crds
           - package: drizzlepac
-            repository: https://github.com/spacetelescope/drizzlepac.git
+            repository: spacetelescope/drizzlepac
           #- package: fitsverify
           #  repository:
           - package: hstcal
-            repository: https://github.com/spacetelescope/hstcal.git
+            repository: spacetelescope/hstcal
           #- package: nictools
-          #  repository: https://github.com/spacetelescope/nictools.git
+          #  repository: spacetelescope/nictools
           - package: pysynphot
-            repository: https://github.com/spacetelescope/pysynphot.git
+            repository: spacetelescope/pysynphot
           - package: reftools
-            repository: https://github.com/spacetelescope/reftools.git
+            repository: spacetelescope/reftools
           - package: stistools
-            repository: https://github.com/spacetelescope/stistools.git
+            repository: spacetelescope/stistools
           - package: stsynphot
-            repository: https://github.com/spacetelescope/stsynphot.git
+            repository: spacetelescope/stsynphot
           - package: synphot
-            repository: https://github.com/spacetelescope/synphot.git
+            repository: spacetelescope/synphot
           #- package: wfc3tools
-          #  repository: https://github.com/spacetelescope/wfc3tools.git
+          #  repository: spacetelescope/wfc3tools
           - package: wfpc2tools
-            repository: https://github.com/spacetelescope/wfpc2tools.git
+            repository: spacetelescope/wfpc2tools
     steps:
       - uses: actions/checkout@v2.4.2
         with:
