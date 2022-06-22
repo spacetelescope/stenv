@@ -48,37 +48,37 @@ jobs:
       matrix:
         include:
           - package: acstools
-            repository: spacetelescope/acstools
+            extras: []
           - package: calcos
-            repository: spacetelescope/calcos
+            extras: []
           - package: ccdproc
-            repository: astropy/ccdproc
+            extras: []
           - package: costools
-            repository: spacetelescope/costools
+            extras: []
           - package: crds
-            repository: spacetelescope/crds
+            extras: []
           - package: drizzlepac
-            repository: spacetelescope/drizzlepac
+            extras: []
           #- package: fitsverify
-          #  repository:
+          #  extras: []
           - package: hstcal
-            repository: spacetelescope/hstcal
+            extras: []
           #- package: nictools
-          #  repository: spacetelescope/nictools
+          #  extras: []
           - package: pysynphot
-            repository: spacetelescope/pysynphot
+            extras: []
           - package: reftools
-            repository: spacetelescope/reftools
+            extras: []
           - package: stistools
-            repository: spacetelescope/stistools
+            extras: []
           - package: stsynphot
-            repository: spacetelescope/stsynphot
+            extras: []
           - package: synphot
-            repository: spacetelescope/synphot
+            extras: []
           #- package: wfc3tools
-          #  repository: spacetelescope/wfc3tools
+          #  extras: []
           - package: wfpc2tools
-            repository: spacetelescope/wfpc2tools
+            extras: []
     steps:
       - uses: actions/checkout@v2.4.2
       - uses: mtkennerly/dunamai-action@v1.1.0
@@ -87,10 +87,6 @@ jobs:
         id: version_semver
         with:
           args: '--style semver --no-metadata'
-      - uses: actions/checkout@v2.4.2
-        with:
-          repository: ${{ matrix.repository }}
-          path: ${{ matrix.package }}
       - uses: actions/cache@v3.0.4
         with:
           path: |
@@ -102,10 +98,12 @@ jobs:
           activate-environment: spacetelescope-env-${{ steps.version_semver.outputs.version }}
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
-      - run: pip install pytest-xdist ci-watson pytest-astropy-header
-      - run: |
-          cd ${{ matrix.package }}
-          pytest -n auto .
+      - uses: actions/checkout@v2.4.2
+        with:
+          repository: ${{ matrix.repository }}
+          path: ${{ matrix.package }}
+      - run: pip install pytest-xdist ${{ matrix.extras }}
+      - run: pytest -n auto --pyargs ${{ matrix.package }}
   export:
     name: export environment
     needs: [ test ]
