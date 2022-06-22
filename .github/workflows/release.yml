@@ -52,31 +52,31 @@ jobs:
           - package: calcos
             dependencies: [ ci_watson ]
           - package: ccdproc
-            dependencies: [ pytest-astropy,memory_profiler ]
+            dependencies: [ pytest-astropy, memory_profiler ]
           - package: costools
             dependencies: [ ]
           - package: crds
             dependencies: [ lockfile, mock, nose, pylint ]
           - package: drizzlepac
-            dependencies: [ ci_watson,crds,pytest-remotedata ]
+            dependencies: [ ci_watson, crds, pytest-remotedata ]
           #- package: fitsverify
-          #  dependencies: []
+          #  dependencies: [ ]
           - package: hstcal
             dependencies: [ ci-watson ]
           #- package: nictools
-          #  dependencies: []
+          #  dependencies: [ ]
           - package: pysynphot
-            dependencies: [ pytest-remotedata ]
+            dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
-            dependencies: [ pytest-remotedata,pytest-astropy-header ]
+            dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: stistools
             dependencies: [ six ]
           - package: stsynphot
-            dependencies: [ pytest-astropy,ci-watson ]
+            dependencies: [ pytest-astropy, ci-watson ]
           - package: synphot
             dependencies: [ pytest-astropy ]
           #- package: wfc3tools
-          #  dependencies: []
+          #  dependencies: [ ]
           - package: wfpc2tools
             dependencies: [ ]
     steps:
