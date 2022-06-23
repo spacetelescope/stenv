@@ -25,7 +25,7 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
@@ -77,15 +77,11 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
           use-only-tar-bz2: true
-      - run: conda list
-      - uses: actions/checkout@v2.4.2
-        with:
-          repository: ${{ matrix.repository }}
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
   test_repository:
@@ -114,11 +110,10 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
-          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - uses: actions/checkout@v2.4.2
         with:
