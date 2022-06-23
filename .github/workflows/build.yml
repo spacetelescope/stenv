@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - "**/*.yml"
+  release:
+    types:
+      - published
 
 defaults:
   run:
@@ -39,8 +42,8 @@ jobs:
         with:
           name: spacetelescope-env-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ steps.version.outputs.version }}.yml
-  test_packaged:
-    name: test `${{ matrix.package }}` with packaged tests
+  run_packaged_unit_tests:
+    name: run `${{ matrix.package }}` unit tests
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
@@ -86,8 +89,8 @@ jobs:
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
-  test_repository:
-    name: test `${{ matrix.package }}` with cloned repository
+  run_repository_unit_tests:
+    name: run `${{ matrix.package }}` unit tests
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
@@ -127,9 +130,61 @@ jobs:
           repository: ${{ matrix.repository }}
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
+  run_calcos_smoke_tests:
+    name: run `calcos` smoke tests
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.4.2
+        with:
+          lfs: true
+      - uses: actions/cache@v3.0.4
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-latest
+          key: conda-${{ runner.os }}-${{ github.sha }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: spacetelescope-env-latest
+          environment-file: spacetelescope-env-latest.yml
+          use-only-tar-bz2: true
+      - uses: actions/cache@v3.0.4
+        with:
+          path: tests/data
+          key: smoke-test-files-${{ hashFiles( 'tests/data/*' ) }}
+      - run: calcos la8n01qkq_rawtag_a.fits
+        env:
+          lref: /grp/crds/hst/references/hst/
+  run_drizzlepac_smoke_tests:
+    name: run `drizzlepac` smoke tests
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.4.2
+        with:
+          lfs: true
+      - uses: actions/cache@v3.0.4
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-latest
+          key: conda-${{ runner.os }}-${{ github.sha }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: spacetelescope-env-latest
+          environment-file: spacetelescope-env-latest.yml
+          use-only-tar-bz2: true
+      - uses: actions/cache@v3.0.4
+        with:
+          path: tests/data
+          key: smoke-test-files-${{ hashFiles( 'tests/data/*' ) }}
+      - run: python tests/test_drizzlepac.py
+        env:
+          jref: /grp/crds/hst/references/hst/
   export:
     name: export environment
-    needs: [ test_packaged, test_repository ]
+    needs: [ run_packaged_unit_tests, run_repository_unit_tests, run_drizzlepac_smoke_tests, run_calcos_smoke_tests ]
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
