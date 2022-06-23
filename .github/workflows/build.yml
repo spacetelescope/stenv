@@ -81,8 +81,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
-          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
+      - run: conda list
       - uses: actions/checkout@v2.4.2
         with:
           repository: ${{ matrix.repository }}
