@@ -13,7 +13,7 @@ defaults:
     shell: bash -l {0}
 
 env:
-  PYSYN_CDBS: $HOME/trds
+  PYSYN_CDBS: /home/runner/trds
 
 jobs:
   build:
