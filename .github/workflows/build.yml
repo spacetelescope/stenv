@@ -81,6 +81,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
+          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - uses: actions/checkout@v2.4.2
         with:
@@ -117,10 +118,11 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
+          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - uses: actions/checkout@v2.4.2
         with:
-          repository: https://github.com/spacetelescope/hstcal.git
+          repository: ${{ matrix.repository }}
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto ${{ matrix.test_directory }}
   export:
