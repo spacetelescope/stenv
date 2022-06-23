@@ -72,6 +72,7 @@ jobs:
           - package: wfpc2tools
             dependencies: [ ]
     steps:
+      - uses: actions/checkout@v2.4.2
       - uses: actions/cache@v3.0.4
         with:
           path: |
@@ -81,6 +82,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
+          environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
@@ -105,6 +107,9 @@ jobs:
             dependencies: [ six ]
             test_directory: [ tests ]
     steps:
+      - uses: actions/checkout@v2.4.2
+        with:
+          path: spacetelescope-env-distribution
       - uses: actions/cache@v3.0.4
         with:
           path: |
@@ -114,12 +119,14 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: spacetelescope-env-latest
+          environment-file: spacetelescope-env-distribution/spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - uses: actions/checkout@v2.4.2
         with:
+          path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
-      - run: pytest -n auto ${{ matrix.test_directory }}
+      - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
   export:
     name: export environment
     needs: [ test_packaged, test_repository ]
