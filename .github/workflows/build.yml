@@ -9,6 +9,9 @@ defaults:
   run:
     shell: bash -l {0}
 
+env:
+  PYSYN_CDBS: $HOME/trds
+
 jobs:
   build:
     name: build environment
@@ -19,27 +22,25 @@ jobs:
         id: version
       - uses: actions/cache@v3.0.4
         with:
-          path: ~/conda_pkgs_dir
-          key: conda-packages-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}
-      - uses: actions/cache@v3.0.4
-        with:
-          path: /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version.outputs.version }}
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version.outputs.version }}
+          path: |
+            ~/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-latest
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-${{ steps.version.outputs.version }}
+          activate-environment: spacetelescope-env-latest
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
       - run: conda update --all
       - run: conda env export > spacetelescope-env-${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-${{ steps.version.outputs.version }}/spacetelescope-env-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ steps.version.outputs.version }}.yml
+      - run: sed -i "s/spacetelescope-env-latest/spacetelescope-env-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - run: cat spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
         with:
           name: spacetelescope-env-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ steps.version.outputs.version }}.yml
-  test:
-    name: test environment
+  test_packaged:
+    name: test `${{ matrix.package }}` with packaged tests
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
@@ -48,8 +49,6 @@ jobs:
         include:
           - package: acstools
             dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
-          - package: calcos
-            dependencies: [ ci_watson ]
           - package: ccdproc
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
@@ -57,19 +56,13 @@ jobs:
           - package: crds
             dependencies: [ lockfile, mock, nose, pylint ]
           - package: drizzlepac
-            dependencies: [ ci_watson, crds, pytest-remotedata ]
-          #- package: fitsverify
-          #  dependencies: [ ]
-          - package: hstcal
-            dependencies: [ ci-watson ]
+            dependencies: [ ci-watson, crds, pytest-remotedata ]
           #- package: nictools
           #  dependencies: [ ]
           - package: pysynphot
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
-          - package: stistools
-            dependencies: [ six ]
           - package: stsynphot
             dependencies: [ ci-watson, pytest-astropy ]
           - package: synphot
@@ -79,34 +72,66 @@ jobs:
           - package: wfpc2tools
             dependencies: [ ]
     steps:
-      - uses: actions/checkout@v2.4.2
-      - uses: mtkennerly/dunamai-action@v1.1.0
-        id: version
       - uses: actions/cache@v3.0.4
         with:
-          path: ~/conda_pkgs_dir
-          key: conda-packages-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}
-      - uses: actions/cache@v3.0.4
-        with:
-          path: /usr/share/miniconda/envs/spacetelescope-env-${{ steps.version.outputs.version }}
-          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ steps.version.outputs.version }}
+          path: |
+            ~/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-latest
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-${{ steps.version.outputs.version }}
-          environment-file: spacetelescope-env-latest.yml
+          activate-environment: spacetelescope-env-latest
           use-only-tar-bz2: true
       - uses: actions/checkout@v2.4.2
         with:
           repository: ${{ matrix.repository }}
-          path: ${{ matrix.package }}
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
+  test_repository:
+    name: test `${{ matrix.package }}` with cloned repository
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: calcos
+            repository: spacetelescope/calcos
+            dependencies: [ ci_watson ]
+            test_directory: [ tests ]
+          - package: hstcal
+            repository: spacetelescope/hstcal
+            dependencies: [ ci-watson ]
+            test_directory: [ tests ]
+          - package: stistools
+            repository: spacetelescope/stistools
+            dependencies: [ six ]
+            test_directory: [ tests ]
+    steps:
+      - uses: actions/cache@v3.0.4
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-latest
+          key: conda-${{ runner.os }}-${{ hashFiles('spacetelescope-env-latest.yml') }}-${{ github.sha }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: spacetelescope-env-latest
+          use-only-tar-bz2: true
+      - uses: actions/checkout@v2.4.2
+        with:
+          repository: https://github.com/spacetelescope/hstcal.git
+      - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
+      - run: pytest -n auto ${{ matrix.test_directory }}
   export:
     name: export environment
-    needs: [ test ]
+    needs: [ test, test_hstcal ]
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2.4.2
+      - uses: mtkennerly/dunamai-action@v1.1.0
+        id: version
       - uses: dawidd6/action-download-artifact@v2.21.1
         with:
           name: spacetelescope-env-${{ steps.version.outputs.version }}.yml
