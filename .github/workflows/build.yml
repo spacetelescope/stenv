@@ -125,7 +125,7 @@ jobs:
       - run: pytest -n auto ${{ matrix.test_directory }}
   export:
     name: export environment
-    needs: [ test, test_hstcal ]
+    needs: [ test_packaged, test_repository ]
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
