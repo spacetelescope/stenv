@@ -14,10 +14,13 @@ dependencies:
       - ccdproc
       - costools
       - crds
+      - dask
       - drizzlepac
       - ginga
+      - h5py
       - ipython
       - jupyter
+      - multiprocessing
       - nictools
       - pysynphot
       - pytest
