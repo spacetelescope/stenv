@@ -58,8 +58,6 @@ jobs:
             dependencies: [ ]
           - package: crds
             dependencies: [ lockfile, mock, nose, pylint ]
-          - package: drizzlepac
-            dependencies: [ ci-watson, crds, pytest-remotedata ]
           #- package: nictools
           #  dependencies: [ ]
           - package: pysynphot
@@ -101,13 +99,17 @@ jobs:
             repository: spacetelescope/calcos
             dependencies: [ ci_watson ]
             test_directory: tests
+          - package: drizzlepac
+            repository: spacetelescope/drizzlepac
+            dependencies: [ ci-watson, crds, pytest-remotedata ]
+            test_directory: tests
           - package: hstcal
             repository: spacetelescope/hstcal
             dependencies: [ ci-watson ]
             test_directory: tests
           - package: stistools
             repository: spacetelescope/stistools
-            dependencies: [ six ]
+            dependencies: [ ".[test]", six ]
             test_directory: tests
     steps:
       - uses: actions/checkout@v2.4.2
