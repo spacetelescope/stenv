@@ -133,6 +133,7 @@ jobs:
   run_calcos_smoke_tests:
     name: run `calcos` smoke tests
     needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.2
@@ -159,6 +160,7 @@ jobs:
   run_drizzlepac_smoke_tests:
     name: run `drizzlepac` smoke tests
     needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.2
@@ -184,7 +186,7 @@ jobs:
           jref: /grp/crds/hst/references/hst/
   export:
     name: export environment
-    needs: [ run_packaged_unit_tests, run_repository_unit_tests, run_drizzlepac_smoke_tests, run_calcos_smoke_tests ]
+    needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
