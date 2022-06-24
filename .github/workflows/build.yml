@@ -109,7 +109,7 @@ jobs:
             test_directory: tests
           - package: stistools
             repository: spacetelescope/stistools
-            dependencies: [ ".[test]", six ]
+            dependencies: [ "'.[test]'", six ]
             test_directory: tests
     steps:
       - uses: actions/checkout@v2.4.2
