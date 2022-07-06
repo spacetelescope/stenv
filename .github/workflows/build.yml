@@ -25,12 +25,14 @@ jobs:
       - uses: actions/checkout@main
       - uses: mtkennerly/dunamai-action@master
         id: version
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date
       - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
@@ -76,12 +78,14 @@ jobs:
             dependencies: [ ]
     steps:
       - uses: actions/checkout@main
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date
       - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
@@ -118,12 +122,14 @@ jobs:
       - uses: actions/checkout@main
         with:
           path: spacetelescope-env-distribution
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date
       - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ github.sha }}
+          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
