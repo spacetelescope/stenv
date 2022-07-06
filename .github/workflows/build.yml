@@ -22,16 +22,16 @@ jobs:
     name: build environment
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.2
-      - uses: mtkennerly/dunamai-action@v1.1.0
+      - uses: actions/checkout@main
+      - uses: mtkennerly/dunamai-action@master
         id: version
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
           key: conda-${{ runner.os }}-${{ github.sha }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
           environment-file: spacetelescope-env-latest.yml
@@ -40,7 +40,7 @@ jobs:
       - run: conda env export > spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - run: sed -i "s/spacetelescope-env-latest/spacetelescope-env-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ steps.version.outputs.version }}.yml
       - run: cat spacetelescope-env-${{ steps.version.outputs.version }}.yml
-      - uses: actions/upload-artifact@v3.1.0
+      - uses: actions/upload-artifact@main
         with:
           name: spacetelescope-env-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ steps.version.outputs.version }}.yml
@@ -58,8 +58,8 @@ jobs:
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
             dependencies: [ ]
-          - package: crds
-            dependencies: [ lockfile, mock, nose, pylint ]
+          #- package: crds
+          #  dependencies: [ lockfile, mock, nose, pylint ]
           #- package: nictools
           #  dependencies: [ ]
           - package: pysynphot
@@ -75,14 +75,14 @@ jobs:
           - package: wfpc2tools
             dependencies: [ ]
     steps:
-      - uses: actions/checkout@v2.4.2
-      - uses: actions/cache@v3.0.4
+      - uses: actions/checkout@main
+      - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
           key: conda-${{ runner.os }}-${{ github.sha }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
           environment-file: spacetelescope-env-latest.yml
@@ -111,80 +111,94 @@ jobs:
             test_directory: tests
           #- package: stistools
           #  repository: spacetelescope/stistools
-          #  dependencies: [ ".[test]", six ]
+          #  dependencies: [ six ]
           #  test_directory: tests
     steps:
-      - uses: actions/checkout@v2.4.2
+      - uses: actions/checkout@main
         with:
           path: spacetelescope-env-distribution
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
           key: conda-${{ runner.os }}-${{ github.sha }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
           environment-file: spacetelescope-env-distribution/spacetelescope-env-latest.yml
           use-only-tar-bz2: true
-      - uses: actions/checkout@v2.4.2
+      - uses: actions/checkout@main
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
       - run: cd ${{ matrix.package }} && pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
+  download_data:
+    name: download data for smoke tests
+    needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
+    runs-on: ubuntu-latest
+    if: 'false'
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-python@main
+        with:
+          python-version: '3.x'
+      - uses: actions/cache@main
+        with:
+          path: 'tests/data/*.fits'
+          key: data-${{ hashFiles('tests/data/download.py') }}
+      - run: pip install pooch
+      - run: python tests/data/download.py
   run_calcos_smoke_tests:
     name: run `calcos` smoke tests
-    needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
-    if: 'false'
+    needs: [ download_data ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.2
+      - uses: actions/checkout@main
         with:
           lfs: true
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
           key: conda-${{ runner.os }}-${{ github.sha }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@main
         with:
-          path: tests/data
-          key: smoke-test-files-${{ hashFiles( 'tests/data/*' ) }}
+          path: 'tests/data/*.fits'
+          key: conda-${{ hashFiles('tests/data/download.py') }}
       - run: calcos la8n01qkq_rawtag_a.fits
         env:
           lref: /grp/crds/hst/references/hst/
   run_drizzlepac_smoke_tests:
     name: run `drizzlepac` smoke tests
-    needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
-    if: 'false'
+    needs: [ download_data ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.2
+      - uses: actions/checkout@main
         with:
           lfs: true
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest
           key: conda-${{ runner.os }}-${{ github.sha }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest
           environment-file: spacetelescope-env-latest.yml
           use-only-tar-bz2: true
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@main
         with:
-          path: tests/data
-          key: smoke-test-files-${{ hashFiles( 'tests/data/*' ) }}
+          path: 'tests/data/*.fits'
+          key: conda-${{ hashFiles('tests/data/download.py') }}
       - run: python tests/test_drizzlepac.py
         env:
           jref: /grp/crds/hst/references/hst/
@@ -194,10 +208,10 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.2
-      - uses: mtkennerly/dunamai-action@v1.1.0
+      - uses: actions/checkout@main
+      - uses: mtkennerly/dunamai-action@master
         id: version
-      - uses: dawidd6/action-download-artifact@v2.21.1
+      - uses: dawidd6/action-download-artifact@main
         with:
           name: spacetelescope-env-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ steps.version.outputs.version }}.yml
