@@ -58,8 +58,8 @@ jobs:
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
             dependencies: [ ]
-          #- package: crds
-          #  dependencies: [ lockfile, mock, nose, pylint ]
+          - package: crds
+            dependencies: [ lockfile, mock, nose, pylint ]
           #- package: nictools
           #  dependencies: [ ]
           - package: pysynphot
@@ -89,6 +89,7 @@ jobs:
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
+        if: ${{ !contains(matrix.name, 'crds') && !contains(matrix.name, 'pysynphot') }}
   run_repository_unit_tests:
     name: run `${{ matrix.package }}` unit tests
     needs: [ build ]
@@ -109,10 +110,10 @@ jobs:
             repository: spacetelescope/hstcal
             dependencies: [ ci-watson ]
             test_directory: tests
-          #- package: stistools
-          #  repository: spacetelescope/stistools
-          #  dependencies: [ six ]
-          #  test_directory: tests
+          - package: stistools
+            repository: spacetelescope/stistools
+            dependencies: [ six ]
+            test_directory: tests
     steps:
       - uses: actions/checkout@main
         with:
@@ -134,6 +135,7 @@ jobs:
           repository: ${{ matrix.repository }}
       - run: cd ${{ matrix.package }} && pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
+        if: ${{ !contains(matrix.name, 'drizzlepac') && !contains(matrix.name, 'stistools') }}
   download_data:
     name: download data for smoke tests
     needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
