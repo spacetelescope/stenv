@@ -144,7 +144,6 @@ jobs:
     name: download data for smoke tests
     needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
     runs-on: ubuntu-latest
-    if: 'false'
     steps:
       - uses: actions/checkout@main
       - uses: actions/setup-python@main
