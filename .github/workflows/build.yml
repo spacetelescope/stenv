@@ -38,7 +38,7 @@ jobs:
       - uses: actions/cache@main
         with:
           path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
-          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/cache@main
         with:
           path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
-          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
@@ -144,7 +144,7 @@ jobs:
       - uses: actions/cache@main
         with:
           path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
-          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
@@ -179,7 +179,7 @@ jobs:
       - uses: actions/cache@main
         with:
           path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
-          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
