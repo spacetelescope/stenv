@@ -22,6 +22,7 @@ jobs:
     name: build environment (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python: [ '3.9', '3.10' ]
     steps:
@@ -57,9 +58,10 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python: [ '3.9', '3.10' ]
         package: [ acstools, ccdproc, costools, reftools, stsynphot, synphot, wfpc2tools ]
+        python: [ '3.9', '3.10' ]
         include:
           - package: acstools
             dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
@@ -108,9 +110,10 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python: [ '3.9', '3.10' ]
         package: [ calcos, hstcal ]
+        python: [ '3.9', '3.10' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -159,6 +162,7 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python: [ '3.9', '3.10' ]
     steps:
@@ -194,6 +198,7 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python: [ '3.9', '3.10' ]
     steps:
