@@ -164,12 +164,14 @@ jobs:
         with:
           lfs: true
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date
       - uses: actions/cache@main
         with:
           path: |
             ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ matrix.python }}-latest
-          key: conda-${{ runner.os }}-${{ github.sha }}
+            /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
+          key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
