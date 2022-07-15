@@ -47,7 +47,7 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda update --all
-        if: steps.cache.outputs.cache-hit == 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
       - run: conda env export > spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
       - run: sed -i "s/spacetelescope-env-${{ matrix.python }}-latest/spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
       - run: cat spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
