@@ -61,6 +61,7 @@ jobs:
     strategy:
       matrix:
         python: [ '3.9', '3.10' ]
+        package: [ acstools, ccdproc, costools, reftools, stsynphot, synphot, wfpc2tools ]
         include:
           - package: acstools
             dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
@@ -113,6 +114,7 @@ jobs:
     strategy:
       matrix:
         python: [ '3.9', '3.10' ]
+        package: [ calcos, hstcal ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
