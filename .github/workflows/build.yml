@@ -55,7 +55,7 @@ jobs:
         with:
           name: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
-  run_packaged_unit_tests:
+  unit_tests:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }})
     needs: [ build ]
     runs-on: ubuntu-latest
@@ -107,8 +107,8 @@ jobs:
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
-  run_repository_unit_tests:
-    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }})
+  unit_tests_from_source:
+    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}) from source
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
@@ -159,14 +159,19 @@ jobs:
           repository: ${{ matrix.repository }}
       - run: cd ${{ matrix.package }} && pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
-  run_calcos_smoke_tests:
-    name: run `calcos` smoke tests (Python ${{ matrix.python }})
+  smoke_tests:
+    name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }})
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        package: [ calcos ]
         python: [ '3.9' ]
+        include:
+          - package: calcos
+            run: calcos la8n01qkq_rawtag_a.fits
+            jref: /home/runner/crds_cache/hst/references/hst/
     steps:
       - uses: actions/checkout@main
         with:
@@ -191,12 +196,12 @@ jobs:
         with:
           path: 'tests/data/'
           key: conda-${{ hashFiles('tests/data/*') }}
-      - run: calcos la8n01qkq_rawtag_a.fits
+      - run: ${{ matrix.run }}
         env:
-          jref: /home/runner/crds_cache/hst/references/hst/
+          jref: ${{ matrix.jref }}
   export:
     name: export environment
-    needs: [ run_packaged_unit_tests, run_repository_unit_tests, run_calcos_smoke_tests ]
+    needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     strategy:
