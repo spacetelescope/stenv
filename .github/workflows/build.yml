@@ -19,7 +19,7 @@ env:
 
 jobs:
   build:
-    name: build environment
+    name: build environment (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,7 +37,6 @@ jobs:
             /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
           key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - run: sed -i "s/python==3.9/python>=3/g" spacetelescope-env-latest.yml
-        if: ${{ matrix.python }} != '3.9'
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
@@ -54,7 +53,7 @@ jobs:
           name: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
   run_packaged_unit_tests:
-    name: run `${{ matrix.package }}` unit tests
+    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }})
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
@@ -103,7 +102,7 @@ jobs:
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
   run_repository_unit_tests:
-    name: run `${{ matrix.package }}` unit tests
+    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }})
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
@@ -152,7 +151,7 @@ jobs:
       - run: cd ${{ matrix.package }} && pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
   run_calcos_smoke_tests:
-    name: run `calcos` smoke tests
+    name: run `calcos` smoke tests (Python ${{ matrix.python }})
     needs: [ build ]
     runs-on: ubuntu-latest
     strategy:
