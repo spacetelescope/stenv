@@ -33,9 +33,11 @@ jobs:
         id: date
       - uses: actions/cache@main
         with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
+          path: /home/runner/conda_pkgs_dir
+          key: conda-packages-${{ steps.date.outputs.date }}
+      - uses: actions/cache@main
+        with:
+          path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
           key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
@@ -89,9 +91,11 @@ jobs:
         id: date
       - uses: actions/cache@main
         with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ matrix.python }}-latest
+          path: /home/runner/conda_pkgs_dir
+          key: conda-packages-${{ steps.date.outputs.date }}
+      - uses: actions/cache@main
+        with:
+          path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
           key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
@@ -135,9 +139,11 @@ jobs:
         id: date
       - uses: actions/cache@main
         with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ matrix.python }}-latest
+          path: /home/runner/conda_pkgs_dir
+          key: conda-packages-${{ steps.date.outputs.date }}
+      - uses: actions/cache@main
+        with:
+          path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
           key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
@@ -168,9 +174,11 @@ jobs:
         id: date
       - uses: actions/cache@main
         with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
+          path: /home/runner/conda_pkgs_dir
+          key: conda-packages-${{ steps.date.outputs.date }}
+      - uses: actions/cache@main
+        with:
+          path: /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
           key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@main
         with:
