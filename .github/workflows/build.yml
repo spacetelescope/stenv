@@ -140,27 +140,12 @@ jobs:
           repository: ${{ matrix.repository }}
       - run: cd ${{ matrix.package }} && pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
-  download_data:
-    name: download data for smoke tests
+  run_calcos_smoke_tests:
+    name: run `calcos` smoke tests
     needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-      - uses: actions/setup-python@main
-        with:
-          python-version: '3.x'
-      - uses: actions/cache@main
-        with:
-          path: 'tests/data/*.fits'
-          key: data-${{ hashFiles('tests/data/download.py') }}
-      - run: pip install pooch
-      - run: python tests/data/download.py
-  run_calcos_smoke_tests:
-    name: run `calcos` smoke tests
-    needs: [ download_data ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@main
         with:
           lfs: true
       - uses: actions/cache@main
@@ -176,37 +161,13 @@ jobs:
           use-only-tar-bz2: true
       - uses: actions/cache@main
         with:
-          path: 'tests/data/*.fits'
-          key: conda-${{ hashFiles('tests/data/download.py') }}
+          path: 'tests/data/'
+          key: conda-${{ hashFiles('tests/data/*') }}
       - run: calcos la8n01qkq_rawtag_a.fits
         env:
-          lref: /grp/crds/hst/references/hst/
-  run_drizzlepac_smoke_tests:
-    name: run `drizzlepac` smoke tests
-    needs: [ download_data ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@main
-        with:
-          lfs: true
-      - uses: actions/cache@main
-        with:
-          path: |
-            ~/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-latest
-          key: conda-${{ runner.os }}-${{ github.sha }}
-      - uses: conda-incubator/setup-miniconda@main
-        with:
-          activate-environment: spacetelescope-env-latest
-          environment-file: spacetelescope-env-latest.yml
-          use-only-tar-bz2: true
-      - uses: actions/cache@main
-        with:
-          path: 'tests/data/*.fits'
-          key: conda-${{ hashFiles('tests/data/download.py') }}
-      - run: python tests/test_drizzlepac.py
-        env:
-          jref: /grp/crds/hst/references/hst/
+          CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          CRDS_PATH: ~/crds_cache
+          jref: ~/crds_cache/hst/references/hst/
   export:
     name: export environment
     needs: [ run_packaged_unit_tests, run_repository_unit_tests ]
