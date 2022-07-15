@@ -36,7 +36,7 @@ jobs:
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
           key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
-      - run: sed -i "s/python==3.9/python>=3/g" spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
