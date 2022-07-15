@@ -214,7 +214,7 @@ jobs:
         id: version
       - uses: dawidd6/action-download-artifact@master
         with:
-          workflow: ${{ github.workflow }}
+          workflow: build.yml
           name: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
       - uses: svenstaro/upload-release-action@master
