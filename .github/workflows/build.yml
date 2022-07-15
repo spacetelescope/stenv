@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9.*', '3.10.*' ]
+        python: [ '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@main
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
       - uses: mtkennerly/dunamai-action@master
         id: version
       - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
@@ -43,7 +43,7 @@ jobs:
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
           environment-file: spacetelescope-env-latest.yml
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda update --all
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9.*', '3.10.*' ]
+        python: [ '3.9', '3.10' ]
         include:
           - package: acstools
             dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
@@ -86,7 +86,7 @@ jobs:
             dependencies: [ ]
     steps:
       - uses: actions/checkout@main
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         id: date
       - uses: actions/cache@main
@@ -101,7 +101,7 @@ jobs:
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
           environment-file: spacetelescope-env-latest.yml
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9.*', '3.10.*' ]
+        python: [ '3.9', '3.10' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -134,7 +134,7 @@ jobs:
       - uses: actions/checkout@main
         with:
           path: spacetelescope-env-distribution
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         id: date
       - uses: actions/cache@main
@@ -149,7 +149,7 @@ jobs:
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
           environment-file: spacetelescope-env-distribution/spacetelescope-env-latest.yml
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
       - uses: actions/checkout@main
@@ -164,12 +164,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9.*', '3.10.*' ]
+        python: [ '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@main
         with:
           lfs: true
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         id: date
       - uses: actions/cache@main
@@ -184,7 +184,7 @@ jobs:
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
           environment-file: spacetelescope-env-latest.yml
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
       - uses: actions/cache@main
@@ -201,7 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9.*', '3.10.*' ]
+        python: [ '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@main
       - uses: mtkennerly/dunamai-action@master
