@@ -39,7 +39,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-latest-${{ matrix.python }}
-          environment-file: spacetelescope-env-latest-${{ matrix.python }}.yml
+          environment-file: spacetelescope-env-latest.yml
           python-version: ${{ matrix.python }}
           auto-update-conda: true
           use-only-tar-bz2: true
