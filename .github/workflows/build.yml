@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9', '3.10' ]
+        python: [ '3.9.*', '3.10.*' ]
     steps:
       - uses: actions/checkout@main
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9', '3.10' ]
+        python: [ '3.9.*', '3.10.*' ]
         include:
           - package: acstools
             dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9', '3.10' ]
+        python: [ '3.9.*', '3.10.*' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -164,7 +164,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9', '3.10' ]
+        python: [ '3.9.*', '3.10.*' ]
     steps:
       - uses: actions/checkout@main
         with:
@@ -201,7 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.9', '3.10' ]
+        python: [ '3.9.*', '3.10.*' ]
     steps:
       - uses: actions/checkout@main
       - uses: mtkennerly/dunamai-action@master
