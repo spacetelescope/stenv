@@ -207,7 +207,7 @@ jobs:
       - uses: actions/checkout@main
       - uses: mtkennerly/dunamai-action@master
         id: version
-      - uses: dawidd6/action-download-artifact@main
+      - uses: dawidd6/action-download-artifact@master
         with:
           name: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
