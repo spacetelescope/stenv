@@ -179,9 +179,7 @@ jobs:
           key: conda-${{ hashFiles('tests/data/*') }}
       - run: calcos la8n01qkq_rawtag_a.fits
         env:
-          CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          CRDS_PATH: ~/crds_cache
-          jref: ~/crds_cache/hst/references/hst/
+          jref: /home/runner/crds_cache/hst/references/hst/
   export:
     name: export environment
     needs: [ run_packaged_unit_tests, run_repository_unit_tests, run_calcos_smoke_tests ]
