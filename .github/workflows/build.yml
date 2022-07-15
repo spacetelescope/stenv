@@ -26,6 +26,7 @@ jobs:
         python: [ '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@main
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
       - uses: mtkennerly/dunamai-action@master
         id: version
       - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
@@ -36,7 +37,6 @@ jobs:
             ~/conda_pkgs_dir
             /usr/share/miniconda/envs/spacetelescope-env-latest-${{ matrix.python }}
           key: conda-${{ runner.os }}-${{ steps.date.outputs.date }}
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
       - uses: conda-incubator/setup-miniconda@main
         with:
           activate-environment: spacetelescope-env-${{ matrix.python }}-latest
@@ -84,6 +84,7 @@ jobs:
             dependencies: [ ]
     steps:
       - uses: actions/checkout@main
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         id: date
       - uses: actions/cache@main
@@ -129,6 +130,7 @@ jobs:
       - uses: actions/checkout@main
         with:
           path: spacetelescope-env-distribution
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         id: date
       - uses: actions/cache@main
@@ -161,6 +163,7 @@ jobs:
       - uses: actions/checkout@main
         with:
           lfs: true
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}/g" spacetelescope-env-latest.yml
       - uses: actions/cache@main
         with:
           path: |
