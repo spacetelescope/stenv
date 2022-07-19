@@ -51,13 +51,17 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
       - run: conda install -y pytest pytest-xdist
       - run: pytest -n auto tests/test_import.py
-      - run: conda env export > spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
-      - run: cat spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
+      - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+        if: matrix.os == 'ubuntu-latest'
+      - run: sed -i "s/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+        if: matrix.os == 'ubuntu-latest'
+      - run: cat spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+        if: matrix.os == 'ubuntu-latest'
       - uses: actions/upload-artifact@v3.1.0
+        if: matrix.os == 'ubuntu-latest'
         with:
-          name: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
-          path: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
+          name: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
   unit_tests:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ build ]
@@ -239,8 +243,11 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda env export > spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
+      - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+        if: matrix.os == 'ubuntu-latest'
+      - run: sed -i "s/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+        if: matrix.os == 'ubuntu-latest'
       - uses: svenstaro/upload-release-action@2.3.0
+        if: matrix.os == 'ubuntu-latest'
         with:
-          file: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-v${{ steps.version.outputs.version }}.yml
+          file: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
