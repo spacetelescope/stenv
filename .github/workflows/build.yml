@@ -24,9 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
-        if: matrix.os == 'macos-latest'
+        if: runner.os == 'MacOS'
       - uses: actions/setup-python@v4.1.0
         with:
           python-version: ${{ matrix.python }}
@@ -35,11 +35,20 @@ jobs:
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
+        if: runner.os == 'Linux'
         id: cache
         with:
           path: |
-            ~/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            /home/runner/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
+      - uses: actions/cache@v3.0.5
+        if: runner.os == 'MacOS'
+        id: cache
+        with:
+          path: |
+            /Users/runner/conda_pkgs_dir
+            /usr/local/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -53,13 +62,13 @@ jobs:
       - run: conda install -y pytest pytest-xdist
       - run: pytest -n auto tests/test_import.py
       - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: cat spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - uses: actions/upload-artifact@v3.1.0
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
         with:
           name: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
@@ -97,16 +106,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
-        if: matrix.os == 'macos-latest'
+        if: runner.os == 'MacOS'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
+        if: runner.os == 'Linux'
+        id: cache
         with:
           path: |
-            ~/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            /home/runner/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
+      - uses: actions/cache@v3.0.5
+        if: runner.os == 'MacOS'
+        id: cache
+        with:
+          path: |
+            /Users/runner/conda_pkgs_dir
+            /usr/local/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -155,16 +174,26 @@ jobs:
         with:
           path: spacetelescope-env-distribution
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
-        if: matrix.os == 'macos-latest'
+        if: runner.os == 'MacOS'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
+        if: runner.os == 'Linux'
+        id: cache
         with:
           path: |
-            ~/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            /home/runner/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
+      - uses: actions/cache@v3.0.5
+        if: runner.os == 'MacOS'
+        id: cache
+        with:
+          path: |
+            /Users/runner/conda_pkgs_dir
+            /usr/local/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -207,9 +236,9 @@ jobs:
         with:
           lfs: true
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
-        if: matrix.os == 'macos-latest'
+        if: runner.os == 'MacOS'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
@@ -255,11 +284,20 @@ jobs:
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
       - uses: actions/cache@v3.0.5
+        if: runner.os == 'Linux'
         id: cache
         with:
           path: |
-            ~/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            /home/runner/conda_pkgs_dir
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
+      - uses: actions/cache@v3.0.5
+        if: runner.os == 'MacOS'
+        id: cache
+        with:
+          path: |
+            /Users/runner/conda_pkgs_dir
+            /usr/local/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -269,10 +307,10 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - uses: svenstaro/upload-release-action@2.3.0
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
         with:
           file: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
