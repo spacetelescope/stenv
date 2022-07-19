@@ -38,8 +38,8 @@ jobs:
         id: cache
         with:
           path: |
-            /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            ~/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -108,8 +108,8 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            ~/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -167,8 +167,8 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            ~/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -219,8 +219,8 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            ~/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
@@ -261,8 +261,8 @@ jobs:
         id: cache
         with:
           path: |
-            /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+            ~/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
