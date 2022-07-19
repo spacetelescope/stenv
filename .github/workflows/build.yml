@@ -23,9 +23,9 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
     steps:
       - uses: actions/checkout@v3.0.2
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
         if: matrix.os == 'ubuntu-latest'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-latest.yml
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
         if: matrix.os == 'macos-latest'
       - uses: actions/setup-python@v4.1.0
         with:
@@ -99,9 +99,9 @@ jobs:
           - package: wfpc2tools
     steps:
       - uses: actions/checkout@v3.0.2
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
         if: matrix.os == 'ubuntu-latest'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-latest.yml
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
         if: matrix.os == 'macos-latest'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
@@ -158,9 +158,9 @@ jobs:
       - uses: actions/checkout@v3.0.2
         with:
           path: spacetelescope-env-distribution
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
         if: matrix.os == 'ubuntu-latest'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
         if: matrix.os == 'macos-latest'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
@@ -210,9 +210,9 @@ jobs:
       - uses: actions/checkout@v3.0.2
         with:
           lfs: true
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-latest.yml
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
         if: matrix.os == 'ubuntu-latest'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-latest.yml
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
         if: matrix.os == 'macos-latest'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
