@@ -12,11 +12,6 @@ defaults:
   run:
     shell: bash -l {0}
 
-env:
-  PYSYN_CDBS: /home/runner/trds
-  CRDS_PATH: /home/runner/crds_cache
-  CRDS_SERVER_URL: https://hst-crds.stsci.edu
-
 jobs:
   build:
     name: build environment (Python ${{ matrix.python }}, ${{ matrix.os }})
@@ -43,7 +38,7 @@ jobs:
         id: cache
         with:
           path: |
-            ../../../conda_pkgs_dir
+            ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -110,7 +105,7 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            ../../../conda_pkgs_dir
+            ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -124,6 +119,10 @@ jobs:
       - run: pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
+        env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
+          CRDS_SERVER_URL: https://hst-crds.stsci.edu
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }}) from source
     needs: [ build ]
@@ -164,7 +163,7 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            ../../../conda_pkgs_dir
+            ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -182,6 +181,10 @@ jobs:
       - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+        env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
+          CRDS_SERVER_URL: https://hst-crds.stsci.edu
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ build ]
@@ -212,7 +215,7 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            ../../../conda_pkgs_dir
+            ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -230,6 +233,9 @@ jobs:
       - run: conda install -y pytest pytest-xdist
       - run: ${{ matrix.run }}
         env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
+          CRDS_SERVER_URL: https://hst-crds.stsci.edu
           jref: ${{ matrix.jref }}
   export:
     name: export environment (Python ${{ matrix.python }}, ${{ matrix.os }})
@@ -252,7 +258,7 @@ jobs:
         id: cache
         with:
           path: |
-            ../../../conda_pkgs_dir
+            ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
