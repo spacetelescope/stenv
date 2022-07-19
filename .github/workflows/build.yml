@@ -222,6 +222,7 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
+      - run: pip install pytest pytest-xdist
       - uses: actions/cache@v3.0.5
         with:
           path: 'tests/data/'
