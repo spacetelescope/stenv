@@ -26,13 +26,13 @@ jobs:
       matrix:
         python: [ '3.9' ]
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v3.0.2
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
-      - uses: mtkennerly/dunamai-action@master
+      - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
-      - uses: actions/cache@main
+      - uses: actions/cache@v3.0.5
         id: cache
         with:
           path: |
@@ -88,11 +88,11 @@ jobs:
           - package: wfpc2tools
             dependencies: [ ]
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v3.0.2
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
-      - uses: actions/cache@main
+      - uses: actions/cache@v3.0.5
         with:
           path: |
             /home/runner/conda_pkgs_dir
@@ -134,13 +134,13 @@ jobs:
           #  dependencies: [ six ]
           #  test_directory: tests
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v3.0.2
         with:
           path: spacetelescope-env-distribution
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
-      - uses: actions/cache@main
+      - uses: actions/cache@v3.0.5
         with:
           path: |
             /home/runner/conda_pkgs_dir
@@ -153,7 +153,7 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v3.0.2
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
@@ -173,13 +173,13 @@ jobs:
             run: calcos la8n01qkq_rawtag_a.fits
             jref: /home/runner/crds_cache/hst/references/hst/
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v3.0.2
         with:
           lfs: true
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
-      - uses: actions/cache@main
+      - uses: actions/cache@v3.0.5
         with:
           path: |
             /home/runner/conda_pkgs_dir
@@ -192,7 +192,7 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - uses: actions/cache@main
+      - uses: actions/cache@v3.0.5
         with:
           path: 'tests/data/'
           key: conda-${{ hashFiles('tests/data/*') }}
@@ -209,10 +209,10 @@ jobs:
       matrix:
         python: [ '3.9' ]
     steps:
-      - uses: actions/checkout@main
-      - uses: mtkennerly/dunamai-action@master
+      - uses: actions/checkout@v3.0.2
+      - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
-      - uses: actions/cache@main
+      - uses: actions/cache@v3.0.5
         id: cache
         with:
           path: |
