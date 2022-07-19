@@ -27,6 +27,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.\*/g" spacetelescope-env-latest.yml
         if: matrix.os == 'macos-latest'
+      - uses: actions/setup-python@v4.1.0
+        with:
+          python-version: ${{ matrix.python }}
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
@@ -249,6 +252,9 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
     steps:
       - uses: actions/checkout@v3.0.2
+      - uses: actions/setup-python@v4.1.0
+        with:
+          python-version: ${{ matrix.python }}
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
       - uses: actions/cache@v3.0.5
