@@ -105,7 +105,8 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
+      - run: conda install -y pytest pytest-xdist
+      - run: pip install ${{ join(matrix.dependencies, ' ') }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}) from source
@@ -157,7 +158,8 @@ jobs:
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
-      - run: cd ${{ matrix.package }} && pip install pytest-xdist ${{ join(matrix.dependencies, ' ') }}
+      - run: cd ${{ matrix.package }} && conda install -y pytest pytest-xdist
+      - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }})
@@ -173,9 +175,7 @@ jobs:
             run: calcos la8n01qkq_rawtag_a.fits
             jref: /home/runner/crds_cache/hst/references/hst/
           - package: drizzlepac
-            run: |
-              pip install pytest pytest-xdist
-              pytest -n auto tests/test_drizzlepac.py
+            run: pytest -n auto tests/test_drizzlepac.py
             jref: /home/runner/crds_cache/hst/references/hst/
     steps:
       - uses: actions/checkout@v3.0.2
@@ -201,6 +201,7 @@ jobs:
         with:
           path: 'tests/data/'
           key: conda-${{ hashFiles('tests/data/*') }}
+      - run: conda install -y pytest pytest-xdist
       - run: ${{ matrix.run }}
         env:
           jref: ${{ matrix.jref }}
