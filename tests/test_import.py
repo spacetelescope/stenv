@@ -1,19 +1,21 @@
 import importlib.metadata
 import re
 import sys
-import yaml
-from packaging.version import Version
 from pathlib import Path
 from typing import Mapping, Dict, Tuple
 
+import yaml
+from packaging.version import Version
+
+ENVIRONMENT_FILENAME = Path(__file__).parent.parent / "spacetelescope-env-latest.yml"
 DEPENDENCY_PATTERN = re.compile(r"([\w\d-]+)\s*((?:[<>=~]=?|\^)\s*[\d\w.]*)?")
 MINIMUM_DEPENDENCY_PATTERN = re.compile(r".*>=?\s*([\d\w.]+).*")
 
 
 def parse_dependency(
-        dependency: str,
-        dependencies: Dict[str, Tuple[str, str]],
-        version_specification_pattern: re.Pattern = DEPENDENCY_PATTERN,
+    dependency: str,
+    dependencies: Dict[str, Tuple[str, str]],
+    version_specification_pattern: re.Pattern = DEPENDENCY_PATTERN,
 ):
     match = re.match(version_specification_pattern, dependency)
     if match is not None:
@@ -28,7 +30,7 @@ INSTALLED_PACKAGES = {
 
 
 def check_package(
-        package_name: str, minimum_version: Version = None, verbose: bool = True
+    package_name: str, minimum_version: Version = None, verbose: bool = True
 ) -> bool:
     if package_name in INSTALLED_PACKAGES:
         installed_version = Version(INSTALLED_PACKAGES[package_name])
@@ -50,20 +52,19 @@ def check_package(
 
 
 def test_import():
-    with open(Path(__file__).parent / "spacetelescope-env-latest.yml") as environment_file:
+    with open(ENVIRONMENT_FILENAME) as environment_file:
         environment = yaml.safe_load(environment_file)
 
     dependencies = {}
 
     for dependency in environment["dependencies"]:
-        if isinstance(dependency, str):
-            if "python" not in dependency and dependency not in "pip":
-                parse_dependency(dependency, dependencies)
-        elif isinstance(dependency, Mapping):
+        if isinstance(dependency, Mapping):
             dependency = list(dependency.items())[0]
             if dependency[0] == "pip":
                 [
-                    parse_dependency(dependency=pip_dependency, dependencies=dependencies)
+                    parse_dependency(
+                        dependency=pip_dependency, dependencies=dependencies
+                    )
                     for pip_dependency in dependency[1]
                 ]
 
@@ -77,4 +78,4 @@ def test_import():
             min_version = None
         if not check_package(package_name, minimum_version=min_version):
             errors.append(package_name)
-    assert len(errors) == 0, f"You must resolve {sum(errors)} errors (above) before running the tutorials."
+    assert len(errors) == 0
