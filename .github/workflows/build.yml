@@ -38,7 +38,7 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.HOME }}/conda_pkgs_dir
+            ../../../conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -108,7 +108,7 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            ${{ env.HOME }}/conda_pkgs_dir
+            ../../../conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -167,7 +167,7 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            ${{ env.HOME }}/conda_pkgs_dir
+            ../../../conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -219,7 +219,7 @@ jobs:
       - uses: actions/cache@v3.0.5
         with:
           path: |
-            ${{ env.HOME }}/conda_pkgs_dir
+            ../../../conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
@@ -262,7 +262,7 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.HOME }}/conda_pkgs_dir
+            ../../../conda_pkgs_dir
             ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
