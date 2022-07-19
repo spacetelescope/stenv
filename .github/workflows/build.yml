@@ -14,12 +14,13 @@ defaults:
 
 jobs:
   build:
-    name: build environment (Python ${{ matrix.python }})
-    runs-on: ubuntu-latest
+    name: build environment (Python ${{ matrix.python }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python: [ '3.9' ]
+        python: [ '3.8', '3.9', '3.10' ]
+        os: [ ubuntu-latest, macos-latest ]
     steps:
       - uses: actions/checkout@v3.0.2
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
@@ -53,14 +54,15 @@ jobs:
           name: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
   unit_tests:
-    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }})
+    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         package: [ acstools, ccdproc, costools, jwst, reftools, stsynphot, synphot, wfpc2tools ]
-        python: [ '3.9' ]
+        python: [ '3.8', '3.9', '3.10' ]
+        os: [ ubuntu-latest, macos-latest ]
         include:
           - package: acstools
             dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
@@ -112,14 +114,15 @@ jobs:
           CRDS_PATH: /home/runner/crds_cache
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   unit_tests_from_source:
-    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}) from source
+    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }}) from source
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         package: [ calcos, hstcal ]
-        python: [ '3.9' ]
+        python: [ '3.8', '3.9', '3.10' ]
+        os: [ ubuntu-latest, macos-latest ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -171,14 +174,15 @@ jobs:
           CRDS_PATH: /home/runner/crds_cache
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
-    name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }})
+    name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         package: [ calcos, drizzlepac ]
-        python: [ '3.9' ]
+        python: [ '3.8', '3.9', '3.10' ]
+        os: [ ubuntu-latest, macos-latest ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -218,14 +222,15 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           jref: ${{ matrix.jref }}
   export:
-    name: export environment
+    name: export environment (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
     if: github.event_name == 'release' && github.event.action == 'published'
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python: [ '3.9' ]
+        python: [ '3.8', '3.9', '3.10' ]
+        os: [ ubuntu-latest, macos-latest ]
     steps:
       - uses: actions/checkout@v3.0.2
       - uses: mtkennerly/dunamai-action@v1.1.0
