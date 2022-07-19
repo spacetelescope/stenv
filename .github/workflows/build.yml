@@ -36,7 +36,6 @@ jobs:
         id: date
       - uses: actions/cache@v3.0.5
         if: runner.os == 'Linux'
-        id: cache
         with:
           path: |
             /home/runner/conda_pkgs_dir
@@ -44,7 +43,6 @@ jobs:
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: actions/cache@v3.0.5
         if: runner.os == 'MacOS'
-        id: cache
         with:
           path: |
             /Users/runner/conda_pkgs_dir
@@ -57,8 +55,6 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda update --all
-        if: steps.cache.outputs.cache-hit != 'true'
       - run: conda install -y pytest pytest-xdist
       - run: pytest -n auto tests/test_import.py
       - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
@@ -116,7 +112,6 @@ jobs:
         id: date
       - uses: actions/cache@v3.0.5
         if: runner.os == 'Linux'
-        id: cache
         with:
           path: |
             /home/runner/conda_pkgs_dir
@@ -124,7 +119,6 @@ jobs:
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: actions/cache@v3.0.5
         if: runner.os == 'MacOS'
-        id: cache
         with:
           path: |
             /Users/runner/conda_pkgs_dir
@@ -185,7 +179,6 @@ jobs:
         id: date
       - uses: actions/cache@v3.0.5
         if: runner.os == 'Linux'
-        id: cache
         with:
           path: |
             /home/runner/conda_pkgs_dir
@@ -193,7 +186,6 @@ jobs:
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: actions/cache@v3.0.5
         if: runner.os == 'MacOS'
-        id: cache
         with:
           path: |
             /Users/runner/conda_pkgs_dir
@@ -289,7 +281,6 @@ jobs:
         id: version
       - uses: actions/cache@v3.0.5
         if: runner.os == 'Linux'
-        id: cache
         with:
           path: |
             /home/runner/conda_pkgs_dir
@@ -297,7 +288,6 @@ jobs:
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: actions/cache@v3.0.5
         if: runner.os == 'MacOS'
-        id: cache
         with:
           path: |
             /Users/runner/conda_pkgs_dir
