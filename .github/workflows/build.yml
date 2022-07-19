@@ -173,7 +173,9 @@ jobs:
             run: calcos la8n01qkq_rawtag_a.fits
             jref: /home/runner/crds_cache/hst/references/hst/
           - package: drizzlepac
-            run: python tests/test_drizzlepac.py
+            run: |
+              pip install pytest pytest-xdist
+              pytest -n auto tests/test_drizzlepac.py
             jref: /home/runner/crds_cache/hst/references/hst/
     steps:
       - uses: actions/checkout@v3.0.2
