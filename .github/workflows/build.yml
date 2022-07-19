@@ -39,11 +39,11 @@ jobs:
         with:
           path: |
             /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ matrix.os }}-${{ steps.date.outputs.date }}
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
+          activate-environment: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           environment-file: spacetelescope-env-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -54,7 +54,7 @@ jobs:
       - run: pytest -n auto tests/test_import.py
       - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
         if: matrix.os == 'ubuntu-latest'
-      - run: sed -i "s/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
         if: matrix.os == 'ubuntu-latest'
       - run: cat spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
         if: matrix.os == 'ubuntu-latest'
@@ -109,11 +109,11 @@ jobs:
         with:
           path: |
             /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ matrix.os }}-${{ steps.date.outputs.date }}
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
+          activate-environment: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           environment-file: spacetelescope-env-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -168,11 +168,11 @@ jobs:
         with:
           path: |
             /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ matrix.os }}-${{ steps.date.outputs.date }}
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
+          activate-environment: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           environment-file: spacetelescope-env-distribution/spacetelescope-env-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -220,11 +220,11 @@ jobs:
         with:
           path: |
             /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ matrix.os }}-${{ steps.date.outputs.date }}
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
+          activate-environment: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           environment-file: spacetelescope-env-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -262,18 +262,18 @@ jobs:
         with:
           path: |
             /home/runner/conda_pkgs_dir
-            /usr/share/miniconda/envs/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ matrix.os }}-${{ steps.date.outputs.date }}
+            /usr/share/miniconda/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest
+          activate-environment: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
           environment-file: spacetelescope-env-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
         if: matrix.os == 'ubuntu-latest'
-      - run: sed -i "s/spacetelescope-env-py${{ matrix.python }}-${{ matrix.os }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
         if: matrix.os == 'ubuntu-latest'
       - uses: svenstaro/upload-release-action@2.3.0
         if: matrix.os == 'ubuntu-latest'
