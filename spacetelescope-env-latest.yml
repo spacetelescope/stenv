@@ -20,6 +20,7 @@ dependencies:
       - h5py
       - ipython
       - jupyter
+      - jwst
       - nictools
       - pysynphot
       - pytest
