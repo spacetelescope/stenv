@@ -65,7 +65,7 @@ def check_package(
     return True
 
 
-def test_dependencies():
+def test_package_install():
     errors = []
     for package_name, specification in DEPENDENCIES.items():
         if specification is not None:
@@ -79,7 +79,7 @@ def test_dependencies():
     assert len(errors) == 0
 
 
-def test_import():
+def test_module_import():
     errors = []
     for package_name in DEPENDENCIES:
         if package_name not in ["ipython"]:
