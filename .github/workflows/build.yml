@@ -64,7 +64,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, ccdproc, costools, reftools, stsynphot, synphot, wfpc2tools ]
+        package: [ acstools, ccdproc, costools, jwst, reftools, stsynphot, synphot, wfpc2tools ]
         python: [ '3.9' ]
         include:
           - package: acstools
@@ -74,6 +74,8 @@ jobs:
           - package: costools
           #- package: crds
           #  dependencies: [ lockfile, mock, nose, pylint ]
+          - package: jwst
+            dependencies: [ ci-watson, pytest-doctestplus, pytest-openfiles, requests_mock ]
           #- package: nictools
           #- package: pysynphot
           #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
