@@ -15,7 +15,6 @@ defaults:
 env:
   PYSYN_CDBS: /home/runner/trds
   CRDS_PATH: /home/runner/crds_cache
-  CRDS_SERVER_URL: https://hst-crds.stsci.edu
 
 jobs:
   build:
@@ -76,6 +75,7 @@ jobs:
           #  dependencies: [ lockfile, mock, nose, pylint ]
           - package: jwst
             dependencies: [ ci-watson, pytest-doctestplus, pytest-openfiles, requests_mock ]
+            CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: nictools
           #- package: pysynphot
           #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
@@ -111,6 +111,8 @@ jobs:
       - run: pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}) from source
     needs: [ build ]
@@ -133,6 +135,7 @@ jobs:
             repository: spacetelescope/hstcal
             dependencies: [ ci-watson ]
             test_directory: tests
+            CRDS_SERVER_URL: https://hst-crds.stsci.edu
           #- package: stistools
           #  repository: spacetelescope/stistools
           #  dependencies: [ six ]
@@ -165,6 +168,8 @@ jobs:
       - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }})
     needs: [ build ]
