@@ -11,6 +11,16 @@ ENVIRONMENT_FILENAME = Path(__file__).parent.parent / "spacetelescope-env-latest
 DEPENDENCY_PATTERN = re.compile(r"([\w\d-]+)\s*((?:[<>=~]=?|\^)\s*[\d\w.]*)?")
 MINIMUM_DEPENDENCY_PATTERN = re.compile(r".*>=?\s*([\d\w.]+).*")
 
+INSTALLED_PACKAGES = {
+    distribution.metadata["name"].lower(): distribution.metadata["version"]
+    for distribution in importlib.metadata.distributions()
+}
+
+DEPENDENCIES = {}
+
+with open(ENVIRONMENT_FILENAME) as environment_file:
+    environment = yaml.safe_load(environment_file)
+
 
 def parse_dependency(
     dependency: str,
@@ -23,10 +33,14 @@ def parse_dependency(
         dependencies[groups[0]] = groups[1]
 
 
-INSTALLED_PACKAGES = {
-    distribution.metadata["name"].lower(): distribution.metadata["version"]
-    for distribution in importlib.metadata.distributions()
-}
+for dependency in environment["dependencies"]:
+    if isinstance(dependency, Mapping):
+        dependency = list(dependency.items())[0]
+        if dependency[0] == "pip":
+            [
+                parse_dependency(dependency=pip_dependency, dependencies=DEPENDENCIES)
+                for pip_dependency in dependency[1]
+            ]
 
 
 def check_package(
@@ -51,25 +65,9 @@ def check_package(
     return True
 
 
-def test_import():
-    with open(ENVIRONMENT_FILENAME) as environment_file:
-        environment = yaml.safe_load(environment_file)
-
-    dependencies = {}
-
-    for dependency in environment["dependencies"]:
-        if isinstance(dependency, Mapping):
-            dependency = list(dependency.items())[0]
-            if dependency[0] == "pip":
-                [
-                    parse_dependency(
-                        dependency=pip_dependency, dependencies=dependencies
-                    )
-                    for pip_dependency in dependency[1]
-                ]
-
+def test_dependencies():
     errors = []
-    for package_name, specification in dependencies.items():
+    for package_name, specification in DEPENDENCIES.items():
         if specification is not None:
             min_version = re.match(MINIMUM_DEPENDENCY_PATTERN, specification)
             if min_version is not None:
@@ -78,4 +76,16 @@ def test_import():
             min_version = None
         if not check_package(package_name, minimum_version=min_version):
             errors.append(package_name)
+    assert len(errors) == 0
+
+
+def test_import():
+    errors = []
+    for package_name in DEPENDENCIES:
+        if package_name not in ["ipython"]:
+            try:
+                importlib.import_module(package_name)
+            except (ImportError, ModuleNotFoundError):
+                errors.append(package_name)
+
     assert len(errors) == 0
