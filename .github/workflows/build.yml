@@ -75,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, ccdproc, costools, jwst, reftools, stsynphot, synphot, wfpc2tools ]
+        package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         python: [ '3.8', '3.9', '3.10' ]
         os: [ ubuntu-latest, macos-latest ]
         include:
@@ -94,9 +94,6 @@ jobs:
           #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
-          - package: stsynphot
-            dependencies: [ ci-watson, pytest-astropy ]
-            pytest_args: --ignore=stsynphot/data --ignore=stsynphot/commissioning
           - package: synphot
             dependencies: [ pytest-astropy ]
           #- package: wfc3tools
@@ -154,11 +151,9 @@ jobs:
           - package: calcos
             repository: spacetelescope/calcos
             dependencies: [ ci_watson ]
-            test_directory: tests
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
           #  dependencies: [ ci-watson, crds, pytest-remotedata ]
-          #  test_directory: tests
           - package: hstcal
             repository: spacetelescope/hstcal
             dependencies: [ ci-watson ]
@@ -167,7 +162,9 @@ jobs:
           #- package: stistools
           #  repository: spacetelescope/stistools
           #  dependencies: [ six ]
-          #  test_directory: tests
+          - package: stsynphot
+            repository: spacetelescope/stsynphot_refactor
+            dependencies: [ ci-watson, pytest-astropy ]
     steps:
       - uses: actions/checkout@v3.0.2
         with:
@@ -199,10 +196,13 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
+      - run: echo "::set-output name=version::$(pip show ${{ matrix.package }} | awk '$1 == "Version:" {print $2}')"
+        id: version
       - uses: actions/checkout@v3.0.2
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
+          ref: ${{ steps.version.outputs.version }}
       - run: cd ${{ matrix.package }} && conda install -y pytest pytest-xdist
       - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
