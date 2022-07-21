@@ -72,23 +72,21 @@ jobs:
           - package: ccdproc
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
-            dependencies: [ ]
           #- package: crds
           #  dependencies: [ lockfile, mock, nose, pylint ]
           #- package: nictools
-          #  dependencies: [ ]
           #- package: pysynphot
           #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: stsynphot
             dependencies: [ ci-watson, pytest-astropy ]
+            pytest_args: --ignore=stsynphot/data --ignore=stsynphot/commissioning
           - package: synphot
             dependencies: [ pytest-astropy ]
           #- package: wfc3tools
           #  dependencies: [ ]
           - package: wfpc2tools
-            dependencies: [ ]
     steps:
       - uses: actions/checkout@v3.0.2
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
@@ -109,8 +107,8 @@ jobs:
           use-only-tar-bz2: true
       - run: conda install -y pytest pytest-xdist
       - run: pip install ${{ join(matrix.dependencies, ' ') }}
-        if: matrix.dependencies[0] != null
-      - run: pytest -n auto --pyargs ${{ matrix.package }}
+        if: matrix.dependencies != ''
+      - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}) from source
     needs: [ build ]
@@ -163,8 +161,8 @@ jobs:
           repository: ${{ matrix.repository }}
       - run: cd ${{ matrix.package }} && conda install -y pytest pytest-xdist
       - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
-        if: matrix.dependencies[0] != null
-      - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.test_directory }}
+        if: matrix.dependencies != ''
+      - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }})
     needs: [ build ]
