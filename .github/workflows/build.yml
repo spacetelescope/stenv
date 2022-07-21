@@ -214,7 +214,7 @@ jobs:
           PYSYN_CDBS: /home/runner/trds
           CRDS_PATH: /home/runner/crds_cache
           CRDS_SERVER_URL: https://hst-crds.stsci.edu
-      - run: pytest -n auto --pyargs ${{ matrix.package }}
+      - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         if: runner.os == 'MacOS'
         env:
           PYSYN_CDBS: /Users/runner/trds
