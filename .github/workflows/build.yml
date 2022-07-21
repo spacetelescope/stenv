@@ -182,7 +182,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
         with:
-          lfs: true
+          lfs: false
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
