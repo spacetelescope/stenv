@@ -19,8 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [ '3.8', '3.9', '3.10' ]
         os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@v3.0.2
       - if: runner.os == 'Linux'
@@ -73,9 +73,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
-        python: [ '3.8', '3.9', '3.10' ]
         os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         include:
           - package: acstools
             dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
@@ -139,9 +139,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, hstcal, stsynphot ]
-        python: [ '3.8', '3.9', '3.10' ]
         os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        package: [ calcos, hstcal, stsynphot ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -211,9 +211,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, drizzlepac ]
-        python: [ '3.8', '3.9', '3.10' ]
         os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        package: [ calcos, drizzlepac ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -270,8 +270,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [ '3.8', '3.9', '3.10' ]
         os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@v3.0.2
       - if: runner.os == 'Linux'
