@@ -133,13 +133,13 @@ jobs:
         env:
           PYSYN_CDBS: /home/runner/trds
           CRDS_PATH: /home/runner/crds_cache
-          CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
       - run: pytest -n auto --pyargs ${{ matrix.package }}
         if: runner.os == 'MacOS'
         env:
           PYSYN_CDBS: /Users/runner/trds
           CRDS_PATH: /Users/runner/crds_cache
-          CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }}) from source
     needs: [ build ]
@@ -213,13 +213,13 @@ jobs:
         env:
           PYSYN_CDBS: /home/runner/trds
           CRDS_PATH: /home/runner/crds_cache
-          CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         if: runner.os == 'MacOS'
         env:
           PYSYN_CDBS: /Users/runner/trds
           CRDS_PATH: /Users/runner/crds_cache
-          CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ build ]
