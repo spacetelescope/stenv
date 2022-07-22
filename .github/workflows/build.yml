@@ -201,8 +201,8 @@ jobs:
         if: matrix.dependencies != ''
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
-          PYSYN_CDBS: ${{ matrix.HOME }}/trds
-          CRDS_PATH: ${{ matrix.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.HOME }}/trds
+          CRDS_PATH: ${{ env.HOME }}/crds_cache
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
@@ -258,8 +258,8 @@ jobs:
       - run: conda install -y pytest pytest-xdist
       - run: ${{ matrix.run }}
         env:
-          PYSYN_CDBS: ${{ matrix.HOME }}/trds
-          CRDS_PATH: ${{ matrix.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.HOME }}/trds
+          CRDS_PATH: ${{ env.HOME }}/crds_cache
           CRDS_SERVER_URL: https://hst-crds.stsci.edu
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
   export:
