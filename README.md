@@ -1,5 +1,7 @@
 # Space Telescope Environment Distribution
 
+> :warning: **This distribution platform is still in testing and is not yet an official release.**
+
 This repository builds YAML files that define frozen environments (sets of packages at specific versions) for an
 Anaconda installation. The [Releases page](https://github.com/spacetelescope/spacetelescope-env-distribution/releases)
 provides a YAML file for each release.
