@@ -12,10 +12,6 @@ defaults:
   run:
     shell: bash -l {0}
 
-env:
-  PYSYN_CDBS: /home/runner/trds
-  CRDS_PATH: /home/runner/crds_cache
-
 jobs:
   build:
     name: build environment (Python ${{ matrix.python }})
@@ -112,6 +108,8 @@ jobs:
         if: matrix.dependencies != ''
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}) from source
@@ -169,6 +167,8 @@ jobs:
         if: matrix.dependencies != ''
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }})
@@ -213,6 +213,9 @@ jobs:
       - run: conda install -y pytest pytest-xdist
       - run: ${{ matrix.run }}
         env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           jref: ${{ matrix.jref }}
   export:
     name: export environment
