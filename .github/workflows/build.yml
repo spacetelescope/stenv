@@ -12,11 +12,6 @@ defaults:
   run:
     shell: bash -l {0}
 
-env:
-  PYSYN_CDBS: /home/runner/trds
-  CRDS_PATH: /home/runner/crds_cache
-  CRDS_SERVER_URL: https://hst-crds.stsci.edu
-
 jobs:
   build:
     name: build environment (Python ${{ matrix.python }})
@@ -64,7 +59,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, ccdproc, costools, reftools, stsynphot, synphot, wfpc2tools ]
+        package: [ acstools, ccdproc, costools, jwst, reftools, stsynphot, synphot, wfpc2tools ]
         python: [ '3.9' ]
         include:
           - package: acstools
@@ -74,6 +69,9 @@ jobs:
           - package: costools
           #- package: crds
           #  dependencies: [ lockfile, mock, nose, pylint ]
+          - package: jwst
+            dependencies: [ ci-watson, pytest-doctestplus, pytest-openfiles, requests_mock ]
+            CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: nictools
           #- package: pysynphot
           #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
@@ -109,6 +107,10 @@ jobs:
       - run: pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
+        env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}) from source
     needs: [ build ]
@@ -131,6 +133,7 @@ jobs:
             repository: spacetelescope/hstcal
             dependencies: [ ci-watson ]
             test_directory: tests
+            CRDS_SERVER_URL: https://hst-crds.stsci.edu
           #- package: stistools
           #  repository: spacetelescope/stistools
           #  dependencies: [ six ]
@@ -163,6 +166,10 @@ jobs:
       - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+        env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }})
     needs: [ build ]
@@ -206,6 +213,9 @@ jobs:
       - run: conda install -y pytest pytest-xdist
       - run: ${{ matrix.run }}
         env:
+          PYSYN_CDBS: /home/runner/trds
+          CRDS_PATH: /home/runner/crds_cache
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           jref: ${{ matrix.jref }}
   export:
     name: export environment
