@@ -131,18 +131,18 @@ jobs:
       - run: pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         env:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
       - uses: actions/cache@v3.0.5
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         env:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
@@ -222,18 +222,18 @@ jobs:
       - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         env:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
       - uses: actions/cache@v3.0.5
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         env:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
@@ -300,19 +300,19 @@ jobs:
           key: data-${{ hashFiles('tests/data/*') }}
       - run: conda install -y pytest pytest-xdist
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         env:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
       - uses: actions/cache@v3.0.5
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: ${{ matrix.CRDS_SERVER_URL }} != ''
+        if: matrix.CRDS_SERVER_URL != ''
         env:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
