@@ -53,6 +53,45 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
+  validate:
+    name: run import tests (Python ${{ matrix.python }}, ${{ matrix.os }})
+    needs: [ build ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - if: runner.os == 'Linux'
+        run: |
+          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+          sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
+      - if: runner.os == 'MacOS'
+        run: |
+          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+          sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
+      - run: |
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
+      - run: echo "::set-output name=date::$(date +'%Y%m%d')"
+        id: date
+      - uses: actions/cache@v3.0.5
+        with:
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest
+          environment-file: spacetelescope-env-latest.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
       - run: conda install -y pytest pytest-xdist
       - run: pytest -n auto tests/test_import.py
       - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
@@ -68,7 +107,7 @@ jobs:
           path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
   unit_tests:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }})
-    needs: [ build ]
+    needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -78,14 +117,14 @@ jobs:
         package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         include:
           - package: acstools
-            dependencies: [ ci-watson, pytest-astropy-header, pytest-remotedata ]
+            dependencies: [ pytest-astropy-header, pytest-remotedata ]
           - package: ccdproc
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
           #- package: crds
           #  dependencies: [ lockfile, mock, nose, pylint ]
           - package: jwst
-            dependencies: [ ci-watson, pytest-doctestplus, pytest-openfiles, requests_mock ]
+            dependencies: [ pytest-doctestplus, pytest-openfiles, requests_mock ]
             CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: nictools
           #- package: pysynphot
@@ -128,8 +167,7 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda install -y pytest pytest-xdist
-      - run: pip install ${{ join(matrix.dependencies, ' ') }}
-        if: matrix.dependencies != ''
+      - run: pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
         env:
@@ -146,14 +184,14 @@ jobs:
         env:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
-      - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
+      - run: pytest -n auto --slow ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }}) from source
-    needs: [ build ]
+    needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -164,13 +202,11 @@ jobs:
         include:
           - package: calcos
             repository: spacetelescope/calcos
-            dependencies: [ ci_watson ]
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
-          #  dependencies: [ ci-watson, crds, pytest-remotedata ]
+          #  dependencies: [ crds, pytest-remotedata ]
           - package: hstcal
             repository: spacetelescope/hstcal
-            dependencies: [ ci-watson ]
             test_directory: tests
             CRDS_SERVER_URL: https://hst-crds.stsci.edu
           #- package: stistools
@@ -178,7 +214,7 @@ jobs:
           #  dependencies: [ six ]
           - package: stsynphot
             repository: spacetelescope/stsynphot_refactor
-            dependencies: [ ci-watson, pytest-astropy ]
+            dependencies: [ pytest-astropy ]
     steps:
       - uses: actions/checkout@v3.0.2
         with:
@@ -219,8 +255,7 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.version.outputs.version }}
       - run: cd ${{ matrix.package }} && conda install -y pytest pytest-xdist
-      - run: cd ${{ matrix.package }} && pip install ${{ join(matrix.dependencies, ' ') }}
-        if: matrix.dependencies != ''
+      - run: cd ${{ matrix.package }} && pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
         env:
@@ -237,14 +272,14 @@ jobs:
         env:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
-      - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+      - run: cd ${{ matrix.package }} && pytest -n auto --slow ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
-    needs: [ build ]
+    needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
