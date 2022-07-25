@@ -109,6 +109,9 @@ jobs:
           echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
           sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
+      - run: |
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
@@ -130,18 +133,20 @@ jobs:
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: ${{ matrix.CRDS_SERVER_URL }} != ''
         env:
-          PYSYN_CDBS: ${{ env.HOME }}/trds
-          CRDS_PATH: ${{ env.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
       - uses: actions/cache@v3.0.5
         if: ${{ matrix.CRDS_SERVER_URL }} != ''
         with:
-          path: ${{ env.HOME }}/crds_cache
+          path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
+      - run: crds sync ${{ matrix.CRDS_CONTEXT }}
+        if: ${{ matrix.CRDS_SERVER_URL }} != ''
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
-          PYSYN_CDBS: ${{ env.HOME }}/trds
-          CRDS_PATH: ${{ env.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }}) from source
@@ -185,6 +190,9 @@ jobs:
           echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
           sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-distribution/spacetelescope-env-latest.yml
+      - run: |
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
@@ -213,18 +221,20 @@ jobs:
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: ${{ matrix.CRDS_SERVER_URL }} != ''
         env:
-          PYSYN_CDBS: ${{ env.HOME }}/trds
-          CRDS_PATH: ${{ env.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
       - uses: actions/cache@v3.0.5
         if: ${{ matrix.CRDS_SERVER_URL }} != ''
         with:
-          path: ${{ env.HOME }}/crds_cache
+          path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
+      - run: crds sync ${{ matrix.CRDS_CONTEXT }}
+        if: ${{ matrix.CRDS_SERVER_URL }} != ''
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
-          PYSYN_CDBS: ${{ env.HOME }}/trds
-          CRDS_PATH: ${{ env.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
@@ -259,6 +269,9 @@ jobs:
           echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
           sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
+      - run: |
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
@@ -283,19 +296,21 @@ jobs:
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: ${{ matrix.CRDS_SERVER_URL }} != ''
         env:
-          PYSYN_CDBS: ${{ env.HOME }}/trds
-          CRDS_PATH: ${{ env.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
       - uses: actions/cache@v3.0.5
         if: ${{ matrix.CRDS_SERVER_URL }} != ''
         with:
-          path: ${{ env.HOME }}/crds_cache
+          path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
+      - run: crds sync ${{ matrix.CRDS_CONTEXT }}
+        if: ${{ matrix.CRDS_SERVER_URL }} != ''
       - run: ${{ matrix.run }}
         env:
-          PYSYN_CDBS: ${{ env.HOME }}/trds
-          CRDS_PATH: ${{ env.HOME }}/crds_cache
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
   export:
