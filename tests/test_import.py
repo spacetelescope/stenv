@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from typing import Mapping, Dict, Tuple
 
+import pytest
 import yaml
 from packaging.version import Version
 
@@ -65,27 +66,27 @@ def check_package(
     return True
 
 
-def test_package_install():
-    errors = []
-    for package_name, specification in DEPENDENCIES.items():
-        if specification is not None:
-            min_version = re.match(MINIMUM_DEPENDENCY_PATTERN, specification)
-            if min_version is not None:
-                min_version = Version(min_version.groups()[0])
-        else:
-            min_version = None
-        if not check_package(package_name, minimum_version=min_version):
-            errors.append(package_name)
-    assert len(errors) == 0
+@pytest.mark.parametrize(
+    "package_name,specification",
+    [
+        (package_name, specification)
+        for package_name, specification in DEPENDENCIES.items()
+    ],
+)
+def test_package_install(package_name, specification):
+    if specification is not None:
+        min_version = re.match(MINIMUM_DEPENDENCY_PATTERN, specification)
+        if min_version is not None:
+            min_version = Version(min_version.groups()[0])
+    else:
+        min_version = None
+
+    assert check_package(package_name, minimum_version=min_version)
 
 
-def test_module_import():
-    errors = []
-    for package_name in DEPENDENCIES:
-        if package_name not in ["ipython"]:
-            try:
-                importlib.import_module(package_name)
-            except (ImportError, ModuleNotFoundError):
-                errors.append(package_name)
-
-    assert len(errors) == 0
+@pytest.mark.parametrize(
+    "package_name",
+    [package_name for package_name in DEPENDENCIES if package_name not in ["ipython"]],
+)
+def test_module_import(package_name):
+    importlib.import_module(package_name)
