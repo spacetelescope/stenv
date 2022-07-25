@@ -63,17 +63,7 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda update --all
-      - run: conda env export --no-builds > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: runner.os == 'MacOS'
-      - run: cat spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-      - uses: actions/upload-artifact@v3.1.0
-        if: runner.os == 'Linux'
-        with:
-          name: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-          path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: conda env export
   validate:
     name: run import tests (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ build ]
@@ -116,6 +106,7 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda install -y pytest pytest-xdist
+      - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }})
@@ -182,6 +173,7 @@ jobs:
           use-only-tar-bz2: true
       - run: conda install -y pytest pytest-xdist
       - run: pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
         env:
@@ -272,6 +264,7 @@ jobs:
           ref: ${{ steps.version.outputs.version }}
       - run: cd ${{ matrix.package }} && conda install -y pytest pytest-xdist
       - run: cd ${{ matrix.package }} && pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
         env:
@@ -352,6 +345,7 @@ jobs:
           path: 'tests/data/'
           key: data-${{ hashFiles('tests/data/*') }}
       - run: conda install -y pytest pytest-xdist
+      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
         env:
@@ -378,7 +372,6 @@ jobs:
   export:
     name: export environment (Python ${{ matrix.python }}, ${{ matrix.os }})
     needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
-    if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -413,11 +406,18 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda env export > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: runner.os == 'Linux'
+      - run: conda env export --no-builds > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
       - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
         if: runner.os == 'Linux'
-      - uses: svenstaro/upload-release-action@2.3.0
+      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+        if: runner.os == 'MacOS'
+      - run: cat spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - uses: actions/upload-artifact@v3.1.0
         if: runner.os == 'Linux'
+        with:
+          name: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - uses: svenstaro/upload-release-action@2.3.0
+        if: github.event_name == 'release' && github.event.action == 'published' && runner.os == 'Linux'
         with:
           file: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
