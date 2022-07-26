@@ -412,6 +412,6 @@ jobs:
           name: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
           path: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
-        if: github.event_name == 'release' && github.event.action == 'published' && runner.os == 'Linux'
+        if: github.event_name == 'release' && github.event.action == 'published'
         with:
           file: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
