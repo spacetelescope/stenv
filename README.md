@@ -1,5 +1,7 @@
 # Space Telescope Environment Distribution
 
+[![build](https://github.com/spacetelescope/spacetelescope-env-distribution/actions/workflows/build.yml/badge.svg?event=release)](https://github.com/spacetelescope/spacetelescope-env-distribution/actions/workflows/build.yml)
+
 > :warning: **This distribution platform is still in testing and is not yet an official release.**
 
 This repository builds YAML files that define frozen environments (sets of packages at specific versions) for an
