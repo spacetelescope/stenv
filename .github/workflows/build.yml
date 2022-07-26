@@ -19,7 +19,7 @@ defaults:
 
 jobs:
   build:
-    name: build environment (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: build environment (${{ matrix.os }}, Python ${{ matrix.python }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -63,7 +63,7 @@ jobs:
       - run: conda update --all
       - run: conda env export
   validate:
-    name: run import tests (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: run import tests (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ build ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -107,7 +107,7 @@ jobs:
       - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
-    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -194,7 +194,7 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   unit_tests_from_source:
-    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }}) from source
+    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }}) from source
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -260,8 +260,8 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.version.outputs.version }}
-      - run: cd ${{ matrix.package }} && conda install -y pytest pytest-xdist
-      - run: cd ${{ matrix.package }} && pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: conda install -y pytest pytest-xdist
+      - run: pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
@@ -285,7 +285,7 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   smoke_tests:
-    name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: run `${{ matrix.package }}` smoke tests (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -368,7 +368,7 @@ jobs:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
   export:
-    name: export environment (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: export environment (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -408,18 +408,13 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda env export --no-builds > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: runner.os == 'MacOS'
-      - run: cat spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: conda env export --no-builds > spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: cat spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
-        if: runner.os == 'Linux'
         with:
-          name: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-          path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          name: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          path: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
         if: github.event_name == 'release' && github.event.action == 'published' && runner.os == 'Linux'
         with:
-          file: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          file: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
