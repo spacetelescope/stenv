@@ -386,6 +386,10 @@ jobs:
           echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
         if: runner.os == 'MacOS'
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
+        if: runner.os == 'MacOS'
       - uses: actions/setup-python@v4.1.0
         with:
           python-version: ${{ matrix.python }}
