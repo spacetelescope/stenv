@@ -260,8 +260,8 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.version.outputs.version }}
-      - run: cd ${{ matrix.package }} && conda install -y pytest pytest-xdist
-      - run: cd ${{ matrix.package }} && pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: conda install -y pytest pytest-xdist
+      - run: pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
