@@ -19,7 +19,7 @@ defaults:
 
 jobs:
   build:
-    name: build environment (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: build environment (${{ matrix.os }}, Python ${{ matrix.python }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -63,7 +63,7 @@ jobs:
       - run: conda update --all
       - run: conda env export
   validate:
-    name: run import tests (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: run import tests (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ build ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -107,7 +107,7 @@ jobs:
       - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
-    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -194,7 +194,7 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   unit_tests_from_source:
-    name: run `${{ matrix.package }}` unit tests (Python ${{ matrix.python }}, ${{ matrix.os }}) from source
+    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }}) from source
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -285,7 +285,7 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   smoke_tests:
-    name: run `${{ matrix.package }}` smoke tests (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: run `${{ matrix.package }}` smoke tests (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -368,7 +368,7 @@ jobs:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
   export:
-    name: export environment (Python ${{ matrix.python }}, ${{ matrix.os }})
+    name: export environment (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
     runs-on: ${{ matrix.os }}
     strategy:
