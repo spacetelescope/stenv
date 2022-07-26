@@ -85,9 +85,6 @@ jobs:
         if: runner.os == 'Linux'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" spacetelescope-env-latest.yml
         if: runner.os == 'MacOS'
-      - run: |
-          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
-          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
