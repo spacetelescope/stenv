@@ -408,18 +408,13 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda env export --no-builds > spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-        if: runner.os == 'MacOS'
-      - run: cat spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: conda env export --no-builds > spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: cat spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
-        if: runner.os == 'Linux'
         with:
-          name: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-          path: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          name: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          path: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
         if: github.event_name == 'release' && github.event.action == 'published' && runner.os == 'Linux'
         with:
-          file: spacetelescope-env-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          file: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
