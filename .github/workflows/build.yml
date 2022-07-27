@@ -404,6 +404,10 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda env export --no-builds > spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-latest.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-latest.yml
+        if: runner.os == 'MacOS'
       - run: cat spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
         with:
