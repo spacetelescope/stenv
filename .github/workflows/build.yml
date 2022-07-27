@@ -1,9 +1,6 @@
 name: build
 
 on:
-  push:
-    paths:
-      - "**/*.yml"
   pull_request:
     branches:
       - main
@@ -11,6 +8,7 @@ on:
       - "**/*.yml"
   release:
     types:
+      - created
       - published
 
 defaults:
