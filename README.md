@@ -16,9 +16,9 @@ provides a YAML file for each release.
    and download the accompanying YAML file
 3. create a new Anaconda environment from the YAML file
    ```shell
-   conda env create --file spacetelescope-env-py3.9-v0.1.0.yml
+   conda env create --file spacetelescope-env-macOS-py3.9-v0.3.0.yml
    ```
 4. activate the environment
    ```shell
-   conda activate spacetelescope-env-py3.9-v0.1.0
+   conda activate spacetelescope-env-macOS-py3.9-v0.3.0
    ```
