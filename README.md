@@ -1,6 +1,7 @@
 # Space Telescope Environment Distribution
 
 [![build](https://github.com/spacetelescope/spacetelescope-env-distribution/actions/workflows/build.yml/badge.svg)](https://github.com/spacetelescope/spacetelescope-env-distribution/actions/workflows/build.yml)
+[![release](https://img.shields.io/github/v/release/spacetelescope/spacetelescope-env-distribution)](https://github.com/spacetelescope/spacetelescope-env-distribution/releases)
 
 > :warning: **This distribution platform is still in testing and is not yet an official release.**
 
