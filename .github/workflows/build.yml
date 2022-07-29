@@ -27,6 +27,8 @@ jobs:
         python: [ '3.8', '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
       - run: |
           echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
@@ -376,6 +378,8 @@ jobs:
         python: [ '3.8', '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
       - run: |
           echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
