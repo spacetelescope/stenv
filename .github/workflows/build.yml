@@ -99,7 +99,7 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda install -y pytest pytest-xdist
+      - run: pip install pytest pytest-xdist
       - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
@@ -165,7 +165,7 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda install -y pytest pytest-xdist
+      - run: pip install pytest pytest-xdist
       - run: pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
@@ -256,7 +256,7 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.version.outputs.version }}
-      - run: conda install -y pytest pytest-xdist
+      - run: pip install pytest pytest-xdist
       - run: pip install ci-watson ${{ join(matrix.dependencies, ' ') }}
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
@@ -338,7 +338,7 @@ jobs:
         with:
           path: 'tests/data/'
           key: data-${{ hashFiles('tests/data/*') }}
-      - run: conda install -y pytest pytest-xdist
+      - run: pip install pytest pytest-xdist
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
