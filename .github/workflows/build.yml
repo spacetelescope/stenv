@@ -27,6 +27,8 @@ jobs:
         python: [ '3.8', '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
       - run: |
           echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
@@ -44,6 +46,8 @@ jobs:
           python-version: ${{ matrix.python }}
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
+        with:
+          args: --pattern '(?P<base>\d+)'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
@@ -374,6 +378,8 @@ jobs:
         python: [ '3.8', '3.9', '3.10' ]
     steps:
       - uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
       - run: |
           echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
@@ -391,6 +397,8 @@ jobs:
           python-version: ${{ matrix.python }}
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
+        with:
+          args: --pattern '(?P<base>\d+)'
       - uses: actions/cache@v3.0.5
         with:
           path: |
@@ -404,17 +412,17 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda env export --no-builds > spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: conda env export --no-builds > spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
         if: runner.os == 'Linux'
-      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
         if: runner.os == 'MacOS'
-      - run: cat spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+      - run: cat spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
         with:
-          name: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
-          path: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          name: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+          path: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
         if: github.event_name == 'release' && github.event.action == 'published'
         with:
-          file: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-v${{ steps.version.outputs.version }}.yml
+          file: spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
