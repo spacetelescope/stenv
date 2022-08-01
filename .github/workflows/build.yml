@@ -47,7 +47,7 @@ jobs:
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
         with:
-          args: --pattern '(?P<base>\d+)'
+          args: --pattern '(?P<base>\d+\.\d+\.\d+)'
       - run: echo "::set-output name=date::$(date +'%Y%m%d')"
         id: date
       - uses: actions/cache@v3.0.5
@@ -398,7 +398,7 @@ jobs:
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
         with:
-          args: --pattern '(?P<base>\d+)'
+          args: --pattern '(?P<base>\d+\.\d+\.\d+)'
       - uses: actions/cache@v3.0.5
         with:
           path: |
