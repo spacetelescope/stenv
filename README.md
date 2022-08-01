@@ -1,4 +1,4 @@
-# Space Telescope Calibration Analysis Tools (STCAT)
+# Space Telescope Calibration and Analysis Tools (STCAT)
 
 [![build](https://github.com/spacetelescope/stcat/actions/workflows/build.yml/badge.svg)](https://github.com/spacetelescope/stcat/actions/workflows/build.yml)
 [![release](https://img.shields.io/github/v/release/spacetelescope/stcat)](https://github.com/spacetelescope/stcat/releases)
