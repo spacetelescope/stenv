@@ -2,6 +2,7 @@
 
 [![build](https://github.com/spacetelescope/spacetelescope-env-distribution/actions/workflows/build.yml/badge.svg)](https://github.com/spacetelescope/spacetelescope-env-distribution/actions/workflows/build.yml)
 [![release](https://img.shields.io/github/v/release/spacetelescope/spacetelescope-env-distribution)](https://github.com/spacetelescope/spacetelescope-env-distribution/releases)
+[![calver](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](https://calver.org)
 
 > :warning: **This distribution platform is still in testing and is not yet an official release.**
 
