@@ -8,7 +8,6 @@ on:
       - "**/*.yml"
   release:
     types:
-      - created
       - published
   workflow_dispatch:
 
@@ -51,6 +50,7 @@ jobs:
       - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
         id: date
       - uses: actions/cache@v3.0.5
+        id: cache
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
@@ -63,7 +63,6 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda update --all
       - run: conda env export
   validate:
     name: run import tests (${{ matrix.os }}, Python ${{ matrix.python }})
