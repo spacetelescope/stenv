@@ -413,9 +413,13 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda env export --no-builds > spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
-      - run: sed -i "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+      - run: |
+          sed -i "/name:/d" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+          sed -i "/prefix:/d" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
         if: runner.os == 'Linux'
-      - run: sed -i "" "s/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-latest/spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}/g" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+      - run: |
+          sed -i "" "/name:/d" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+          sed -i "" "/prefix:/d" spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
         if: runner.os == 'MacOS'
       - run: cat spacetelescope-env-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3.1.0
