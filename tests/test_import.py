@@ -1,12 +1,12 @@
 import importlib.metadata
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
-from typing import Mapping, Dict, Tuple
+from typing import Dict, Mapping, Tuple
 
+from packaging.version import Version
 import pytest
 import yaml
-from packaging.version import Version
 
 ENVIRONMENT_FILENAME = Path(__file__).parent.parent / "stenv-latest.yml"
 DEPENDENCY_PATTERN = re.compile(r"([\w\d-]+)\s*((?:[<>=~]=?|\^)\s*[\d\w.]*)?")
@@ -86,7 +86,11 @@ def test_package_install(package_name, specification):
 
 @pytest.mark.parametrize(
     "package_name",
-    [package_name for package_name in DEPENDENCIES if package_name not in ["ipython"]],
+    [
+        package_name
+        for package_name in DEPENDENCIES
+        if package_name not in ["ci-watson", "ipython", "pytest-xdist"]
+    ],
 )
 def test_module_import(package_name):
     importlib.import_module(package_name)
