@@ -10,6 +10,7 @@ dependencies:
       - acstools
       - calcos
       - ccdproc
+      - ci-watson
       - costools
       - crds
       - dask
@@ -22,6 +23,7 @@ dependencies:
       - nictools
       - pysynphot
       - pytest
+      - pytest-xdist
       - reftools
       - sphinx
       - stistools
