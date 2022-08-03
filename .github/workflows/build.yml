@@ -54,11 +54,11 @@ jobs:
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+            ${{ env.CONDA }}/envs/stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+          activate-environment: stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           environment-file: stenv-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -93,11 +93,11 @@ jobs:
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+            ${{ env.CONDA }}/envs/stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+          activate-environment: stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           environment-file: stenv-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -159,11 +159,11 @@ jobs:
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+            ${{ env.CONDA }}/envs/stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+          activate-environment: stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           environment-file: stenv-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -242,11 +242,11 @@ jobs:
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+            ${{ env.CONDA }}/envs/stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+          activate-environment: stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           environment-file: stenv/stenv-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -325,11 +325,11 @@ jobs:
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+            ${{ env.CONDA }}/envs/stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+          activate-environment: stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           environment-file: stenv-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
@@ -399,30 +399,30 @@ jobs:
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+            ${{ env.CONDA }}/envs/stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ steps.date.outputs.date }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-latest
+          activate-environment: stenv-latest-py${{ matrix.python }}-${{ runner.os }}
           environment-file: stenv-latest.yml
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: conda env export --no-builds > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+      - run: conda env export --no-builds > stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
       - run: |
-          sed -i "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
-          sed -i "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+          sed -i "/name:/d" stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
+          sed -i "/prefix:/d" stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
         if: runner.os == 'Linux'
       - run: |
-          sed -i "" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
-          sed -i "" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+          sed -i "" "/name:/d" stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
+          sed -i "" "/prefix:/d" stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
         if: runner.os == 'MacOS'
-      - run: cat stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+      - run: cat stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
       - uses: actions/upload-artifact@v3.1.0
         with:
-          name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
-          path: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+          name: stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
+          path: stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
         if: github.event_name == 'release' && github.event.action == 'published'
         with:
-          file: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}.yml
+          file: stenv-${{ steps.version.outputs.version }}-py${{ matrix.python }}-${{ runner.os }}.yml
