@@ -17,9 +17,9 @@ each release.
    and download the accompanying YAML file
 3. create a new Anaconda environment from the YAML file
    ```shell
-   conda env create --file stenv-macOS-py3.9-2022.08.08.yml -n stenv-macOS-py3.9-2022.08.08
+   conda env create --file stenv-2022.08.08-py3.9-macOS.yml -n stenv-2022.08.08-py3.9-macOS
    ```
 4. activate the environment
    ```shell
-   conda activate stenv-macOS-py3.9-2022.08.08
+   conda activate stenv-2022.08.08-py3.9-macOS
    ```
