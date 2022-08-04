@@ -1,4 +1,4 @@
-name: Build and test environments
+name: Build and test stable versions
 
 on:
   release:

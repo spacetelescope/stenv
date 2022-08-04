@@ -1,4 +1,4 @@
-name: Build and test environments
+name: Build and test latest versions
 
 on:
   pull_request:
