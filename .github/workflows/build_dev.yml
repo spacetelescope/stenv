@@ -1,0 +1,427 @@
+name: Build and test environments
+
+on:
+  schedule:
+    - cron: '* 0 * * *'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  build:
+    name: build environment (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
+      - run: |
+          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'Linux'
+      - run: |
+          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'MacOS'
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'MacOS'
+      - uses: actions/setup-python@v4.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: mtkennerly/dunamai-action@v1.1.0
+        id: version
+        with:
+          args: --pattern '(?P<base>\d+\.\d+\.\d+)'
+      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        id: date
+      - uses: actions/cache@v3.0.5
+        id: cache
+        with:
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-dev-${{ steps.date.outputs.date }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          environment-file: stenv-dev.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
+      - run: conda env export
+  validate:
+    name: run import tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: [ build ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        constraint: [ latest, stable ]
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - run: |
+          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'Linux'
+      - run: |
+          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'MacOS'
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'MacOS'
+      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        id: date
+      - uses: actions/cache@v3.0.5
+        with:
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-dev-${{ steps.date.outputs.date }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          environment-file: stenv-dev.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
+      - run: pip install pytest pytest-xdist
+      - run: conda env export
+      - run: pytest -n auto tests/test_import.py
+  unit_tests:
+    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: [ validate ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
+        os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        constraint: [ latest, stable ]
+        include:
+          - package: acstools
+            dependencies: [ pytest-astropy-header, pytest-remotedata ]
+          - package: ccdproc
+            dependencies: [ memory_profiler, pytest-astropy ]
+          - package: costools
+          #- package: crds
+          #  dependencies: [ lockfile, mock, nose, pylint ]
+          - package: jwst
+            dependencies: [ pytest-doctestplus, pytest-openfiles, requests_mock ]
+            CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+          #- package: nictools
+          #- package: pysynphot
+          #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
+          - package: reftools
+            dependencies: [ pytest-remotedata, pytest-astropy-header ]
+          - package: synphot
+            dependencies: [ pytest-astropy ]
+          #- package: wfc3tools
+          #  dependencies: [ ]
+          - package: wfpc2tools
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - run: |
+          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'Linux'
+      - run: |
+          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'MacOS'
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'MacOS'
+      - run: |
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        id: date
+      - uses: actions/cache@v3.0.5
+        with:
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-dev-${{ steps.date.outputs.date }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          environment-file: stenv-dev.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
+      - run: pip install pytest pytest-xdist ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: conda env export
+      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
+        if: matrix.CRDS_SERVER_URL != ''
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+      - uses: actions/cache@v3.0.5
+        if: matrix.CRDS_SERVER_URL != ''
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ env.CRDS_CONTEXT }}
+      - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
+        if: matrix.CRDS_SERVER_URL != ''
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+      - run: pytest -n auto --slow ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+  unit_tests_from_source:
+    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }}) from source
+    needs: [ validate ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ calcos, hstcal, stsynphot ]
+        os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        constraint: [ latest, stable ]
+        include:
+          - package: calcos
+            repository: spacetelescope/calcos
+          #- package: drizzlepac
+          #  repository: spacetelescope/drizzlepac
+          #  dependencies: [ crds, pytest-remotedata ]
+          - package: hstcal
+            repository: spacetelescope/hstcal
+            test_directory: tests
+            CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          #- package: stistools
+          #  repository: spacetelescope/stistools
+          #  dependencies: [ six ]
+          - package: stsynphot
+            repository: spacetelescope/stsynphot_refactor
+            dependencies: [ pytest-astropy ]
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          path: stenv
+      - run: |
+          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'Linux'
+      - run: |
+          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'MacOS'
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv/stenv-dev.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv/stenv-dev.yml
+        if: runner.os == 'MacOS'
+      - run: |
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        id: date
+      - uses: actions/cache@v3.0.5
+        with:
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-dev-${{ steps.date.outputs.date }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          environment-file: stenv/stenv-dev.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
+      - run: echo "::set-output name=version::$(pip show ${{ matrix.package }} | awk '$1 == "Version:" {print $2}')"
+        id: version
+      - uses: actions/checkout@v3.0.2
+        with:
+          path: ${{ matrix.package }}
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.version.outputs.version }}
+      - run: pip install pytest pytest-xdist ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: conda env export
+      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
+        if: matrix.CRDS_SERVER_URL != ''
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+      - uses: actions/cache@v3.0.5
+        if: matrix.CRDS_SERVER_URL != ''
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ env.CRDS_CONTEXT }}
+      - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
+        if: matrix.CRDS_SERVER_URL != ''
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+      - run: cd ${{ matrix.package }} && pytest -n auto --slow ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+  smoke_tests:
+    name: run `${{ matrix.package }}` smoke tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: [ validate ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ calcos, drizzlepac ]
+        os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        constraint: [ latest, stable ]
+        include:
+          - package: calcos
+            run: calcos la8n01qkq_rawtag_a.fits
+            CRDS_SERVER_URL: https://hst-crds.stsci.edu
+            jref: hst/references/hst/
+          - package: drizzlepac
+            run: pytest -n auto tests/test_drizzlepac.py
+            CRDS_SERVER_URL: https://hst-crds.stsci.edu
+            jref: hst/references/hst/
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          lfs: true
+      - run: |
+          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'Linux'
+      - run: |
+          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'MacOS'
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'MacOS'
+      - run: |
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        id: date
+      - uses: actions/cache@v3.0.5
+        with:
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-dev-${{ steps.date.outputs.date }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          environment-file: stenv-dev.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
+      - run: pip install pytest pytest-xdist
+      - run: conda env export
+      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
+        if: matrix.CRDS_SERVER_URL != ''
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
+      - uses: actions/cache@v3.0.5
+        if: matrix.CRDS_SERVER_URL != ''
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ env.CRDS_CONTEXT }}
+      - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
+        if: matrix.CRDS_SERVER_URL != ''
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+      - uses: actions/cache@v3.0.5
+        with:
+          path: 'tests/data/'
+          key: data-${{ hashFiles('tests/data/*') }}
+      - run: ${{ matrix.run }}
+        env:
+          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_PATH: ${{ env.CRDS_PATH }}
+          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
+          jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
+  export:
+    name: export environment (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python: [ '3.8', '3.9', '3.10' ]
+        constraint: [ latest, stable ]
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
+      - run: |
+          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'Linux'
+      - run: |
+          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
+          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+        if: runner.os == 'MacOS'
+      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'Linux'
+      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-dev.yml
+        if: runner.os == 'MacOS'
+      - uses: actions/setup-python@v4.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: mtkennerly/dunamai-action@v1.1.0
+        id: version
+        with:
+          args: --pattern '(?P<base>\d+\.\d+\.\d+)'
+      - uses: actions/cache@v3.0.5
+        with:
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-dev-${{ steps.date.outputs.date }}
+      - uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-dev
+          environment-file: stenv-dev.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
+      - run: conda env export --no-builds > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+      - run: |
+          sed -i "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+          sed -i "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+        if: runner.os == 'Linux'
+      - run: |
+          sed -i "" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+          sed -i "" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+        if: runner.os == 'MacOS'
+      - run: cat stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+      - uses: actions/upload-artifact@v3.1.0
+        with:
+          name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+          path: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
+      - uses: svenstaro/upload-release-action@2.3.0
+        if: github.event_name == 'release' && github.event.action == 'published'
+        with:
+          file: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-dev.yml
