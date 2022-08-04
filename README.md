@@ -10,6 +10,12 @@ This repository builds YAML files that define frozen environments (sets of packa
 Anaconda installation. The [Releases page](https://github.com/spacetelescope/stenv/releases) provides a YAML file for
 each release.
 
+If you have issues, please contact one of the following help desks:
+
+**HST Help Desk:** https://stsci.service-now.com/hst
+
+**JWST Help Desk:** https://stsci.service-now.com/jwst
+
 ## Installation
 
 1. install Anaconda - https://docs.conda.io/en/latest/miniconda.html
