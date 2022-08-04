@@ -73,7 +73,6 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
     steps:
       - uses: actions/checkout@v3.0.2
       - run: |
@@ -116,7 +115,6 @@ jobs:
         package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
         include:
           - package: acstools
             dependencies: [ pytest-astropy-header, pytest-remotedata ]
@@ -203,7 +201,6 @@ jobs:
         package: [ calcos, hstcal, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -295,7 +292,6 @@ jobs:
         package: [ calcos, drizzlepac ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -377,7 +373,6 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
     steps:
       - uses: actions/checkout@v3.0.2
         with:
