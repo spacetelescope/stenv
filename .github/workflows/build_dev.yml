@@ -3,6 +3,9 @@ name: Build and test environments
 on:
   schedule:
     - cron: '* 0 * * *'
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 defaults:
