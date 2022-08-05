@@ -10,7 +10,7 @@ dependencies:
       - git+https://github.com/spacetelescope/acstools.git
       - git+https://github.com/spacetelescope/calcos.git
       - git+https://github.com/spacetelescope/ccdproc.git
-      - git+https://github.com/spacetelescope/ci-watson.git
+      - ci-watson
       - git+https://github.com/spacetelescope/costools.git
       - git+https://github.com/spacetelescope/crds.git
       - dask
