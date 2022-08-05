@@ -1,11 +1,6 @@
 name: Build and test stable versions
 
 on:
-  schedule:
-    - cron: '* 0 * * *'
-  release:
-    types:
-      - published
   workflow_dispatch:
 
 defaults:
