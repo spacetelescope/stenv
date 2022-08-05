@@ -1,4 +1,4 @@
-name: Build and test development versions
+name: Build and test stable versions
 
 on:
   schedule:
@@ -70,7 +70,6 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
     steps:
       - uses: actions/checkout@v3.0.2
       - run: |
@@ -100,7 +99,6 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: pip install pytest pytest-xdist
       - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
@@ -113,7 +111,6 @@ jobs:
         package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
         include:
           - package: acstools
             dependencies: [ pytest-astropy-header, pytest-remotedata ]
@@ -133,7 +130,6 @@ jobs:
           - package: synphot
             dependencies: [ pytest-astropy ]
           #- package: wfc3tools
-          #  dependencies: [ ]
           - package: wfpc2tools
     steps:
       - uses: actions/checkout@v3.0.2
@@ -167,7 +163,8 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: pip install pytest pytest-xdist ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: pip install ${{ join(matrix.dependencies, ' ') }}
+        if: matrix.dependencies != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
@@ -200,7 +197,6 @@ jobs:
         package: [ calcos, hstcal, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -258,7 +254,8 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.version.outputs.version }}
-      - run: pip install pytest pytest-xdist ci-watson ${{ join(matrix.dependencies, ' ') }}
+      - run: pip install ${{ join(matrix.dependencies, ' ') }}
+        if: matrix.dependencies != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
@@ -291,7 +288,6 @@ jobs:
         package: [ calcos, drizzlepac ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -335,7 +331,6 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: pip install pytest pytest-xdist
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
@@ -373,7 +368,6 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
-        constraint: [ latest, stable ]
     steps:
       - uses: actions/checkout@v3.0.2
         with:
