@@ -205,9 +205,10 @@ jobs:
         id: package_version
       - uses: actions/checkout@v3.0.2
         with:
+          path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
-      - run: pip install ".[${{ matrix.extra }}]"
+      - run: cd ${{ matrix.package }} && pip install ".[${{ matrix.extra }}]"
         if: matrix.extra != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
@@ -226,7 +227,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
-      - run: pytest -n auto --slow ${{ matrix.pytest_args }}
+      - run: cd ${{ matrix.package }} && pytest -n auto --slow ${{ matrix.pytest_args }}
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
