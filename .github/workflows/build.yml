@@ -288,7 +288,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
-      - run: cd ${{ matrix.package }} && pytest -n auto --slow ${{ matrix.pytest_args }}
+      - run: cd ${{ matrix.package }} && pytest -n auto --slow ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
