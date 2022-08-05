@@ -262,7 +262,7 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: echo "::set-output name=version::$(pip show ${{ matrix.package }} | awk '$1 == "Version:" {print $2}')"
+      - run: echo "::set-output name=version::$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')"
         id: package_version
       - uses: actions/checkout@v3.0.2
         with:
