@@ -188,12 +188,12 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
       - uses: actions/cache@v3.0.5
-        if: matrix.CRDS_SERVER_URL != ''
+        if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: matrix.CRDS_SERVER_URL != ''
+        if: env.CRDS_CONTEXT != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
@@ -279,12 +279,12 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
       - uses: actions/cache@v3.0.5
-        if: matrix.CRDS_SERVER_URL != ''
+        if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: matrix.CRDS_SERVER_URL != ''
+        if: env.CRDS_CONTEXT != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
@@ -356,12 +356,12 @@ jobs:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
       - uses: actions/cache@v3.0.5
-        if: matrix.CRDS_SERVER_URL != ''
+        if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ env.CRDS_CONTEXT }}
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: matrix.CRDS_SERVER_URL != ''
+        if: env.CRDS_CONTEXT != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
