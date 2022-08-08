@@ -20,9 +20,9 @@ If you have issues, please contact one of the following help desks:
 2. Pick a release from the [Releases page](https://github.com/spacetelescope/stenv/releases)
    and download the accompanying YAML file.
 
-> :warning: **Note: YAML files
-are [generated upon release creation](https://github.com/spacetelescope/stenv/actions/workflows/build.yml), and may take
-several minutes to be attached to the Release Assets section.**
+> :warning: **Note: If the release was just made recently, you may not see corresponding YAML files in the Release
+Assets section for several minutes as they
+are [built and tested](https://github.com/spacetelescope/stenv/actions/workflows/build.yml).**
 
 3. Create a new conda environment from the YAML file:
    ```shell
