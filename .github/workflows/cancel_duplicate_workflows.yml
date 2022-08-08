@@ -2,7 +2,7 @@ name: Cancel duplicate workflows
 
 on:
   workflow_run:
-    workflows: [ 'Build and test environments' ]
+    workflows: ['Build and test environment']
     types:
       - requested
 
