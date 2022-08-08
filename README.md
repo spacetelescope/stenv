@@ -18,14 +18,14 @@ If you have issues, please contact one of the following help desks:
 
 ## Installation
 
-1. install Anaconda - https://docs.conda.io/en/latest/miniconda.html
-2. pick a release from the [Releases page](https://github.com/spacetelescope/stenv/releases)
-   and download the accompanying YAML file
-3. create a new Anaconda environment from the YAML file
+1. Install Miniconda - https://docs.conda.io/en/latest/miniconda.html
+2. Pick a release from the [Releases page](https://github.com/spacetelescope/stenv/releases)
+   and download the accompanying YAML file.
+3. Create a new conda environment from the YAML file:
    ```shell
    conda env create --file stenv-macOS-py3.9-2022.08.08.yml -n stenv-macOS-py3.9-2022.08.08
    ```
-4. activate the environment
+4. Activate the new environment:
    ```shell
    conda activate stenv-macOS-py3.9-2022.08.08
    ```
