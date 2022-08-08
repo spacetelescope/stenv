@@ -26,9 +26,9 @@ are [built and tested](https://github.com/spacetelescope/stenv/actions/workflows
 
 3. Create a new conda environment from the YAML file:
    ```shell
-   conda env create --file stenv-macOS-py3.9-2022.08.08.yml -n stenv-macOS-py3.9-2022.08.08
+   conda env create --file stenv-macOS-py3.9-2022.08.08-latest.yml -n stenv-macOS-py3.9-2022.08.08-latest
    ```
 4. Activate the new environment:
    ```shell
-   conda activate stenv-macOS-py3.9-2022.08.08
+   conda activate stenv-macOS-py3.9-2022.08.08-latest
    ```
