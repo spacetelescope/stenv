@@ -2,8 +2,8 @@ channels:
   - conda-forge
 
 dependencies:
-  - fitsverify
-  - hstcal
+  - fitsverify=4.20
+  - hstcal=2.7
   - pip
   - python==3.9
   - pip:
