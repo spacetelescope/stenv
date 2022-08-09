@@ -12,6 +12,10 @@ definitions at a snapshot in time) that are built and tested on each supported p
 
 ## Tested Platforms
 
+The following platforms have
+been [tested with import, unit, and smoke tests](https://github.com/spacetelescope/stenv/actions/workflows/build.yml)
+against the latest releases of comprising packages:
+
 - operating systems
     - Ubuntu Linux (GitHub Actions' `ubuntu-latest` image)
     - Mac OS (GitHub Actions' `ubuntu-latest` image)
@@ -20,7 +24,7 @@ definitions at a snapshot in time) that are built and tested on each supported p
     - `3.9`
     - `3.10`
 - version contraints
-    - `stable` (patch versions)
+    - `stable` (manually-pinned stable patch versions)
     - `latest` (latest releases)
     - `dev` (latest commits on main branch)
 
@@ -28,21 +32,27 @@ definitions at a snapshot in time) that are built and tested on each supported p
 
 1. Install Miniconda - https://docs.conda.io/en/latest/miniconda.html
 
-2. [Pick a release from the Releases page](https://github.com/spacetelescope/stenv/releases). These releases have YAML
-   files in the Assets section for each supported platform and Python version:
-   [![release example](docs/release_example.png)](https://github.com/spacetelescope/stenv/releases)
+2. Retrieve an environment definition file from one of the following:
+    1. Download one of the general (platform-agnostic) YAML files (`stenv-stable.yml`, `stenv-latest.yml`,
+       or `stenv-dev.yml`) from the root of this repository.
+       > :warning: `stenv-stable.yml`, `stenv-latest.yml`, and `stenv-dev.yml` define unfrozen environments that **have
+       not been built or tested against specific platforms**. To use a frozen environment (with explicit versions) that
+       was built and tested on supported platforms, download a file from a specific release (below). :warning:
+
+    2. [Pick a release from the Releases page](https://github.com/spacetelescope/stenv/releases). These releases have
+       YAML files in the Assets section for each supported platform and Python version:
+       [![release example](docs/release_example.png)](https://github.com/spacetelescope/stenv/releases)
+
+       > Building and testing environments on supported platforms may take several minutes; **if a release was just made
+       recently, you may need to wait for
+       its [associated workflow job](https://github.com/spacetelescope/stenv/actions/workflows/build.yml) to finish
+       before environment files are available**.
 
    This example assumes Mac OSX (`macOS`) with Python 3.9 (`py3.9`) and release `2022.08.08` with the `latest`
-   constraints. To use this example for another configuration, download the respective environment file.
+   constraints.
 
-   > :warning: **Creation of a new release will trigger a
-   new [workflow job in GitHub Actions](https://github.com/spacetelescope/stenv/actions/workflows/build.yml) that builds
-   and tests the environment on a range of platforms and Python versions. This process may take several minutes; if a
-   release was just made recently, you may need to wait for its associated workflow job to finish before environment
-   files are available.**
-
-3. You can download a YAML file with your browser from
-   the [release page](https://github.com/spacetelescope/stenv/releases), or use `curl` with a direct URL:
+3. You can download a YAML file from the [release page](https://github.com/spacetelescope/stenv/releases), or use `curl`
+   with a direct URL:
    ```shell
    curl https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml
    ```
@@ -52,7 +62,8 @@ definitions at a snapshot in time) that are built and tested on each supported p
    ```shell
    conda env create --file stenv-macOS-py3.9-2022.08.08-latest.yml --name stenv-py3.9-2022.08.08-latest
    ```
-   Alternatively, you can pass the url to the `--file` argument of `conda env create`:
+
+   Alternatively, you can pass the url directly to the `--file` argument of `conda env create`:
    ```shell
    conda env create --file https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml --name stenv-py3.9-2022.08.08-latest
    ```
