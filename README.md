@@ -23,7 +23,7 @@ against the latest releases of comprising packages:
     - `3.8`
     - `3.9`
     - `3.10`
-- version contraints
+- version constraints
     - `stable` (manually-pinned stable patch versions)
     - `latest` (latest releases)
     - `dev` (latest commits on main branch)
