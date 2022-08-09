@@ -47,28 +47,28 @@ against the latest releases of comprising packages:
        recently, you may need to wait for
        its [associated workflow job](https://github.com/spacetelescope/stenv/actions/workflows/build.yml) to finish
        before environment files are available**.
+       
+       You can download a YAML file from the [release page](https://github.com/spacetelescope/stenv/releases), or use `curl`
+       with a direct URL:
+       ```shell
+       curl https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml
+       ```
 
-   This example assumes Mac OSX (`macOS`) with Python 3.9 (`py3.9`) and release `2022.08.08` with the `latest`
-   constraints.
-
-3. You can download a YAML file from the [release page](https://github.com/spacetelescope/stenv/releases), or use `curl`
-   with a direct URL:
-   ```shell
-   curl https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml
-   ```
-
-4. To create the environment, use `conda env create --file <filename> --name <environment-name>`. The `--name` is the
-   name of the environment that you create, and the handle that you later use to activate it:
+       This example assumes Mac OSX (`macOS`) with Python 3.9 (`py3.9`) and release `2022.08.08` with the `latest`
+       constraints.
+       
+3. Create the environment with `conda env create --file <filename> --name <environment-name>` (the `--name` argument is the
+   name of the environment that you create, and the handle that you will use later to activate):
    ```shell
    conda env create --file stenv-macOS-py3.9-2022.08.08-latest.yml --name stenv-py3.9-2022.08.08-latest
    ```
 
-   Alternatively, you can pass the url directly to the `--file` argument of `conda env create`:
+   Alternatively, you can skip downloading the file by passing the url directly to the `--file` argument of `conda env create`:
    ```shell
    conda env create --file https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml --name stenv-py3.9-2022.08.08-latest
    ```
 
-5. Finally, activate the environment to have access to the Python installation:
+4. Finally, activate the environment to have access to the Python installation:
    ```shell
    conda activate stenv-macOS-py3.9-2022.08.08-latest
    ```
