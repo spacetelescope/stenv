@@ -4,7 +4,7 @@
 [![release](https://img.shields.io/github/v/release/spacetelescope/stenv)](https://github.com/spacetelescope/stenv/releases)
 [![calver](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](https://calver.org)
 
-This repository builds YAML files that define environments for an Anaconda installation. The `stenv-stable.yml`
+This repository builds YAML files that define environments for a `conda` installation. The `stenv-stable.yml`
 , `stenv-latest.yml`, and `stenv-dev.yml` files provide minimum definitions for building this environment with stable
 pinned versions, latest released versions, and latest Git commits, respectively. Additionally,
 each [release](https://github.com/spacetelescope/stenv/releases) provides frozen environment files (specific version
