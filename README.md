@@ -17,8 +17,8 @@ been [tested with import, unit, and smoke tests](https://github.com/spacetelesco
 against the latest releases of comprising packages:
 
 - operating systems
-    - Ubuntu Linux (GitHub Actions' `ubuntu-latest` image)
-    - Mac OS (GitHub Actions' `ubuntu-latest` image)
+    - Linux (GitHub Actions' `ubuntu-latest` image)
+    - Mac OS (GitHub Actions' `macos-latest` image)
 - Python versions
     - `3.8`
     - `3.9`
@@ -32,7 +32,7 @@ against the latest releases of comprising packages:
 
 1. Install Miniconda - https://docs.conda.io/en/latest/miniconda.html
 
-2. Retrieve an environment definition file from one of the following:
+2. Retrieve an environment definition file by choosing one of the following methods:
     1. Download one of the general (platform-agnostic) YAML files (`stenv-stable.yml`, `stenv-latest.yml`,
        or `stenv-dev.yml`) from the root of this repository.
        > :warning: `stenv-stable.yml`, `stenv-latest.yml`, and `stenv-dev.yml` define unfrozen environments that **have
