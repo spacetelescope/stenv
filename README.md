@@ -10,6 +10,20 @@ pinned versions, latest released versions, and latest Git commits, respectively.
 each [release](https://github.com/spacetelescope/stenv/releases) provides frozen environment files (specific version
 definitions at a snapshot in time) that are built and tested on each supported platform and Python version.
 
+## Tested Platforms
+
+- operating systems
+    - Ubuntu Linux (GitHub Actions' `ubuntu-latest` image)
+    - Mac OS (GitHub Actions' `ubuntu-latest` image)
+- Python versions
+    - `3.8`
+    - `3.9`
+    - `3.10`
+- version contraints
+    - `stable` (patch versions)
+    - `latest` (latest releases)
+    - `dev` (latest commits on main branch)
+
 ## Installation
 
 1. Install Miniconda - https://docs.conda.io/en/latest/miniconda.html
@@ -17,6 +31,9 @@ definitions at a snapshot in time) that are built and tested on each supported p
 2. [Pick a release from the Releases page](https://github.com/spacetelescope/stenv/releases). These releases have YAML
    files in the Assets section for each supported platform and Python version:
    [![release example](docs/release_example.png)](https://github.com/spacetelescope/stenv/releases)
+
+   This example assumes Mac OSX (`macOS`) with Python 3.9 (`py3.9`) and release `2022.08.08` with the `latest`
+   constraints. To use this example for another configuration, download the respective environment file.
 
    > :warning: **Creation of a new release will trigger a
    new [workflow job in GitHub Actions](https://github.com/spacetelescope/stenv/actions/workflows/build.yml) that builds
