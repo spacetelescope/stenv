@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "**/*.yml"
+      - '**/*.yml'
   release:
     types:
       - published
@@ -19,6 +19,10 @@ on:
           - stable
           - dev
         default: latest
+      release:
+        description: upload exported files to a release of the current tag
+        required: false
+        type: boolean
 
 defaults:
   run:
@@ -56,7 +60,7 @@ jobs:
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
         with:
-          args: --pattern '(?P<base>\d+\.\d+\.\d+)'
+          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
       - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
         id: date
       - uses: actions/cache@v3.0.5
@@ -407,7 +411,7 @@ jobs:
       - uses: mtkennerly/dunamai-action@v1.1.0
         id: version
         with:
-          args: --pattern '(?P<base>\d+\.\d+\.\d+)'
+          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
       - uses: actions/cache@v3.0.5
         with:
           path: |
@@ -436,6 +440,6 @@ jobs:
           name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
           path: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
       - uses: svenstaro/upload-release-action@2.3.0
-        if: github.event_name == 'release' && github.event.action == 'published'
+        if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.release == 'true'
         with:
           file: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
