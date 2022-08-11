@@ -12,8 +12,9 @@ on:
   workflow_dispatch:
     inputs:
       constraint:
-        description: whether to use `latest`, `stable`, or `dev` versions of dependencies
+        description: which versions of dependencies to constrain
         required: true
+        type: choice
         options:
           - latest
           - stable
