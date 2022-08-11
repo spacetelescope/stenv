@@ -10,8 +10,9 @@ jobs:
     name: build stable environment
     runs-on: ubuntu-latest
     steps:
-      - uses: aurelien-baudet/workflow-dispatch@v2.1.1
+      - uses: benc-uk/workflow-dispatch@v1.1
         with:
           workflow: Build and test environment
-          inputs: '{ "constraint": "stable" , "release": ${{ github.ref }} }'
+          inputs: '{ "constraint": "stable" , "release": "true" }'
           wait-for-completion: false
+          token: '${{ secrets.PERSONAL_TOKEN }}'
