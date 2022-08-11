@@ -16,8 +16,8 @@ on:
         required: true
         type: choice
         options:
-          - latest
           - stable
+          - latest
           - dev
         default: latest
       release:
