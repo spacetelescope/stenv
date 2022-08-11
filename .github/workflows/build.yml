@@ -31,7 +31,7 @@ defaults:
 
 jobs:
   build:
-    name: build environment (${{ matrix.os }}, Python ${{ matrix.python }})
+    name: build ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -80,7 +80,7 @@ jobs:
           use-only-tar-bz2: true
       - run: conda env export
   validate:
-    name: run import tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    name: validate ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
     needs: [ build ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -121,7 +121,7 @@ jobs:
       - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
-    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -208,7 +208,7 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   unit_tests_from_source:
-    name: run `${{ matrix.package }}` unit tests (${{ matrix.os }}, Python ${{ matrix.python }}) from source
+    name: run `${{ matrix.package }}` unit tests from source in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -299,7 +299,7 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   smoke_tests:
-    name: run `${{ matrix.package }}` smoke tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    name: run `${{ matrix.package }}` smoke tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
     needs: [ validate ]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -381,7 +381,7 @@ jobs:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
   export:
-    name: export environment (${{ matrix.os }}, Python ${{ matrix.python }})
+    name: export ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
     needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
     runs-on: ${{ matrix.os }}
     strategy:
