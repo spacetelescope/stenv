@@ -6,9 +6,8 @@
 
 This repository builds YAML files that define environments for a `conda` installation. The `stenv-stable.yml`
 , `stenv-latest.yml`, and `stenv-dev.yml` files provide minimum definitions for building this environment with stable
-pinned versions, latest released versions, and latest Git commits, respectively. Additionally,
-each [release](https://github.com/spacetelescope/stenv/releases) provides frozen environment files (specific version
-definitions at a snapshot in time) that are built and tested on each supported platform and Python version.
+pinned versions, latest released versions, and latest Git commits, respectively. Each [release](https://github.com/spacetelescope/stenv/releases) provides frozen environment files (specific version
+definitions at a snapshot in time) that are built and tested on each supported platform and Python version using GitHub Actions.
 
 ## Tested Platforms
 
