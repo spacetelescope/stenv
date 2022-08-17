@@ -8,6 +8,7 @@ dependencies:
   - python==3.9
   - pip:
       - acstools
+      - asdf>=2.12.1
       - calcos
       - ccdproc
       - ci-watson
@@ -19,7 +20,7 @@ dependencies:
       - h5py
       - ipython
       - jupyter
-      - jwst>=1.6.0
+      - jwst>=1.6.2
       - nictools
       - pysynphot
       - pytest
