@@ -127,12 +127,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
           - package: acstools
             dependencies: [ pytest-astropy-header, pytest-remotedata ]
+          - package: asdf
+            dependencies: [ 'astropy >=5.0.4', 'gwcs', 'pytest-doctestplus', 'pytest-remotedata', 'pytest-openfiles', 'psutil', 'lz4 >=0.10' ]
           - package: ccdproc
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
@@ -214,13 +216,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ asdf, calcos, hstcal, stsynphot ]
+        package: [ calcos, hstcal, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
-          - package: asdf
-            repository: asdf-format/asdf
-            extra: tests
           - package: calcos
             repository: spacetelescope/calcos
           #- package: drizzlepac
