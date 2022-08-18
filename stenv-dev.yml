@@ -8,6 +8,7 @@ dependencies:
   - python==3.9
   - pip:
       - git+https://github.com/spacetelescope/acstools.git
+      - git+https://github.com/asdf-format/asdf.git
       - git+https://github.com/spacetelescope/calcos.git
       - git+https://github.com/spacetelescope/ccdproc.git
       - ci-watson
