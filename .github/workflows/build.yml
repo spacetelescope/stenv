@@ -214,10 +214,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, hstcal, stsynphot ]
+        package: [ asdf, calcos, hstcal, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
+          - package: asdf
+            repository: asdf-format/asdf
+            extra: tests
           - package: calcos
             repository: spacetelescope/calcos
           #- package: drizzlepac
