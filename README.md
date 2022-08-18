@@ -69,7 +69,7 @@ against the latest releases of comprising packages:
 
 4. Finally, activate the environment to have access to the Python installation:
    ```shell
-   conda activate stenv-macOS-py3.9-2022.08.08-latest
+   conda activate stenv-py3.9-2022.08.08-latest
    ```
 
 ## Help
