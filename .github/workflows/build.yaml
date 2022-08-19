@@ -70,8 +70,6 @@ jobs:
           - package: ccdproc
             extras: [ test ]
           - package: costools
-          #- package: pysynphot
-          #  extras: [ test ]
           - package: reftools
             extras: [ test ]
           - package: synphot
