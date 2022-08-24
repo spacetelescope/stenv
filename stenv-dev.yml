@@ -5,6 +5,7 @@ dependencies:
   - fitsverify
   - hstcal
   - pip
+  - pytables
   - python==3.9
   - pip:
       - git+https://github.com/spacetelescope/acstools.git
