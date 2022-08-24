@@ -16,7 +16,7 @@ dependencies:
       - git+https://github.com/spacetelescope/costools.git
       - git+https://github.com/spacetelescope/crds.git
       - dask
-      - git+https://github.com/spacetelescope/drizzlepac.git
+      - drizzlepac
       - ginga
       - h5py
       - ipython
