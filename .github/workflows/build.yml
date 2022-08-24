@@ -227,6 +227,8 @@ jobs:
           use-only-tar-bz2: true
       - run: echo "::set-output name=version::$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')"
         id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+        if: env.CONSTRAINT != 'dev'
       - uses: actions/checkout@v3.0.2
         with:
           path: ${{ matrix.package }}
