@@ -75,50 +75,10 @@ jobs:
           auto-update-conda: true
           use-only-tar-bz2: true
       - run: conda env export
-  validate:
-    name: validate ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ build ]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10' ]
-    steps:
-      - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
-      - uses: actions/checkout@v3.0.2
-      - run: |
-          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
-        if: runner.os == 'Linux'
-      - run: |
-          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
-        if: runner.os == 'MacOS'
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'MacOS'
-      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
-        id: date
-      - uses: actions/cache@v3.0.5
-        with:
-          path: |
-            ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
-        with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv-${{ env.CONSTRAINT }}.yml
-          python-version: ${{ matrix.python }}.*
-          auto-update-conda: true
-          use-only-tar-bz2: true
-      - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ validate ]
+    needs: [ build ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -207,7 +167,7 @@ jobs:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests from source in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ validate ]
+    needs: [ build ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -298,7 +258,7 @@ jobs:
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ validate ]
+    needs: [ build ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
