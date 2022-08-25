@@ -66,7 +66,7 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -133,7 +133,7 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -217,7 +217,7 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -227,6 +227,8 @@ jobs:
           use-only-tar-bz2: true
       - run: echo "::set-output name=version::$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')"
         id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+        if: env.CONSTRAINT != 'dev'
       - uses: actions/checkout@v3.0.2
         with:
           path: ${{ matrix.package }}
@@ -302,7 +304,7 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -376,7 +378,7 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2.1.1
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}

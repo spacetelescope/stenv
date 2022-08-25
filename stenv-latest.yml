@@ -7,6 +7,8 @@ dependencies:
   - pip
   - pytables
   - python==3.9
+  - pytest
+  - pytest-xdist
   - pip:
       - acstools
       - asdf>=2.12.1
@@ -24,8 +26,6 @@ dependencies:
       - jwst>=1.6.2
       - nictools
       - pysynphot
-      - pytest
-      - pytest-xdist
       - reftools
       - sphinx
       - stistools

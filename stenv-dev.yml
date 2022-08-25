@@ -7,11 +7,13 @@ dependencies:
   - pip
   - pytables
   - python==3.9
+  - pytest
+  - pytest-xdist
   - pip:
       - git+https://github.com/spacetelescope/acstools.git
       - git+https://github.com/asdf-format/asdf.git
       - git+https://github.com/spacetelescope/calcos.git
-      - git+https://github.com/spacetelescope/ccdproc.git
+      - git+https://github.com/astropy/ccdproc.git
       - ci-watson
       - git+https://github.com/spacetelescope/costools.git
       - git+https://github.com/spacetelescope/crds.git
@@ -24,12 +26,10 @@ dependencies:
       - git+https://github.com/spacetelescope/jwst.git
       - git+https://github.com/spacetelescope/nictools.git
       - git+https://github.com/spacetelescope/pysynphot.git
-      - pytest
-      - pytest-xdist
       - reftools
       - sphinx
       - git+https://github.com/spacetelescope/stistools.git
       - git+https://github.com/spacetelescope/stsynphot_refactor.git
-      - git+https://github.com/spacetelescope/synphot.git
+      - git+https://github.com/spacetelescope/synphot_refactor.git
       - git+https://github.com/spacetelescope/wfc3tools.git
       - git+https://github.com/spacetelescope/wfpc2tools.git
