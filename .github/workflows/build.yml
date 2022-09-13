@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11.0-rc.2' ]
+        python: [ '3.8', '3.9', '3.10', '3.11' ]
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
@@ -71,7 +71,7 @@ jobs:
       matrix:
         package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11.0-rc.2' ]
+        python: [ '3.8', '3.9', '3.10', '3.11.2' ]
         include:
           - package: acstools
             extras: [ test ]
@@ -147,7 +147,7 @@ jobs:
       matrix:
         package: [ calcos, hstcal, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11.0-rc.2' ]
+        python: [ '3.8', '3.9', '3.10', '3.11.2' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -236,7 +236,7 @@ jobs:
       matrix:
         package: [ calcos, drizzlepac ]
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11.0-rc.2' ]
+        python: [ '3.8', '3.9', '3.10', '3.11.2' ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -310,7 +310,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11.0-rc.2' ]
+        python: [ '3.8', '3.9', '3.10', '3.11.2' ]
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
