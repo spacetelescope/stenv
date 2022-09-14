@@ -40,7 +40,7 @@ jobs:
         python: [ '3.8', '3.9', '3.10' ]
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: |
@@ -55,19 +55,19 @@ jobs:
         if: runner.os == 'Linux'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'MacOS'
-      - uses: actions/setup-python@v4.1.0
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
       - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
         id: date
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         id: cache
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -110,7 +110,7 @@ jobs:
           - package: wfpc2tools
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3
       - run: |
           echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
           echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
@@ -128,13 +128,13 @@ jobs:
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
       - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
         id: date
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -150,7 +150,7 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
@@ -192,7 +192,7 @@ jobs:
             extra: test
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3
         with:
           path: stenv
       - run: |
@@ -212,13 +212,13 @@ jobs:
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
       - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
         id: date
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv/stenv-${{ env.CONSTRAINT }}.yml
@@ -229,7 +229,7 @@ jobs:
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
         if: env.CONSTRAINT != 'dev'
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
@@ -243,7 +243,7 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
@@ -279,7 +279,7 @@ jobs:
             jref: hst/references/hst/
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3
         with:
           lfs: true
       - run: |
@@ -299,13 +299,13 @@ jobs:
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
       - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
         id: date
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -320,7 +320,7 @@ jobs:
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
@@ -330,7 +330,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         with:
           path: 'tests/data/'
           key: data-${{ hashFiles('tests/data/*') }}
@@ -351,7 +351,7 @@ jobs:
         python: [ '3.8', '3.9', '3.10' ]
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: |
@@ -366,20 +366,20 @@ jobs:
         if: runner.os == 'Linux'
       - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'MacOS'
-      - uses: actions/setup-python@v4.1.0
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-      - uses: mtkennerly/dunamai-action@v1.1.0
+      - uses: mtkennerly/dunamai-action@v1
         id: version
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
-      - uses: actions/cache@v3.0.5
+      - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2.1.1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -396,7 +396,7 @@ jobs:
           sed -i "" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'MacOS'
       - run: cat stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
-      - uses: actions/upload-artifact@v3.1.0
+      - uses: actions/upload-artifact@v3
         with:
           name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
           path: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
