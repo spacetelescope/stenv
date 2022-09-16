@@ -50,7 +50,7 @@ against the latest releases of comprising packages:
        You can download a YAML file from the [release page](https://github.com/spacetelescope/stenv/releases), or use `curl`
        with a direct URL:
        ```shell
-       curl https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml -o stenv-macOS-py3.9-2022.08.08-latest.yml
+       curl -L https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml -o stenv-macOS-py3.9-2022.08.08-latest.yml
        ```
 
        This example assumes Mac OSX (`macOS`) with Python 3.9 (`py3.9`) and release `2022.08.08` with the `latest`
