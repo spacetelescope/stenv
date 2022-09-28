@@ -8,7 +8,8 @@ assignees: ''
 ---
 
 <!-- Feel free to modify this placeholder text to be relevant to your request: -->
-`<package>` should be added to the base `stenv` environment.
+`<package>` should be added to the base `stenv` environment. It can be found at 
+https://github.com/spacetelescope/<package>
 
 <!-- The default environment of `stenv` represents the "basic" software stack for work with space telescope data. If you
 would like to add a package to this environment, please consider the following: -->
