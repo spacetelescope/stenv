@@ -1,5 +1,5 @@
 ---
-name: Bug report
+name: Report a bug or issue
 about: Report an issue in a defined environment, or with a specific package in `stenv`
 title: "`<error>` happens upon doing **action**"
 labels: bug 
