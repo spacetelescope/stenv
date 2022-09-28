@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Report an issue in a defined environment, or with a specific package in `stenv`
-title: `<error>` happens upon doing **action**
+title: "`<error>` happens upon doing **action**"
 labels: bug 
 assignees: ''
 
