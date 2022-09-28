@@ -1,5 +1,5 @@
 ---
-name: Request a package is removed 
+name: Request package removal 
 about: Remove a package from `stenv`
 title: remove `<package>` from environment 
 labels: remove package 
