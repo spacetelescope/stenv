@@ -19,3 +19,6 @@ would like to add a package to this environment, please consider the following: 
 
 <!-- If any of the above are not true, this package might not be suitable for inclusion in the base environment; 
 however, it still might merit the creation of a separate environment focused on the specific package requirements. -->
+
+**Additional packages / requirements:**
+- 

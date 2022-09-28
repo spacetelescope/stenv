@@ -10,7 +10,7 @@ assignees: ''
 <!-- Feel free to modify this placeholder text to be relevant to your issue: -->
 When I do **action**, something bad happens and / or I get the error `<error>`.
 
-Steps that can reproduce the error:
+**Steps that can reproduce the error:**
 1. `conda create -n stenv -f stenv_latest.yml`
 2. `conda activate stenv`
 3. `python`
