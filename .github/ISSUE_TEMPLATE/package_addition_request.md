@@ -1,8 +1,8 @@
 ---
-name: Package request 
+name: Request new package 
 about: Add a new package to `stenv`
 title: add `<package>` to environment 
-labels: new package 
+labels: add package 
 assignees: ''
 
 ---

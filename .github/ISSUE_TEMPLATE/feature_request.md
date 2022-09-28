@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: Request new feature
 about: Request a new feature with the build / deployment system
 title: 
 labels: enhancement 
