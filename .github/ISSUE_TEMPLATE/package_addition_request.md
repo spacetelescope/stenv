@@ -24,6 +24,6 @@ however, it still might merit the creation of a separate environment focused on 
 **Additional packages / requirements:**
 - `<package_2>`
 
-To add a new package, the requirement should be added to the `*.yml` files defining the environments. For instance, for 
+<!-- To add a new package, the requirement should be added to the `*.yml` files defining the environments. For instance, for 
 the base environment, `stenv_latest.yml`, `stenv_dev.yml`, and `stenv_stable.yml`. Then, the new package's tests should 
-pass against the built environment.
+pass against the built environment. -->
