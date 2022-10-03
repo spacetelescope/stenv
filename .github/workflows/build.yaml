@@ -27,6 +27,7 @@ defaults:
     shell: bash -l {0}
 
 env:
+  DATA_DIRECTORY: /home/runner/work/stenv/stenv/tests/data
   CRDS_PATH: /tmp/crds_cache
   PYSYN_CDBS: /tmp/trds
 
@@ -59,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, costools, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, costools, poppy, reftools, synphot, wfpc2tools, webbpsf ]
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
@@ -70,6 +71,8 @@ jobs:
           - package: ccdproc
             extras: [ test ]
           - package: costools
+          - package: poppy
+            extras: [ test ]
           #- package: pysynphot
           #  extras: [ test ]
           - package: reftools
@@ -77,6 +80,13 @@ jobs:
           - package: synphot
             extras: [ test ]
           - package: wfpc2tools
+          - package: webbpsf
+            extras: [ test ]
+            commands: [
+              'curl -L https://stsci.box.com/shared/static/ntb71b3uusf1kzgf9bss0hzbreoja5gg.gz -o webbpsf-data.gz',
+              'tar -xvzf webbpsf-data.gz -C $DATA_DIRECTORY',
+              ]
+            data: true
         exclude:
           - runs-on: macos-latest
             python-version: 3.9
@@ -106,9 +116,15 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
+      - if: matrix.data != ''
+        uses: actions/cache@v3
+        with:
+          path: 'tests/data/'
+          key: data-${{ hashFiles('tests/data/*') }}
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+          WEBBPSF_PATH: ${{ env.DATA_DIRECTORY }}/webbpsf-data
   unit_tests_from_source:
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
     needs: [ build ]
@@ -194,6 +210,7 @@ jobs:
       - run: pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+          WEBBPSF_PATH: ${{ env.DATA_DIRECTORY }}/webbpsf-data
         working-directory: ${{ matrix.package }}
   smoke_tests:
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
