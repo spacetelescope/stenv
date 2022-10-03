@@ -83,7 +83,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, crds, costools, jwst, nictools, pysynphot, reftools, synphot, wfc3tools,
+                   wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
@@ -94,20 +95,19 @@ jobs:
           - package: ccdproc
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
-          #- package: crds
-          #  dependencies: [ lockfile, mock, nose, pylint ]
+          - package: crds
+            dependencies: [ lockfile, mock, nose, pylint ]
           - package: jwst
             dependencies: [ pytest-doctestplus, pytest-openfiles, requests_mock ]
             CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-          #- package: nictools
-          #- package: pysynphot
-          #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
+          - package: nictools
+          - package: pysynphot
+            dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: synphot
             dependencies: [ pytest-astropy ]
-          #- package: wfc3tools
-          - package: wfpc2tools
+          - package: wfc3tools
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
@@ -172,21 +172,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, hstcal, stsynphot ]
+        package: [ calcos, drizzlepac, hstcal, stistools, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
-          #- package: drizzlepac
-          #  repository: spacetelescope/drizzlepac
-          #  extra: test
+          - package: drizzlepac
+            repository: spacetelescope/drizzlepac
+            extra: test
           - package: hstcal
             repository: spacetelescope/hstcal
             test_directory: tests
             CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          #- package: stistools
-          #  repository: spacetelescope/stistools
+          - package: stistools
+            repository: spacetelescope/stistools
           - package: stsynphot
             repository: spacetelescope/stsynphot_refactor
             extra: test
