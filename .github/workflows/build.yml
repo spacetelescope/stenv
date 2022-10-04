@@ -83,8 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, crds, costools, jwst, nictools, pysynphot, reftools, synphot, wfc3tools,
-                   wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, crds, costools, jwst, pysynphot, reftools, synphot, wfc3tools, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
@@ -95,12 +94,9 @@ jobs:
           - package: ccdproc
             dependencies: [ memory_profiler, pytest-astropy ]
           - package: costools
-          - package: crds
-            dependencies: [ lockfile, mock, nose, pylint ]
           - package: jwst
             dependencies: [ pytest-doctestplus, pytest-openfiles, requests_mock ]
             CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-          - package: nictools
           - package: pysynphot
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
@@ -143,6 +139,8 @@ jobs:
           use-only-tar-bz2: true
       - run: pip install ${{ join(matrix.dependencies, ' ') }}
         if: matrix.dependencies != ''
+      - run: ${{ join(matrix.commands, ' && ') }}
+        if: matrix.commands != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
@@ -178,6 +176,11 @@ jobs:
         include:
           - package: calcos
             repository: spacetelescope/calcos
+          - package: crds
+            repository: spacetelescope/crds
+            extra: test
+            CRDS_SERVER_URL: https://hst-crds.stsci.edu
+            commands: [ 'setup_test_cache $HOME', 'source envs/hst-crds-ops.sh' ]
           - package: drizzlepac
             repository: spacetelescope/drizzlepac
             extra: test
