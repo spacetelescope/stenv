@@ -239,6 +239,8 @@ jobs:
           ref: ${{ steps.package_version.outputs.version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ matrix.extra }}]"
         if: matrix.extra != ''
+      - run: ${{ join(matrix.commands, ' && ') }}
+        if: matrix.commands != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.CRDS_SERVER_URL != ''
