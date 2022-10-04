@@ -83,7 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, crds, costools, jwst, pysynphot, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, costools, jwst, pysynphot, reftools, synphot, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
@@ -169,7 +169,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, drizzlepac, hstcal, stistools, stsynphot ]
+        package: [ calcos, crds, drizzlepac, hstcal, stistools, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
@@ -238,7 +238,7 @@ jobs:
           ref: ${{ steps.package_version.outputs.version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ matrix.extra }}]"
         if: matrix.extra != ''
-      - run: ${{ join(matrix.commands, ' && ') }}
+      - run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
