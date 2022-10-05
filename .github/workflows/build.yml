@@ -96,7 +96,8 @@ jobs:
           - package: costools
           - package: jwst
             dependencies: [ pytest-doctestplus, pytest-openfiles, requests_mock ]
-            CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+            env:
+              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
             pytest_args: '--slow'
           - package: pysynphot
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
@@ -143,9 +144,9 @@ jobs:
         if: matrix.commands != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.CRDS_SERVER_URL != ''
+        if: matrix.env.CRDS_SERVER_URL != ''
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
       - uses: actions/cache@v3
@@ -156,11 +157,11 @@ jobs:
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
         if: env.CRDS_CONTEXT != ''
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   unit_tests_from_source:
@@ -179,7 +180,8 @@ jobs:
           #- package: crds
           #  repository: spacetelescope/crds
           #  extra: test
-          #  CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          #  env:
+          #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
           #  commands: [ './setup_test_cache $HOME', 'source envs/hst-crds-ops.sh' ]
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
@@ -188,7 +190,8 @@ jobs:
             repository: spacetelescope/hstcal
             pytest_args: '--slow'
             test_directory: tests
-            CRDS_SERVER_URL: https://hst-crds.stsci.edu
+            env:
+              CRDS_SERVER_URL: https://hst-crds.stsci.edu
           - package: stistools
             repository: spacetelescope/stistools
           - package: stsynphot
@@ -244,9 +247,9 @@ jobs:
         if: matrix.commands != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.CRDS_SERVER_URL != ''
+        if: matrix.env.CRDS_SERVER_URL != ''
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
       - uses: actions/cache@v3
@@ -257,11 +260,11 @@ jobs:
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
         if: env.CRDS_CONTEXT != ''
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
       - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   smoke_tests:
@@ -277,12 +280,14 @@ jobs:
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
-            CRDS_SERVER_URL: https://hst-crds.stsci.edu
-            jref: hst/references/hst/
+            env:
+              CRDS_SERVER_URL: https://hst-crds.stsci.edu
+              jref: hst/references/hst/
           - package: drizzlepac
             run: pytest -n auto tests/test_drizzlepac.py
-            CRDS_SERVER_URL: https://hst-crds.stsci.edu
-            jref: hst/references/hst/
+            env:
+              CRDS_SERVER_URL: https://hst-crds.stsci.edu
+              jref: hst/references/hst/
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
@@ -320,12 +325,12 @@ jobs:
           use-only-tar-bz2: true
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.CRDS_SERVER_URL != ''
+        if: matrix.env.CRDS_SERVER_URL != ''
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
-          jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
+          jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
       - uses: actions/cache@v3
         if: env.CRDS_CONTEXT != ''
         with:
@@ -334,7 +339,7 @@ jobs:
       - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
         if: env.CRDS_CONTEXT != ''
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
       - uses: actions/cache@v3
         with:
@@ -342,10 +347,10 @@ jobs:
           key: data-${{ hashFiles('tests/data/*') }}
       - run: ${{ matrix.run }}
         env:
-          CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
           PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
-          jref: ${{ env.CRDS_PATH }}/${{ matrix.jref }}
+          jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
   export:
     name: export ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
     needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
