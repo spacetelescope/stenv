@@ -97,6 +97,7 @@ jobs:
           - package: jwst
             dependencies: [ pytest-doctestplus, pytest-openfiles, requests_mock ]
             CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+            pytest_args: '--slow'
           - package: pysynphot
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
@@ -157,7 +158,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
-      - run: pytest -n auto --slow ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
+      - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
@@ -185,6 +186,7 @@ jobs:
           #  extra: test
           - package: hstcal
             repository: spacetelescope/hstcal
+            pytest_args: '--slow'
             test_directory: tests
             CRDS_SERVER_URL: https://hst-crds.stsci.edu
           - package: stistools
@@ -257,7 +259,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
-      - run: cd ${{ matrix.package }} && pytest -n auto --slow ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+      - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
