@@ -182,7 +182,7 @@ jobs:
             extra: test
             env:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
-            commands: [ './setup_test_cache $HOME', 'source envs/hst-crds-ops.sh' ]
+            pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh &&'
           - package: drizzlepac
             repository: spacetelescope/drizzlepac
             extra: test
@@ -243,8 +243,6 @@ jobs:
           ref: ${{ steps.package_version.outputs.version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ matrix.extra }}]"
         if: matrix.extra != ''
-      - run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
-        if: matrix.commands != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
@@ -262,7 +260,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
-      - run: cd ${{ matrix.package }} && pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+      - run: cd ${{ matrix.package }} && ${{ matrix.pre_command }} pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           CRDS_PATH: ${{ env.CRDS_PATH }}
