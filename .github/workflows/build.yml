@@ -177,15 +177,15 @@ jobs:
         include:
           - package: calcos
             repository: spacetelescope/calcos
-          #- package: crds
-          #  repository: spacetelescope/crds
-          #  extra: test
-          #  env:
-          #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          #  commands: [ './setup_test_cache $HOME', 'source envs/hst-crds-ops.sh' ]
-          #- package: drizzlepac
-          #  repository: spacetelescope/drizzlepac
-          #  extra: test
+          - package: crds
+            repository: spacetelescope/crds
+            extra: test
+            env:
+              CRDS_SERVER_URL: https://hst-crds.stsci.edu
+            commands: [ './setup_test_cache $HOME', 'source envs/hst-crds-ops.sh' ]
+          - package: drizzlepac
+            repository: spacetelescope/drizzlepac
+            extra: test
           - package: hstcal
             repository: spacetelescope/hstcal
             pytest_args: '--slow'
