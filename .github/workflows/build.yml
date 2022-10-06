@@ -83,7 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, costools, jwst, pysynphot, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
@@ -99,8 +99,8 @@ jobs:
             env:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
             pytest_args: '--slow'
-          - package: pysynphot
-            dependencies: [ pytest-remotedata, pytest-astropy-header ]
+          #- package: pysynphot
+          #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: reftools
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: synphot
@@ -171,21 +171,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, crds, drizzlepac, hstcal, stistools, stsynphot ]
+        package: [ calcos, hstcal, stistools, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
-          - package: crds
-            repository: spacetelescope/crds
-            extra: test
-            env:
-              CRDS_SERVER_URL: https://hst-crds.stsci.edu
-            pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh &&'
-          - package: drizzlepac
-            repository: spacetelescope/drizzlepac
-            extra: test
+          #- package: crds
+          #  repository: spacetelescope/crds
+          #  extra: test
+          #  env:
+          #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh &&'
+          #- package: drizzlepac
+          #  repository: spacetelescope/drizzlepac
+          #  extra: test
           - package: hstcal
             repository: spacetelescope/hstcal
             pytest_args: '--slow'
