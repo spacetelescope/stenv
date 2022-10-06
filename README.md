@@ -1,4 +1,4 @@
-# `stenv` - Space Telescope Calibration Pipeline and Analysis Tools
+# Space Telescope Environment (`stenv`)
 
 [![build](https://github.com/spacetelescope/stenv/actions/workflows/build.yml/badge.svg)](https://github.com/spacetelescope/stenv/actions/workflows/build.yml)
 [![release](https://img.shields.io/github/v/release/spacetelescope/stenv)](https://github.com/spacetelescope/stenv/releases)

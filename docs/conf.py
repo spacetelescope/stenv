@@ -22,7 +22,7 @@ def setup(app):
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 
-project = 'stenv'
+project = 'Space Telescope Environment (`stenv`)'
 author = 'Space Telescope Science Institute'
 copyright = f'{datetime.today().year}, {author}'
 release = dunamai.Version.from_any_vcs('(?P<base>\d+\.\d+\.\d+)').serialize()
@@ -77,10 +77,10 @@ html_theme_options = {
 html_theme_path = [stsci_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents. If None, it defaults to "<project> v<release> documentation".
-# html_title = None
+html_title = f'{project} v{release} documentation'
 
 # A shorter title for the navigation bar. Default is the same as html_title.
-# html_short_title = None
+html_short_title = html_title
 
 # The name of an image file (within the static path) to use as favicon of the docs.
 # This file should be a Windows icon file (.ico) being 16x16 or 32x32 pixels large.
