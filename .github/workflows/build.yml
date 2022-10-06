@@ -171,7 +171,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, hstcal, stistools, stsynphot ]
+        package: [ calcos, hstcal, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10' ]
         include:
@@ -192,8 +192,8 @@ jobs:
             test_directory: tests
             env:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          - package: stistools
-            repository: spacetelescope/stistools
+          #- package: stistools
+          #  repository: spacetelescope/stistools
           - package: stsynphot
             repository: spacetelescope/stsynphot_refactor
             extra: test
