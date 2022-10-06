@@ -25,7 +25,7 @@ def setup(app):
 project = 'stenv'
 author = 'Space Telescope Science Institute'
 copyright = f'{datetime.today().year}, {author}'
-release = dunamai.Version.from_any_vcs().serialize()
+release = dunamai.Version.from_any_vcs('(?P<base>\d+\.\d+\.\d+)').serialize()
 version = release.split('-', 1)[0]
 
 # -- General configuration ---------------------------------------------------
