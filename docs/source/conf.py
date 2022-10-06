@@ -32,6 +32,7 @@ version = release.split('-', 1)[0]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+master_doc = 'source/index'
 
 
 def check_sphinx_version(expected_version):
