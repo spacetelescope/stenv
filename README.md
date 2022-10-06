@@ -15,6 +15,6 @@ in [the official documentation](https://stenv.readthedocs.io).
 If you have issues with ``stenv``, please [create a new GitHub issue](https://github.com/spacetelescope/stenv/issues)
 or contact one of the following help desks:
 
-**HST Help Desk:** https://stsci.service-now.com/hst
+* **HST Help Desk:** https://stsci.service-now.com/hst
 
-**JWST Help Desk:** https://stsci.service-now.com/jwst
+* **JWST Help Desk:** https://stsci.service-now.com/jwst
