@@ -1,7 +1,7 @@
 Repository Structure
 ####################
 
-The ``stenv`` repository consists of two parts:
+``stenv`` consists of two parts:
 
 #. several Conda environment definition files in YAML format, and
 #. a GitHub Actions workflow that builds and tests a working environment from each YAML file
