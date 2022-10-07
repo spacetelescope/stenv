@@ -9,8 +9,11 @@ A Conda environment is designed to be isolated from system packages, and can be 
 This has the advantage of allowing several separate installations of Python packages and other tools without cluttering the system installation, allowing switching between use cases or package contexts at will.
 A Conda client, such as Miniconda, Mamba, or Anaconda, provides the ``conda`` command, which lets you create, manage, and activate new environments.
 
+Installing a ``stenv`` environment
+==================================
+
 Install Conda
-=============
+-------------
 
 First, choose and install a Conda client and a base Conda environment on your system:
 
@@ -19,7 +22,7 @@ First, choose and install a Conda client and a base Conda environment on your sy
 - `Anaconda <https://www.anaconda.com/distribution/>`_ is Continuum Analytics Inc.'s flagship product, and provides a full-featured Conda root environment as well as hundreds of useful tools, libraries, and utilities by default (OS X users should choose the command-line installer).
 
 Choose a ``stenv`` release
-==========================
+--------------------------
 
 Now that you have a Conda installation, you should choose a release of ``stenv`` from the `Releases page <https://github.com/spacetelescope/stenv/releases>`_ and download the environment definition file from the Assets section that corresponds to your platform.
 
@@ -37,7 +40,7 @@ Now that you have a Conda installation, you should choose a release of ``stenv``
     Building and testing environments on supported platforms may take several minutes; **if a release was just made recently, you may need to wait** for its `associated workflow job to finish <https://github.com/spacetelescope/stenv/actions/workflows/build.yml>`_ before environment files are available.
 
 Build environment
-=================
+-----------------
 
 With an environment definition YAML file, you can build the environment with ``conda env create --file <filename> --name <environment-name>`` (the ``--name`` argument is the name of the environment that you create).
 
@@ -54,22 +57,21 @@ This example assumes that you chose an environment file for Mac OSX (``macOS``) 
 
         conda env create --file https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml --name stenv-py3.9-2022.08.08-latest
 
-Activate environment
-====================
+Activating an environment
+=========================
 
-Finally, activate the environment:
+Once you have built an environment, you can activate it with ``conda activate <name>``.
+This will temporarily change your PATH, environment variables, available binaries, and Python installation:
 
 .. code-block:: shell
 
     conda activate stenv
 
-You can then see that ``python`` now points to a different Python installation:
+You can now see that ``python`` points to a different installation:
 
 .. code-block:: shell
 
     which python
-
-You can now run ``python`` with packages in ``stenv``.
 
 .. code-block:: shell
 
@@ -85,10 +87,10 @@ To deactivate an environment, run ``deactivate``.
 
     deactivate
 
-Removing environment
-====================
+Deleting an environment
+=======================
 
-To remove an environment with all of its packages, run ``conda env remove -n <name>``:
+To delete an environment with all of its packages, run ``conda env remove -n <name>``:
 
 .. code-block:: shell
 
