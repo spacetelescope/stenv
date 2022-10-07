@@ -1,5 +1,5 @@
-Repository Structure
-####################
+Developer Notes
+###############
 
 ``stenv`` consists of two parts:
 

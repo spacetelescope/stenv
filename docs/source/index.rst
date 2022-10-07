@@ -12,6 +12,7 @@ If you have issues with ``stenv``, please `create a new GitHub issue <https://gi
 .. toctree::
    :hidden:
 
-   installation.rst
-   repository_structure.rst
+   getting_started.rst
+   environments.rst
    astroconda.rst
+   developer_notes.rst

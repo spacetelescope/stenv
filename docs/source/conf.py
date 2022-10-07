@@ -128,4 +128,4 @@ html_use_opensearch = ''
 html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'stenv'
+htmlhelp_basename = project
