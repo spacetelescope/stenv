@@ -81,11 +81,11 @@ You can now see that ``python`` points to a different installation:
 .. note::
     You can show installed packages available within a Conda environment with ``conda env export``.
 
-To deactivate an environment, run ``deactivate``.
+To deactivate an environment, run ``conda deactivate``.
 
 .. code-block:: shell
 
-    deactivate
+    conda deactivate
 
 Deleting an environment
 =======================
