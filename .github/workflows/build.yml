@@ -105,6 +105,7 @@ jobs:
             dependencies: [ pytest-remotedata, pytest-astropy-header ]
           - package: synphot
             dependencies: [ pytest-astropy ]
+          - package: wfpc2tools
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
