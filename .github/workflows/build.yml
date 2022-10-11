@@ -90,21 +90,21 @@ jobs:
           - package: acstools
             dependencies: [ pytest-astropy-header, pytest-remotedata ]
           - package: asdf
-            dependencies: [ 'astropy >=5.0.4', 'gwcs', 'pytest-doctestplus', 'pytest-remotedata', 'pytest-openfiles', 'psutil', 'lz4 >=0.10' ]
+            extras: [ tests ]
           - package: ccdproc
-            dependencies: [ memory_profiler, pytest-astropy ]
+            extras: [ test ]
           - package: costools
           - package: jwst
-            dependencies: [ pytest-doctestplus, pytest-openfiles, requests_mock ]
+            extras: [ test ]
             env:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
             pytest_args: '--slow'
           #- package: pysynphot
-          #  dependencies: [ pytest-remotedata, pytest-astropy-header ]
+          #  extras: [ test ]
           - package: reftools
-            dependencies: [ pytest-remotedata, pytest-astropy-header ]
+            extras: [ test ]
           - package: synphot
-            dependencies: [ pytest-astropy ]
+            extras: [ test ]
           - package: wfpc2tools
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
@@ -139,8 +139,8 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: pip install ${{ join(matrix.dependencies, ' ') }}
-        if: matrix.dependencies != ''
+      - run: pip install "${{ matrix.package }}[${{ join(matrix.extra, ',') }}]"
+        if: matrix.extras != ''
       - run: ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
       - run: conda env export
@@ -180,13 +180,13 @@ jobs:
             repository: spacetelescope/calcos
           #- package: crds
           #  repository: spacetelescope/crds
-          #  extra: test
+          #  extras: [ test ]
           #  env:
           #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
           #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh &&'
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
-          #  extra: test
+          #  extras: [ test ]
           - package: hstcal
             repository: spacetelescope/hstcal
             pytest_args: '--slow'
@@ -197,7 +197,7 @@ jobs:
           #  repository: spacetelescope/stistools
           - package: stsynphot
             repository: spacetelescope/stsynphot_refactor
-            extra: test
+            extras: [ test ]
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
@@ -242,8 +242,8 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
-      - run: cd ${{ matrix.package }} && pip install ".[${{ matrix.extra }}]"
-        if: matrix.extra != ''
+      - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extra, ',') }}]"
+        if: matrix.extras != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
