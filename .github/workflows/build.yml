@@ -139,7 +139,7 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: pip install "${{ matrix.package }}[${{ join(matrix.extra, ',') }}]"
+      - run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
       - run: ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
@@ -242,7 +242,7 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
-      - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extra, ',') }}]"
+      - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
       - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
