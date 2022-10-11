@@ -321,21 +321,21 @@ jobs:
         id: version
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
-      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+      - run: echo "::set-output name=date::$(date +'%a %b %d %Y')"
         id: date
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          python-version: ${{ matrix.python }}.*
+          use-mamba: true
+          use-only-tar-bz2: true
       - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv-${{ env.CONSTRAINT }}.yml
-          python-version: ${{ matrix.python }}.*
-          auto-update-conda: true
-          use-only-tar-bz2: true
+          key: "micromamba-env ${{ runner.os }} ${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}"
+      - run: mamba env update -n stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }} -f stenv-${{ env.CONSTRAINT }}.yml
       - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
       - run: |
           sed -i "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
