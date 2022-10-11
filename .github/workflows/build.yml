@@ -60,7 +60,6 @@ jobs:
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
-      - run: conda env export
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
@@ -116,7 +115,6 @@ jobs:
         if: matrix.extras != ''
       - run: ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
-      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -203,7 +201,6 @@ jobs:
           ref: ${{ env.package_version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
-      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -268,7 +265,6 @@ jobs:
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
-      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -325,13 +321,22 @@ jobs:
         id: version
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
-      - uses: mamba-org/provision-with-micromamba@v13
+      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+        id: date
+      - uses: actions/cache@v3
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          path: |
+            ${{ env.HOME }}/conda_pkgs_dir
+            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
-          cache-env: true
-          cache-downloads: true
-      - run: conda env export --no-builds > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
+          python-version: ${{ matrix.python }}.*
+          auto-update-conda: true
+          use-only-tar-bz2: true
+      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
       - run: |
           sed -i "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
           sed -i "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
