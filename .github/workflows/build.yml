@@ -188,7 +188,7 @@ jobs:
       - uses: mamba-org/provision-with-micromamba@v13
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv-${{ env.CONSTRAINT }}.yml
+          environment-file: stenv/stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
       - run: echo "package_version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_ENV
