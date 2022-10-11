@@ -58,7 +58,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
         id: date
       - uses: actions/cache@v3
         id: cache
@@ -66,7 +66,7 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -124,14 +124,14 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
         id: date
       - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -218,14 +218,14 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
         id: date
       - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -233,15 +233,14 @@ jobs:
           python-version: ${{ matrix.python }}.*
           auto-update-conda: true
           use-only-tar-bz2: true
-      - run: echo "::set-output name=version::$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')"
-        id: package_version
+      - run: echo "package_version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_ENV
         # TODO: figure out a better way to use package version when checking out a Git ref
         if: env.CONSTRAINT != 'dev'
       - uses: actions/checkout@v3
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
+          ref: ${{ env.package_version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
       - run: conda env export
@@ -307,14 +306,14 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - run: echo "::set-output name=date::$(date +'%Y.%m.%d')"
+      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
         id: date
       - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -388,7 +387,7 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ steps.date.outputs.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
+          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
