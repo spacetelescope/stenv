@@ -43,13 +43,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: |
-          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
         if: runner.os == 'Linux'
-      - run: |
-          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
         if: runner.os == 'MacOS'
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'Linux'
@@ -58,23 +54,12 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
-        id: date
-      - uses: actions/cache@v3
-        id: cache
+      - uses: mamba-org/provision-with-micromamba@v13
         with:
-          path: |
-            ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
-          python-version: ${{ matrix.python }}.*
-          auto-update-conda: true
-          use-only-tar-bz2: true
-      - run: conda env export
+          cache-env: true
+          cache-downloads: true
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
@@ -109,13 +94,9 @@ jobs:
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
-      - run: |
-          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
         if: runner.os == 'Linux'
-      - run: |
-          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
         if: runner.os == 'MacOS'
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'Linux'
@@ -124,26 +105,16 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
-        id: date
-      - uses: actions/cache@v3
+      - uses: mamba-org/provision-with-micromamba@v13
         with:
-          path: |
-            ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
-          python-version: ${{ matrix.python }}.*
-          auto-update-conda: true
-          use-only-tar-bz2: true
+          cache-env: true
+          cache-downloads: true
       - run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
       - run: ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
-      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -203,13 +174,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: stenv
-      - run: |
-          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
         if: runner.os == 'Linux'
-      - run: |
-          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
         if: runner.os == 'MacOS'
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv/stenv-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'Linux'
@@ -218,21 +185,12 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
-        id: date
-      - uses: actions/cache@v3
+      - uses: mamba-org/provision-with-micromamba@v13
         with:
-          path: |
-            ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv/stenv-${{ env.CONSTRAINT }}.yml
-          python-version: ${{ matrix.python }}.*
-          auto-update-conda: true
-          use-only-tar-bz2: true
+          cache-env: true
+          cache-downloads: true
       - run: echo "package_version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_ENV
         # TODO: figure out a better way to use package version when checking out a Git ref
         if: env.CONSTRAINT != 'dev'
@@ -243,7 +201,6 @@ jobs:
           ref: ${{ env.package_version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
-      - run: conda env export
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -291,13 +248,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           lfs: true
-      - run: |
-          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
         if: runner.os == 'Linux'
-      - run: |
-          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
         if: runner.os == 'MacOS'
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'Linux'
@@ -306,22 +259,12 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
-        id: date
-      - uses: actions/cache@v3
+      - uses: mamba-org/provision-with-micromamba@v13
         with:
-          path: |
-            ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
-          python-version: ${{ matrix.python }}.*
-          auto-update-conda: true
-          use-only-tar-bz2: true
-      - run: conda env export
+          cache-env: true
+          cache-downloads: true
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -363,13 +306,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: |
-          echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/share/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
         if: runner.os == 'Linux'
-      - run: |
-          echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-          echo "CONDA=$(echo /usr/local/miniconda)" >> $GITHUB_ENV
+      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
         if: runner.os == 'MacOS'
       - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
         if: runner.os == 'Linux'
@@ -382,20 +321,26 @@ jobs:
         id: version
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
+      # TODO: change following to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
+      - run: echo "::set-output name=date::$(date +'%a %b %d %Y')"
+        id: date
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
+          python-version: ${{ matrix.python }}.*
+          mamba-version: '*'
+          channels: conda-forge,defaults
+          channel-priority: true
+          use-only-tar-bz2: true
       - uses: actions/cache@v3
         with:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: conda-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}-${{ env.date }}-${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv-${{ env.CONSTRAINT }}.yml
-          python-version: ${{ matrix.python }}.*
-          auto-update-conda: true
-          use-only-tar-bz2: true
-      - run: conda env export --no-builds > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
+          key: "mamba-env ${{ runner.os }}-${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}"
+      - run: mamba env update -n stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }} -f stenv-${{ env.CONSTRAINT }}.yml
+      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
+      # TODO: change previous to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
       - run: |
           sed -i "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
           sed -i "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
