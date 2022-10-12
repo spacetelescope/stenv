@@ -321,6 +321,7 @@ jobs:
         id: version
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
+      # TODO: change following to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
       - run: echo "::set-output name=date::$(date +'%a %b %d %Y')"
         id: date
       - uses: conda-incubator/setup-miniconda@v2
@@ -336,9 +337,10 @@ jobs:
           path: |
             ${{ env.HOME }}/conda_pkgs_dir
             ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: "micromamba-env ${{ runner.os }} ${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}"
+          key: "mamba-env ${{ runner.os }}-${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}"
       - run: mamba env update -n stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }} -f stenv-${{ env.CONSTRAINT }}.yml
       - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
+      # TODO: change previous to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
       - run: |
           sed -i "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
           sed -i "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
