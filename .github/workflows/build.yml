@@ -327,7 +327,9 @@ jobs:
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           python-version: ${{ matrix.python }}.*
-          use-mamba: true
+          mamba-version: '*'
+          channels: conda-forge,defaults
+          channel-priority: true
           use-only-tar-bz2: true
       - uses: actions/cache@v3
         with:
