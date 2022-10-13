@@ -29,6 +29,7 @@ dependencies:
       - drizzlepac
       - ginga
       - jwst>=1.6.2
+      - mirage
       - nictools
       - pysynphot
       - reftools
