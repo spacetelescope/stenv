@@ -60,6 +60,7 @@ jobs:
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
+      - run: pip freeze
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
@@ -115,6 +116,7 @@ jobs:
         if: matrix.extras != ''
       - run: ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
+      - run: pip freeze
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -201,6 +203,9 @@ jobs:
           ref: ${{ env.package_version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
+      - run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
+        if: matrix.commands != ''
+      - run: pip freeze
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
@@ -265,6 +270,11 @@ jobs:
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
+      - run: pip install ".[${{ join(matrix.extras, ',') }}]"
+        if: matrix.extras != ''
+      - run: ${{ join(matrix.commands, ' && ') }}
+        if: matrix.commands != ''
+      - run: pip freeze
       - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
