@@ -212,6 +212,11 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           WEBBPSF_PATH: ${{ env.DATA_DIRECTORY }}/webbpsf-data
         working-directory: ${{ matrix.package }}
+      - if: matrix.data != ''
+        uses: actions/cache@v3
+        with:
+          path: 'tests/data/'
+          key: data-${{ hashFiles('tests/data/*') }}
   smoke_tests:
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
     needs: [ build ]
