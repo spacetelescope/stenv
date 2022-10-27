@@ -54,7 +54,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -106,7 +106,7 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -187,7 +187,7 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv/stenv-${{ env.CONSTRAINT }}.yml
@@ -264,7 +264,7 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
