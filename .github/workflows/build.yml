@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10' ]
+        python: [ '3.8', '3.9', '3.10', '3.11' ]
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -71,7 +71,7 @@ jobs:
       matrix:
         package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10' ]
+        python: [ '3.8', '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
             extras: [ test ]
@@ -106,7 +106,7 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -147,7 +147,7 @@ jobs:
       matrix:
         package: [ calcos, hstcal, stsynphot ]
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10' ]
+        python: [ '3.8', '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -187,7 +187,7 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv/stenv-${{ env.CONSTRAINT }}.yml
@@ -236,7 +236,7 @@ jobs:
       matrix:
         package: [ calcos, drizzlepac ]
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10' ]
+        python: [ '3.8', '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -264,7 +264,7 @@ jobs:
       - run: |
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
-      - uses: mamba-org/provision-with-micromamba@v13
+      - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
@@ -310,7 +310,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10' ]
+        python: [ '3.8', '3.9', '3.10', '3.11' ]
     steps:
       - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
       - uses: actions/checkout@v3

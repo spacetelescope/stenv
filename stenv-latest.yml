@@ -30,6 +30,7 @@ dependencies:
       - sphinx
       - stistools
       - stsynphot
+      - stregion>=1.1.7
       - synphot
       - wfc3tools
       - wfpc2tools
