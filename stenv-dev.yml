@@ -30,6 +30,7 @@ dependencies:
       - sphinx
       - git+https://github.com/spacetelescope/stistools.git
       - git+https://github.com/spacetelescope/stsynphot_refactor.git
+      - stregion>=1.1.7
       - git+https://github.com/spacetelescope/synphot_refactor.git
       - git+https://github.com/spacetelescope/wfc3tools.git
       - git+https://github.com/spacetelescope/wfpc2tools.git
