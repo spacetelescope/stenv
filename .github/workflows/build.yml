@@ -134,7 +134,7 @@ jobs:
         if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ env.CRDS_CONTEXT }}-${{ matrix.package }}
+          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
@@ -209,7 +209,7 @@ jobs:
         if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ env.CRDS_CONTEXT }}-${{ matrix.package }}
+          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
       - run: cd ${{ matrix.package }} && ${{ matrix.pre_command }} pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
@@ -265,7 +265,7 @@ jobs:
         if: env.CRDS_CONTEXT != ''
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ env.CRDS_CONTEXT }}-${{ matrix.package }}
+          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
       - uses: actions/cache@v3
         with:
           path: 'tests/data/'
