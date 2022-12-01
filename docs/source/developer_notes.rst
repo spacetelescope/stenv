@@ -11,9 +11,9 @@ Environment Definition Files
 
 The main environment consists of three separate YAML files, which each provide minimum packages for building a working environment locally:
 
-#. ``stenv-stable.yml`` - package are pinned to their most recent stable feature versions
-#. ``stenv-latest.yml`` - packages resolve to the latest version available on PyPI
-#. ``stenv-dev.yml`` - packages are built from the latest main branch of their source code
+#. :ref:`stenv_stable` - packages are pinned to their most recent stable feature versions
+#. :ref:`stenv_latest` - packages resolve to the latest version available on PyPI
+#. :ref:`stenv_dev` - packages are built from the latest main branch of their source code
 
 Automated Build and Testing
 ===========================

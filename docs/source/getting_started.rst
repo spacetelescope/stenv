@@ -9,8 +9,10 @@ A Conda environment is designed to be isolated from system packages, and can be 
 This has the advantage of allowing several separate installations of Python packages and other tools without cluttering the system installation, allowing switching between use cases or package contexts at will.
 A Conda client, such as Miniconda, Mamba, or Anaconda, provides the ``conda`` command, which lets you create, manage, and activate new environments.
 
-Installing an ``stenv`` environment
-===================================
+Installation
+============
+
+.. _install_conda:
 
 Install Conda
 -------------
@@ -21,10 +23,13 @@ First, choose and install a Conda client and a base Conda environment on your sy
 - `Mamba <https://mamba.readthedocs.io/en/latest/installation.html>`_ is similar to Miniconda but rewritten in C++. It has near-parity of ``conda`` commands with Miniconda and Anaconda.
 - `Anaconda <https://www.anaconda.com/distribution/>`_ is Continuum Analytics Inc.'s flagship product, and provides a full-featured Conda root environment as well as hundreds of useful tools, libraries, and utilities by default (OS X users should choose the command-line installer).
 
+.. _choose_release:
+
 Choose an ``stenv`` release
 ---------------------------
 
 Now that you have a Conda installation, you should choose a release of ``stenv`` from the `Releases page <https://github.com/spacetelescope/stenv/releases>`_ and download the environment definition file from the Assets section that corresponds to your platform.
+If you are unsure which of the :ref:`environments` you should choose, we recommend using ``latest``.
 
 .. image:: release_example.png
     :alt: example of a release page, showing output files
