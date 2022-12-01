@@ -58,9 +58,34 @@ HST Data Processing (HSTDP)
 Instructions for installation of each delivery may be found in the respective subdirectories of the releases repository:
 https://github.com/astroconda/astroconda-releases/tree/master/caldp
 
+.. warning::
+
+    The repository is located within the Astroconda GitHub organization;
+    this is for legacy reasons, and does not indicate that support for Astroconda will extend beyond its sunset date of
+    **February 1st, 2023**.
+
 .. code-block:: sh
 
-    20200323  (Note: the date here represents the initial testing iteration and not the final public release date.)
+    20221010
+    20220527
+    20220406
+    20220214
+    20220127
+    20211129
+    20211119
+    20210928
+    20210827
+    20210721
+    20210505
+    20210415
+    20210323
+    20201208
+    20201012
+    20200812
+    20200708
+    20200611
+    20200421
+    20200323
 
 Historical deliveries used an older naming convention:
 https://github.com/astroconda/astroconda-releases/tree/master/hstdp
