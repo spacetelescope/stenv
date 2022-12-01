@@ -8,6 +8,7 @@ Space Telescope Environment (``stenv``)
 
    getting_started.rst
    environments.rst
+   pipeline_releases.rst
    astroconda.rst
    developer_notes.rst
 
