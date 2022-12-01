@@ -27,7 +27,7 @@ Choose an ``stenv`` release
 ---------------------------
 
 Now that you have a Conda installation, you should choose a release of ``stenv`` from the `Releases page <https://github.com/spacetelescope/stenv/releases>`_ and download the environment definition file from the Assets section that corresponds to your platform.
-If you are unsure which of the :ref:`environments` you should choose, we recommend using ``stenv-latest.yml``.
+If you are unsure which of the :ref:`environments` you should choose, we recommend using ``latest``.
 
 .. image:: release_example.png
     :alt: example of a release page, showing output files

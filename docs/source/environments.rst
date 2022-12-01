@@ -4,7 +4,7 @@ Environment Definitions
 #######################
 
 The main environment consists of several YAML files, which each provide instructions for building a working environment locally.
-If you don't know which environment definition to choose, use ``stenv-latest.yml``
+If you don't know which environment definition to choose, we recommend using ``latest``.
 
 .. _stenv_stable:
 
