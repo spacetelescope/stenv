@@ -4,7 +4,6 @@ Pipeline Releases
 #################
 
 .. note::
-
     A working ``conda`` installation (Miniconda, Mamba, Anaconda, etc.) is required; see :ref:`install_conda`.
     ``stenv`` does not support Python 2 nor 32-bit operating systems.
 
@@ -37,9 +36,7 @@ Example
     source activate demo_2016.1
 
 .. note::
-
-    The URL shown in this example does not necessarily reflect the latest iteration available.
-    Please consult the :ref:`file_urls` section to ensure you are installing the correct release.
+    The URL shown in this example does not reflect the latest iteration available. Please consult the :ref:`file_urls` section to ensure you are installing the correct release.
 
 
 .. _file_urls:
@@ -58,7 +55,6 @@ Instructions for installation of each delivery may be found in the respective su
 https://github.com/astroconda/astroconda-releases/tree/master/caldp
 
 .. warning::
-
     The repository is located within the Astroconda GitHub organization;
     this is for legacy reasons, and does not indicate that support for Astroconda will extend beyond its sunset date of
     **February 1st, 2023**.

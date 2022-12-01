@@ -9,7 +9,7 @@ Space Telescope Environment (``stenv``)
    getting_started.rst
    environments.rst
    pipeline_releases.rst
-   astroconda.rst
+   faq.rst
    developer_notes.rst
 
 If you have issues with ``stenv``, please `create a new GitHub issue <https://github.com/spacetelescope/stenv/issues>`_ or contact one of the following help desks:

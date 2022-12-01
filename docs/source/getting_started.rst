@@ -23,6 +23,8 @@ First, choose and install a Conda client and a base Conda environment on your sy
 - `Mamba <https://mamba.readthedocs.io/en/latest/installation.html>`_ is similar to Miniconda but rewritten in C++. It has near-parity of ``conda`` commands with Miniconda and Anaconda.
 - `Anaconda <https://www.anaconda.com/distribution/>`_ is Continuum Analytics Inc.'s flagship product, and provides a full-featured Conda root environment as well as hundreds of useful tools, libraries, and utilities by default (OS X users should choose the command-line installer).
 
+.. _choose_release:
+
 Choose an ``stenv`` release
 ---------------------------
 
