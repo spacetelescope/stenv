@@ -9,8 +9,10 @@ A Conda environment is designed to be isolated from system packages, and can be 
 This has the advantage of allowing several separate installations of Python packages and other tools without cluttering the system installation, allowing switching between use cases or package contexts at will.
 A Conda client, such as Miniconda, Mamba, or Anaconda, provides the ``conda`` command, which lets you create, manage, and activate new environments.
 
-Installing an ``stenv`` environment
-===================================
+Installation
+============
+
+.. _install_conda:
 
 Install Conda
 -------------
