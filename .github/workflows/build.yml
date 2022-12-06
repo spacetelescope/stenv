@@ -34,8 +34,10 @@ jobs:
     name: set up environment variables
     runs-on: ubuntu-latest
     steps:
+      - run: echo "HOME=$HOME" >> $GITHUB_ENV
       - run: |
           touch ci_env.txt
+          echo "HOME=${{ env.HOME }}" >> ci_env.txt
           echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> ci_env.txt
           echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> ci_env.txt
           echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> ci_env.txt
