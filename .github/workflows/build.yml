@@ -30,8 +30,22 @@ defaults:
     shell: bash -l {0}
 
 jobs:
+  variables:
+    name: set up environment variables
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          touch ci_env.txt
+          echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> ci_env.txt
+          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> ci_env.txt
+          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> ci_env.txt
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ci-env
+          path: ci_env.txt
   build:
     name: build ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
+    needs: [ variables ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -39,18 +53,16 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10', '3.11' ]
     steps:
-      - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
+      - uses: actions/download-artifact@v3
+        with:
+          name: ci-env
+      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
+        if: runner.os == 'MacOS'
+      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-        if: runner.os == 'Linux'
-      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-        if: runner.os == 'MacOS'
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'MacOS'
+      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
@@ -64,7 +76,7 @@ jobs:
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ build ]
+    needs: [ variables, build ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -93,19 +105,14 @@ jobs:
             extras: [ test ]
           - package: wfpc2tools
     steps:
-      - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
+      - uses: actions/download-artifact@v3
+        with:
+          name: ci-env
+      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
+        if: runner.os == 'MacOS'
+      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
-      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-        if: runner.os == 'Linux'
-      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-        if: runner.os == 'MacOS'
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'MacOS'
-      - run: |
-          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
-          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -121,8 +128,6 @@ jobs:
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
-          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
       - uses: actions/cache@v3
         if: env.CRDS_CONTEXT != ''
         with:
@@ -132,15 +137,12 @@ jobs:
         if: env.CRDS_CONTEXT != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
-          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   unit_tests_from_source:
     name: run `${{ matrix.package }}` unit tests from source in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ build ]
+    needs: [ variables, build ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -172,21 +174,16 @@ jobs:
             repository: spacetelescope/stsynphot_refactor
             extras: [ test ]
     steps:
-      - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
+      - uses: actions/download-artifact@v3
+        with:
+          name: ci-env
+      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
+        if: runner.os == 'MacOS'
+      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           path: stenv
-      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-        if: runner.os == 'Linux'
-      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-        if: runner.os == 'MacOS'
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv/stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv/stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'MacOS'
-      - run: |
-          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
-          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -210,8 +207,6 @@ jobs:
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
-          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
       - uses: actions/cache@v3
         if: env.CRDS_CONTEXT != ''
         with:
@@ -221,15 +216,12 @@ jobs:
         if: env.CRDS_CONTEXT != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
       - run: cd ${{ matrix.package }} && ${{ matrix.pre_command }} pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
-          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
   smoke_tests:
     name: run `${{ matrix.package }}` smoke tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ build ]
+    needs: [ variables, build ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -249,21 +241,16 @@ jobs:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
               jref: hst/references/hst/
     steps:
-      - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
+      - uses: actions/download-artifact@v3
+        with:
+          name: ci-env
+      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
+        if: runner.os == 'MacOS'
+      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           lfs: true
-      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-        if: runner.os == 'Linux'
-      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-        if: runner.os == 'MacOS'
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'MacOS'
-      - run: |
-          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> $GITHUB_ENV
-          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> $GITHUB_ENV
+      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
@@ -279,8 +266,6 @@ jobs:
         if: matrix.env.CRDS_SERVER_URL != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
-          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
       - uses: actions/cache@v3
         if: env.CRDS_CONTEXT != ''
@@ -291,7 +276,6 @@ jobs:
         if: env.CRDS_CONTEXT != ''
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
       - uses: actions/cache@v3
         with:
           path: 'tests/data/'
@@ -299,12 +283,10 @@ jobs:
       - run: ${{ matrix.run }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          CRDS_PATH: ${{ env.CRDS_PATH }}
-          PYSYN_CDBS: ${{ env.PYSYN_CDBS }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
   export:
     name: export ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
-    needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
+    needs: [ variables, unit_tests, unit_tests_from_source, smoke_tests ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -312,18 +294,16 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
         python: [ '3.8', '3.9', '3.10', '3.11' ]
     steps:
-      - run: echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_ENV
+      - uses: actions/download-artifact@v3
+        with:
+          name: ci-env
+      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
+        if: runner.os == 'MacOS'
+      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: echo "HOME=$(echo /home/runner)" >> $GITHUB_ENV
-        if: runner.os == 'Linux'
-      - run: echo "HOME=$(echo /Users/runner)" >> $GITHUB_ENV
-        if: runner.os == 'MacOS'
-      - run: sed -i "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'Linux'
-      - run: sed -i "" "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'MacOS'
+      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
@@ -337,7 +317,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          python-version: ${{ matrix.python }}.*
+          python-version: ${{ matrix.python }}
           mamba-version: '*'
           channels: conda-forge,defaults
           channel-priority: true
