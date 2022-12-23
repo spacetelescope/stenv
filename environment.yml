@@ -12,6 +12,7 @@ dependencies:
   - pip:
       - acstools
       - asdf>=2.12.1
+      - astropy
       - calcos>=3.4.4
       - ccdproc
       - ci-watson
@@ -25,8 +26,10 @@ dependencies:
       - jupyter
       - jwst>=1.6.2
       - nictools
+      - numpy
       - pysynphot
       - reftools
+      - scipy
       - sphinx
       - stistools
       - stsynphot
