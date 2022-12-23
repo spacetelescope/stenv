@@ -126,15 +126,16 @@ jobs:
       - run: ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
       - run: pip freeze
-      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.env.CRDS_SERVER_URL != ''
+      - if: matrix.env.CRDS_SERVER_URL != ''
+        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
+        id: crds_context
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
       - uses: actions/cache@v3
-        if: env.CRDS_CONTEXT != ''
+        if: steps.crds_context.outputs.context != ''
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
+          key: crds-${{ matrix.package }}-${{ steps.crds_context.outputs.context }}
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
@@ -188,28 +189,30 @@ jobs:
           cache-env: true
           cache-downloads: true
           extra-specs: python=${{ matrix.python }}
-      - run: echo "package_version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_ENV
-        # TODO: figure out a better way to use package version when checking out a Git ref
+      - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         if: env.CONSTRAINT != 'dev'
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
       - uses: actions/checkout@v3
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
-          ref: ${{ env.package_version }}
+          ref: ${{ steps.package_version.outputs.version }}
       - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
       - run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
       - run: pip freeze
-      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.env.CRDS_SERVER_URL != ''
+      - if: matrix.env.CRDS_SERVER_URL != ''
+        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
+        id: crds_context
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
       - uses: actions/cache@v3
-        if: env.CRDS_CONTEXT != ''
+        if: steps.crds_context.outputs.context != ''
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
+          key: crds-${{ matrix.package }}-${{ steps.crds_context.outputs.context }}
       - run: cd ${{ matrix.package }} && ${{ matrix.pre_command }} pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
@@ -256,16 +259,16 @@ jobs:
       - run: ${{ join(matrix.commands, ' && ') }}
         if: matrix.commands != ''
       - run: pip freeze
-      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.env.CRDS_SERVER_URL != ''
+      - if: matrix.env.CRDS_SERVER_URL != ''
+        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
+        id: crds_context
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
       - uses: actions/cache@v3
-        if: env.CRDS_CONTEXT != ''
+        if: steps.crds_context.outputs.context != ''
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
+          key: crds-${{ matrix.package }}-${{ steps.crds_context.outputs.context }}
       - uses: actions/cache@v3
         with:
           path: 'tests/data/'
