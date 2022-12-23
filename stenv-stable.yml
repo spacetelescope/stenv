@@ -10,7 +10,7 @@ dependencies:
   - pytest
   - pytest-xdist
   - pip:
-      - acstools>=3.4,<3.5
+      - acstools>=3.5,<3.6
       - asdf>=2.14,<2.15
       - calcos>=3.4,<3.5
       - ccdproc>=2.4,<2.5
@@ -23,7 +23,7 @@ dependencies:
       - h5py
       - ipython
       - jupyter
-      - jwst>=1.8,<1.9
+      - jwst>=1.9,<1.10
       - nictools>=1.1,<1.2
       - pysynphot>=2.0,<2.1
       - reftools>=2.1,<2.2
