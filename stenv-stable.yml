@@ -6,7 +6,7 @@ dependencies:
   - hstcal=2.7
   - pip
   - pytables
-  - python==3.9
+  - python
   - pytest
   - pytest-xdist
   - pip:

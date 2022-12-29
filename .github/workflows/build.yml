@@ -64,7 +64,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
@@ -74,6 +73,7 @@ jobs:
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
+          extra-specs: python=${{ matrix.python }}
       - run: pip freeze
       - run: pytest -n auto tests/test_import.py
   unit_tests:
@@ -114,13 +114,13 @@ jobs:
         if: runner.os == 'MacOS'
       - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
-      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
+          extra-specs: python=${{ matrix.python }}
       - run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
       - run: ${{ join(matrix.commands, ' && ') }}
@@ -185,13 +185,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: stenv
-      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}.*/g" stenv/stenv-${{ env.CONSTRAINT }}.yml
       - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv/stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
+          extra-specs: python=${{ matrix.python }}
       - run: echo "package_version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_ENV
         # TODO: figure out a better way to use package version when checking out a Git ref
         if: env.CONSTRAINT != 'dev'
@@ -252,13 +252,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           lfs: true
-      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: mamba-org/provision-with-micromamba@v14
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
           environment-file: stenv-${{ env.CONSTRAINT }}.yml
           cache-env: true
           cache-downloads: true
+          extra-specs: python=${{ matrix.python }}
       - run: pip install ".[${{ join(matrix.extras, ',') }}]"
         if: matrix.extras != ''
       - run: ${{ join(matrix.commands, ' && ') }}
@@ -305,7 +305,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: sed -i"" -e "s/python==3.9/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
+      - run: sed -i"" -e "s/python/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
