@@ -12,7 +12,7 @@ dependencies:
   - pip:
       - acstools
       - asdf>=2.12.1
-      - calcos
+      - calcos>=3.4.4
       - ccdproc
       - ci-watson
       - costools
