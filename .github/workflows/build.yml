@@ -43,7 +43,7 @@ jobs:
       - run: echo "constraint=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_OUTPUT
         id: constraint
   build:
-    name: build ${{ github.event.inputs.constraint }} Python ${{ matrix.python-version }} environment on ${{ matrix.os }}
+    name: build ${{ github.event.inputs.constraint }} Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ variables ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
