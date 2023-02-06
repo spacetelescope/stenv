@@ -29,63 +29,52 @@ defaults:
   run:
     shell: bash -l {0}
 
+env:
+  CRDS_PATH: /tmp/crds_cache
+  PYSYN_CDBS: /tmp/trds
+
 jobs:
   variables:
     name: set up environment variables
     runs-on: ubuntu-latest
+    outputs:
+      constraint: ${{ steps.constraint.outputs.constraint }}
     steps:
-      - run: echo "HOME=$HOME" >> $GITHUB_ENV
-      - run: |
-          touch ci_env.txt
-          echo "HOME=${{ env.HOME }}" >> ci_env.txt
-          echo "CONSTRAINT=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> ci_env.txt
-          echo "CRDS_PATH=${{ env.HOME }}/crds_cache" >> ci_env.txt
-          echo "PYSYN_CDBS=${{ env.HOME }}/trds" >> ci_env.txt
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ci-env
-          path: ci_env.txt
+      - run: echo "constraint=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_OUTPUT
+        id: constraint
   build:
-    name: build ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
+    name: build ${{ github.event.inputs.constraint }} Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ variables ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11' ]
+        runs-on: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.8', '3.9', '3.10', '3.11' ]
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: ci-env
-      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
-        if: runner.os == 'MacOS'
-      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: mamba-org/provision-with-micromamba@v15
         with:
-          python-version: ${{ matrix.python }}
-      - uses: mamba-org/provision-with-micromamba@v14
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv-${{ env.CONSTRAINT }}.yml
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
+          environment-file: stenv-${{ needs.variables.outputs.constraint }}.yml
           cache-env: true
           cache-downloads: true
-          extra-specs: python=${{ matrix.python }}
+          extra-specs: |
+            python=${{ matrix.python-version }}
       - run: pip freeze
       - run: pytest -n auto tests/test_import.py
   unit_tests:
-    name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
+    name: run `${{ matrix.package }}` unit tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ variables, build ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
-        os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11' ]
+        runs-on: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.8', '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
             extras: [ test ]
@@ -107,51 +96,43 @@ jobs:
             extras: [ test ]
           - package: wfpc2tools
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: ci-env
-      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
-        if: runner.os == 'MacOS'
-      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
-      - uses: mamba-org/provision-with-micromamba@v14
+      - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv-${{ env.CONSTRAINT }}.yml
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
+          environment-file: stenv-${{ needs.variables.outputs.constraint }}.yml
           cache-env: true
           cache-downloads: true
-          extra-specs: python=${{ matrix.python }}
-      - run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
-        if: matrix.extras != ''
-      - run: ${{ join(matrix.commands, ' && ') }}
-        if: matrix.commands != ''
+          extra-specs: |
+            python=${{ matrix.python-version }}
+      - if: matrix.extras != ''
+        run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
+      - if: matrix.commands != ''
+        run: ${{ join(matrix.commands, ' && ') }}
       - run: pip freeze
-      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.env.CRDS_SERVER_URL != ''
+      - if: matrix.env.CRDS_SERVER_URL != ''
+        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
+        id: crds-context
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - uses: actions/cache@v3
-        if: env.CRDS_CONTEXT != ''
+      - if: steps.crds-context.outputs.context != ''
+        uses: actions/cache@v3
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ env.CRDS_CONTEXT }}
-      - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: env.CRDS_CONTEXT != ''
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
       - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_from_source:
-    name: run `${{ matrix.package }}` unit tests from source in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
+    name: run `${{ matrix.package }}` unit tests from source in ${{ github.event.inputs.constraint }} Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ variables, build ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         package: [ calcos, hstcal, stsynphot ]
-        os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11' ]
+        runs-on: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.8', '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -176,61 +157,54 @@ jobs:
             repository: spacetelescope/stsynphot_refactor
             extras: [ test ]
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: ci-env
-      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
-        if: runner.os == 'MacOS'
-      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           path: stenv
-      - uses: mamba-org/provision-with-micromamba@v14
+      - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv/stenv-${{ env.CONSTRAINT }}.yml
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
+          environment-file: stenv/stenv-${{ needs.variables.outputs.constraint }}.yml
           cache-env: true
           cache-downloads: true
-          extra-specs: python=${{ matrix.python }}
-      - run: echo "package_version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_ENV
+          extra-specs: |
+            python=${{ matrix.python-version }}
+      - if: needs.variables.outputs.constraint != 'dev'
+        run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-        if: env.CONSTRAINT != 'dev'
       - uses: actions/checkout@v3
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
-          ref: ${{ env.package_version }}
-      - run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
-        if: matrix.extras != ''
-      - run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
-        if: matrix.commands != ''
+          ref: ${{ steps.package_version.outputs.version }}
+      - if: matrix.extras != ''
+        run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
+      - if: matrix.commands != ''
+        run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
       - run: pip freeze
-      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.env.CRDS_SERVER_URL != ''
+      - if: matrix.env.CRDS_SERVER_URL != ''
+        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
+        id: crds-context
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - uses: actions/cache@v3
-        if: env.CRDS_CONTEXT != ''
+      - if: steps.crds-context.outputs.context != ''
+        uses: actions/cache@v3
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ env.CRDS_CONTEXT }}
-      - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: env.CRDS_CONTEXT != ''
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
       - run: cd ${{ matrix.package }} && ${{ matrix.pre_command }} pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   smoke_tests:
-    name: run `${{ matrix.package }}` smoke tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
+    name: run `${{ matrix.package }}` smoke tests in ${{ github.event.inputs.constraint }} Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ variables, build ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         package: [ calcos, drizzlepac ]
-        os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11' ]
+        runs-on: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.8', '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -243,41 +217,32 @@ jobs:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
               jref: hst/references/hst/
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: ci-env
-      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
-        if: runner.os == 'MacOS'
-      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           lfs: true
-      - uses: mamba-org/provision-with-micromamba@v14
+      - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          environment-file: stenv-${{ env.CONSTRAINT }}.yml
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
+          environment-file: stenv-${{ needs.variables.outputs.constraint }}.yml
           cache-env: true
           cache-downloads: true
-          extra-specs: python=${{ matrix.python }}
-      - run: pip install ".[${{ join(matrix.extras, ',') }}]"
-        if: matrix.extras != ''
-      - run: ${{ join(matrix.commands, ' && ') }}
-        if: matrix.commands != ''
+          extra-specs: |
+            python=${{ matrix.python-version }}
+      - if: matrix.extras != ''
+        run: pip install ".[${{ join(matrix.extras, ',') }}]"
+      - if: matrix.commands != ''
+        run: ${{ join(matrix.commands, ' && ') }}
       - run: pip freeze
-      - run: echo "CRDS_CONTEXT=$(crds list --operational-context)" >> $GITHUB_ENV
-        if: matrix.env.CRDS_SERVER_URL != ''
+      - if: matrix.env.CRDS_SERVER_URL != ''
+        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
+        id: crds-context
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
-      - uses: actions/cache@v3
-        if: env.CRDS_CONTEXT != ''
+      - if: steps.crds-context.outputs.context != ''
+        uses: actions/cache@v3
         with:
           path: ${{ env.CRDS_PATH }}
-          key: crds-${{ env.CRDS_CONTEXT }}
-      - run: crds sync --contexts ${{ env.CRDS_CONTEXT }}
-        if: env.CRDS_CONTEXT != ''
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
       - uses: actions/cache@v3
         with:
           path: 'tests/data/'
@@ -287,28 +252,22 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
   export:
-    name: export ${{ github.event.inputs.constraint }} Python ${{ matrix.python }} environment on ${{ matrix.os }}
+    name: export ${{ github.event.inputs.constraint }} Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ variables, unit_tests, unit_tests_from_source, smoke_tests ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        python: [ '3.8', '3.9', '3.10', '3.11' ]
+        runs-on: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.8', '3.9', '3.10', '3.11' ]
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: ci-env
-      - run: sed -i'' -e 's/\/home\//\/Users\//g' ci_env.txt
-        if: runner.os == 'MacOS'
-      - run: cat ci_env.txt >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: sed -i"" -e "s/python/python==${{ matrix.python }}.*/g" stenv-${{ env.CONSTRAINT }}.yml
+      - run: sed -i"" -e "s/python/python==${{ matrix.python-version }}.*/g" stenv-${{ needs.variables.outputs.constraint }}.yml
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python-version }}
       - uses: mtkennerly/dunamai-action@v1
         id: version
         with:
@@ -318,35 +277,30 @@ jobs:
         id: date
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          python-version: ${{ matrix.python }}
-          mamba-version: '*'
-          channels: conda-forge,defaults
+          environment-file: stenv-${{ needs.variables.outputs.constraint }}.yml
+          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
+          python-version: ${{ matrix.python-version }}
+          miniforge-version: 'latest'
+          miniforge-variant: 'Mambaforge'
+          use-mamba: true
+          channels: 'conda-forge,defaults'
           channel-priority: true
           use-only-tar-bz2: true
       - uses: actions/cache@v3
         with:
-          path: |
-            ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }}
-          key: "mamba-env ${{ runner.os }}-${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles(format('stenv-{0}.yml', env.CONSTRAINT)) }}"
-      - run: mamba env update -n stenv-${{ runner.os }}-py${{ matrix.python }}-${{ env.CONSTRAINT }} -f stenv-${{ env.CONSTRAINT }}.yml
-      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
+          path: ~/conda_pkgs_dir
+          key: "mamba-env ${{ runner.os }}-${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles(format('stenv-{0}.yml', needs.variables.outputs.constraint)) }}"
+      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
       # TODO: change previous to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
       - run: |
-          sed -i "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
-          sed -i "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'Linux'
-      - run: |
-          sed -i "" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
-          sed -i "" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
-        if: runner.os == 'MacOS'
-      - run: cat stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
+          sed -i"" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
+          sed -i"" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
+      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
       - uses: actions/upload-artifact@v3
         with:
-          name: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
-          path: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
-      - uses: svenstaro/upload-release-action@2.3.0
-        if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.release == 'true'
+          name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
+          path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
+      - if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.release == 'true'
+        uses: svenstaro/upload-release-action@v2
         with:
-          file: stenv-${{ runner.os }}-py${{ matrix.python }}-${{ steps.version.outputs.version }}-${{ env.CONSTRAINT }}.yml
+          file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
