@@ -57,7 +57,7 @@ jobs:
           fetch-depth: 0
       - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.runs-on }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
           environment-file: stenv-${{ needs.variables.outputs.constraint }}.yml
           cache-env: true
           cache-downloads: true
@@ -288,9 +288,7 @@ jobs:
           use-only-tar-bz2: true
       - uses: actions/cache@v3
         with:
-          path: |
-            ${{ env.HOME }}/conda_pkgs_dir
-            ${{ env.CONDA }}/envs/stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.constraint }}
+          path: ~/conda_pkgs_dir
           key: "mamba-env ${{ runner.os }}-${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles(format('stenv-{0}.yml', needs.variables.outputs.constraint)) }}"
       - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
       # TODO: change previous to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
