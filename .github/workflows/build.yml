@@ -38,7 +38,7 @@ jobs:
     name: set up environment variables
     runs-on: ubuntu-latest
     outputs:
-      constraint: steps.constraint.outputs.constraint
+      constraint: ${{ steps.constraint.outputs.constraint }}
     steps:
       - run: echo "constraint=$(if [ -z ${{ github.event.inputs.constraint }} ]; then echo latest; else echo ${{ github.event.inputs.constraint }}; fi)" >> $GITHUB_OUTPUT
         id: constraint
