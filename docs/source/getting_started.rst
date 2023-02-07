@@ -4,7 +4,7 @@ Getting Started
 Conda Basics
 ============
 
-``stenv`` defines Conda environments, which are sets of packages installed together at specific versions.
+``stenv`` defines a Conda environment, a set of packages installed together at specific versions.
 A Conda environment is designed to be isolated from system packages, and can be **activated** (similar to using ``source``) to switch the current context (PATH, environment variables, available binaries, Python installation, etc.) to an isolated instance that is separate from the system.
 This has the advantage of allowing several separate installations of Python packages and other tools without cluttering the system installation, allowing switching between use cases or package contexts at will.
 A Conda client, such as Miniconda, Mamba, or Anaconda, provides the ``conda`` command, which lets you create, manage, and activate new environments.
@@ -28,8 +28,9 @@ First, choose and install a Conda client and a base Conda environment on your sy
 Choose an ``stenv`` release
 ---------------------------
 
-Now that you have a Conda installation, you should choose a release of ``stenv`` from the `Releases page <https://github.com/spacetelescope/stenv/releases>`_ and download the environment definition file from the Assets section that corresponds to your platform.
-If you are unsure which of the :ref:`environments` you should choose, we recommend using ``latest``.
+Now that you have a Conda installation, you should choose a release of ``stenv`` from the
+`Releases page <https://github.com/spacetelescope/stenv/releases>`_ and download the environment definition file
+from the ``Assets`` section that corresponds with your platform.
 
 .. image:: release_example.png
     :alt: example of a release page, showing output files
@@ -39,7 +40,7 @@ If you are unsure which of the :ref:`environments` you should choose, we recomme
 
     .. code-block:: shell
 
-        curl -L https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml -o stenv-macOS-py3.9-2022.08.08-latest.yml
+        curl -L https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08.yml -o stenv-macOS-py3.9-2022.08.08.yml
 
 .. warning::
     Building and testing environments on supported platforms may take several minutes; **if a release was just made recently, you may need to wait** for its `associated workflow job to finish <https://github.com/spacetelescope/stenv/actions/workflows/build.yml>`_ before environment files are available.
@@ -51,16 +52,16 @@ With an environment definition YAML file, you can build the environment with ``c
 
 .. code-block:: shell
 
-    conda env create --file stenv-macOS-py3.9-2022.08.08-latest.yml --name stenv
+    conda env create --file stenv-macOS-py3.9-2022.08.08.yml --name stenv
 
-This example assumes that you chose an environment file for Mac OSX (``macOS``) with Python 3.9 (``py3.9``) and release ``2022.08.08`` with the ``latest`` constraints.
+This example assumes that you chose an environment file for Mac OSX (``macOS``) with Python 3.9 (``py3.9``) and release ``2022.08.08``.
 
 .. note::
     Instead of downloading a YAML file, you can also pass the url directly to the ``--file`` argument of ``conda env create``:
 
     .. code-block:: shell
 
-        conda env create --file https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08-latest.yml --name stenv-py3.9-2022.08.08-latest
+        conda env create --file https://github.com/spacetelescope/stenv/releases/download/2022.08.08/stenv-macOS-py3.9-2022.08.08.yml --name stenv-py3.9-2022.08.08
 
 Activating an environment
 =========================

@@ -1,13 +1,12 @@
 Space Telescope Environment (``stenv``)
 #######################################
 
-``stenv`` is a set of installable Conda environments maintained by the `Space Telescope Science Institute (STScI) <http://www.stsci.edu/>`_ in Baltimore, Maryland. These environments provide tools and utilities required to process and analyze data from the Hubble Space Telescope (HST), James Webb Space Telescope (JWST), and others.
+``stenv`` is an installable Conda environment maintained by the `Space Telescope Science Institute (STScI) <http://www.stsci.edu/>`_ in Baltimore, Maryland. This environment provides tools and utilities required to process and analyze data from the Hubble Space Telescope (HST), James Webb Space Telescope (JWST), and others.
 
 .. toctree::
    :maxdepth: 1
 
    getting_started.rst
-   environments.rst
    pipeline_releases.rst
    faq.rst
    developer_notes.rst

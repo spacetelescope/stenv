@@ -8,7 +8,7 @@ from packaging.version import Version
 import pytest
 import yaml
 
-ENVIRONMENT_FILENAME = Path(__file__).parent.parent / "stenv-latest.yml"
+ENVIRONMENT_FILENAME = Path(__file__).parent.parent / "environment.yml"
 DEPENDENCY_PATTERN = re.compile(r"([\w\d-]+)\s*((?:[<>=~]=?|\^)\s*[\d\w.]*)?")
 MINIMUM_DEPENDENCY_PATTERN = re.compile(r".*>=?\s*([\d\w.]+).*")
 

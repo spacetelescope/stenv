@@ -1,24 +1,31 @@
 Developer Notes
 ###############
 
-``stenv`` consists of two parts:
+``stenv`` consists of several parts:
 
-#. several Conda environment definition files in YAML format, and
-#. a GitHub Actions workflow that builds and tests a working environment from each YAML file
+#. a (mostly) unconstrained Conda environment definition file (``environment.yml``)
+#. a GitHub Actions CI workflow that automatically builds and tests the environment on several platforms
+#. GitHub releases with constrained Conda environment definition files for every tested platform
 
-Environment Definition Files
-============================
+.. _environment_definition:
 
-The main environment consists of three separate YAML files, which each provide minimum packages for building a working environment locally:
+Environment Definition
+======================
 
-#. :ref:`stenv_stable` - packages are pinned to their most recent stable feature versions
-#. :ref:`stenv_latest` - packages resolve to the latest version available on PyPI
-#. :ref:`stenv_dev` - packages are built from the latest main branch of their source code
+The main environment is defined by ``environment.yml``, which provides packages for building a working environment locally:
+
+.. literalinclude:: ../../environment.yml
+   :language: yaml
 
 Automated Build and Testing
 ===========================
 
-The GitHub Actions `workflow <https://github.com/spacetelescope/stenv/actions/workflows/build.yml>`_ builds, tests, and exports environments to YAML files for Linux and Mac OS (using GitHub Actions' ``ubuntu-latest`` and ``macos-latest``). These environment definition YAML files are attached to `every new release <https://github.com/spacetelescope/stenv/releases>`_.
+The GitHub Actions `workflow <https://github.com/spacetelescope/stenv/actions/workflows/build.yml>`_ builds and tests the environment on Linux and Mac OS (using GitHub Actions' ``ubuntu-latest`` and ``macos-latest``).
+
+Releases
+========
+
+The environment definition files built by the above workflow are attached to `every new release <https://github.com/spacetelescope/stenv/releases>`_.
 
 .. image:: release_example.png
   :alt: example of a release page, showing output files
