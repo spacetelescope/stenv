@@ -304,3 +304,14 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}-${{ needs.variables.outputs.constraint }}.yml
+  update_docs:
+    if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.release == 'true'
+    name: update version number in documentation
+    needs: [ export ]
+    runs-on: ubuntu-latest
+    steps:
+      - run: python docs/update_version.py ${{ steps.version.outputs.version }} docs/source
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: updated version number in documentation
+          file_pattern: docs/source/**
