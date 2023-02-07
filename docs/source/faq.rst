@@ -4,9 +4,8 @@ Frequently Asked Questions
 What if my platform isn't listed in released YAML files, or a released YAML file doesn't build on my system?
 ============================================================================================================
 
-If the YAML files built for a release (see :ref:`choose_release`) do not include your platform,
-you can use one of the environment files in the root of the repository (see :ref:`environments`).
-Note, however, that these environments have not necessarily been tested for your platform.
+If the YAML files built for a release (see :ref:`choose_release`) do not include your platform, you can use the :ref:`environment_definition` file (``environment.yml``) in the root of the repository.
+Note, however, that this environment has not been tested for all platforms.
 
 What about Astroconda?
 ======================
