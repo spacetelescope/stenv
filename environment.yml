@@ -2,13 +2,22 @@ channels:
   - conda-forge
 
 dependencies:
+  - astropy
+  - dask
   - fitsverify
   - hstcal
+  - h5py
+  - ipython
+  - jupyter
+  - numpy
   - pip
   - pytables
   - python
   - pytest
   - pytest-xdist
+  - scipy
+  - scikit-image
+  - sphinx
   - pip:
       - acstools
       - asdf>=2.12.1
@@ -17,17 +26,12 @@ dependencies:
       - ci-watson
       - costools
       - crds
-      - dask
       - drizzlepac
       - ginga
-      - h5py
-      - ipython
-      - jupyter
       - jwst>=1.6.2
       - nictools
       - pysynphot
       - reftools
-      - sphinx
       - stistools
       - stsynphot
       - stregion>=1.1.7
