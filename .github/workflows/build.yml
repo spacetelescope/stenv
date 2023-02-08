@@ -161,7 +161,7 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
       - if: matrix.extras != ''
-        run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
+        run: cd ${{ matrix.package }} && pip install -e ".[${{ join(matrix.extras, ',') }}]"
       - if: matrix.commands != ''
         run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
       - run: pip freeze
