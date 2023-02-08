@@ -66,11 +66,6 @@ jobs:
           - package: ccdproc
             extras: [ test ]
           - package: costools
-          - package: jwst
-            extras: [ test ]
-            env:
-              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-            pytest_args: '--slow'
           #- package: pysynphot
           #  extras: [ test ]
           - package: reftools
@@ -134,6 +129,13 @@ jobs:
             test_directory: tests
             env:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          - package: jwst
+            repository: spacetelescope/jwst
+            extras: [ test ]
+            test_directory: tests
+            pytest_args: '--slow'
+            env:
+              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: stistools
           #  repository: spacetelescope/stistools
           - package: stsynphot
