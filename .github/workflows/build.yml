@@ -132,7 +132,6 @@ jobs:
           - package: jwst
             repository: spacetelescope/jwst
             extras: [ test ]
-            test_directory: tests
             pytest_args: '--slow'
             env:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
