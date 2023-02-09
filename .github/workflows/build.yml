@@ -159,7 +159,7 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
       - if: matrix.extras != ''
-        run: pip install ".[${{ join(matrix.extras, ',') }}]"
+        run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
       - run: pip freeze
       - if: matrix.env.CRDS_SERVER_URL != ''
