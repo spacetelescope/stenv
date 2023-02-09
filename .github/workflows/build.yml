@@ -159,7 +159,8 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
       - if: matrix.extras != ''
-        run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
+        run: pip install ".[${{ join(matrix.extras, ',') }}]"
+        working-directory: ${{ matrix.package }}
       - run: pip freeze
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
