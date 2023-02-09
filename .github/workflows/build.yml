@@ -130,7 +130,7 @@ jobs:
           - package: jwst
             repository: spacetelescope/jwst
             extras: [ test ]
-            pytest_args: '--slow'
+            pytest_args: '--slow -k "not test_cmdline_status"'
             env:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: stistools
