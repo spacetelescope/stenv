@@ -243,6 +243,7 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
   export:
+    if: github.event.inputs.skip_testing == 'true'
     name: export Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
     runs-on: ${{ matrix.runs-on }}
