@@ -12,10 +12,16 @@ on:
       - published
   workflow_dispatch:
     inputs:
-      release:
+      skip_testing:
+        description: skip unit testing and proceed directly to export
+        required: false
+        type: boolean
+        default: false
+      upload_to_release:
         description: upload exported files to a release of the current tag
         required: false
         type: boolean
+        default: false
 
 defaults:
   run:
@@ -49,6 +55,7 @@ jobs:
       - run: pip freeze
       - run: pytest -n auto tests/test_import.py
   unit_tests:
+    if: !inputs.skip_testing
     name: run `${{ matrix.package }}` unit tests in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ build ]
     runs-on: ${{ matrix.runs-on }}
@@ -107,6 +114,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_from_source:
+    if: !inputs.skip_testing
     name: run `${{ matrix.package }}` unit tests from source in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ build ]
     runs-on: ${{ matrix.runs-on }}
@@ -178,6 +186,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   smoke_tests:
+    if: !inputs.skip_testing
     name: run `${{ matrix.package }}` smoke tests in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
     needs: [ build ]
     runs-on: ${{ matrix.runs-on }}
@@ -278,12 +287,12 @@ jobs:
         with:
           name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
           path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
-      - if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.release == 'true'
+      - if: (github.event_name == 'release' && github.event.action == 'published') || inputs.upload_to_release
         uses: svenstaro/upload-release-action@v2
         with:
           file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
   update_docs:
-    if: (github.event_name == 'release' && github.event.action == 'published') || github.event.inputs.release == 'true'
+    if: (github.event_name == 'release' && github.event.action == 'published') || inputs.upload_to_release
     name: update version number in documentation
     needs: [ export ]
     runs-on: ubuntu-latest
