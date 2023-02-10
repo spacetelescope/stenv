@@ -62,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, costools, reftools, synphot, wfpc2tools ]
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
@@ -73,11 +73,6 @@ jobs:
           - package: ccdproc
             extras: [ test ]
           - package: costools
-          - package: jwst
-            extras: [ test ]
-            env:
-              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-            pytest_args: '--slow'
           #- package: pysynphot
           #  extras: [ test ]
           - package: reftools
@@ -97,8 +92,6 @@ jobs:
             python=${{ matrix.python-version }}
       - if: matrix.extras != ''
         run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
-      - if: matrix.commands != ''
-        run: ${{ join(matrix.commands, ' && ') }}
       - run: pip freeze
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
@@ -121,7 +114,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, hstcal, stsynphot ]
+        package: [ calcos, hstcal, jwst, stsynphot ]
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
@@ -132,7 +125,7 @@ jobs:
           #  extras: [ test ]
           #  env:
           #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh &&'
+          #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
           #  extras: [ test ]
@@ -142,6 +135,12 @@ jobs:
             test_directory: tests
             env:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
+          - package: jwst
+            repository: spacetelescope/jwst
+            extras: [ test ]
+            pytest_args: '--slow -k "not test_cmdline_status"'
+            env:
+              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: stistools
           #  repository: spacetelescope/stistools
           - package: stsynphot
@@ -168,9 +167,8 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
       - if: matrix.extras != ''
-        run: cd ${{ matrix.package }} && pip install ".[${{ join(matrix.extras, ',') }}]"
-      - if: matrix.commands != ''
-        run: cd ${{ matrix.package }} && ${{ join(matrix.commands, ' && ') }}
+        run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
+        working-directory: ${{ matrix.package }}
       - run: pip freeze
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
@@ -182,9 +180,13 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - run: cd ${{ matrix.package }} && ${{ matrix.pre_command }} pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+      - if: matrix.pre_command != ''
+        run: ${{ matrix.pre_command }}
+        working-directory: ${{ matrix.package }}
+      - run: pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+        working-directory: ${{ matrix.package }}
   smoke_tests:
     if: github.event.inputs.skip_testing != 'true'
     name: run `${{ matrix.package }}` smoke tests in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
@@ -221,8 +223,6 @@ jobs:
             python=${{ matrix.python-version }}
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - if: matrix.commands != ''
-        run: ${{ join(matrix.commands, ' && ') }}
       - run: pip freeze
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
