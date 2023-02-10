@@ -234,9 +234,25 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
+  version:
+    name: parse version from tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: mtkennerly/dunamai-action@v1
+        id: version
+        with:
+          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   export:
     name: export Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
-    needs: [ unit_tests, unit_tests_from_source, smoke_tests ]
+    needs: [ version, unit_tests, unit_tests_from_source, smoke_tests ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -245,18 +261,7 @@ jobs:
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: mtkennerly/dunamai-action@v1
-        id: version
-        with:
-          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
       # TODO: change following to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
-      - run: echo "::set-output name=date::$(date +'%a %b %d %Y')"
-        id: date
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
       - uses: conda-incubator/setup-miniconda@v2
         with:
           environment-file: environment.yml
@@ -268,31 +273,28 @@ jobs:
           channels: 'conda-forge,defaults'
           channel-priority: true
           use-only-tar-bz2: true
-      - uses: actions/cache@v3
-        with:
-          path: ~/conda_pkgs_dir
-          key: "mamba-env ${{ runner.os }}-${{ runner.arch }} ${{ steps.date.outputs.date }} file: ${{ hashFiles('environment.yml') }}"
-      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
+      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
       # TODO: change previous to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
       - run: |
-          sed -i"" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
-          sed -i"" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
-      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
+          sed -i"" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+          sed -i"" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3
         with:
-          name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
-          path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
+          name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+          path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
       - if: (github.event_name == 'release' && github.event.action == 'published')
         uses: svenstaro/upload-release-action@v2
         with:
-          file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ steps.version.outputs.version }}.yml
+          file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
   update_docs:
     if: (github.event_name == 'release' && github.event.action == 'published')
     name: update version number in documentation
-    needs: [ export ]
+    needs: [ version, export ]
     runs-on: ubuntu-latest
     steps:
-      - run: python docs/update_version.py ${{ steps.version.outputs.version }} docs/source
+      - uses: actions/checkout@v3
+      - run: python docs/update_version.py ${{ needs.version.outputs.version }} docs/source
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: updated version number in documentation
