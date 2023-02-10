@@ -240,12 +240,12 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
       - uses: mtkennerly/dunamai-action@v1
         id: version
         with:
