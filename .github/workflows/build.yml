@@ -262,6 +262,9 @@ jobs:
       # TODO: change following to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
       - run: echo "::set-output name=date::$(date +'%a %b %d %Y')"
         id: date
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
       - uses: conda-incubator/setup-miniconda@v2
         with:
           environment-file: environment.yml
