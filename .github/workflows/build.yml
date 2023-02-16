@@ -48,7 +48,7 @@ jobs:
           extra-specs: |
             python=${{ matrix.python-version }}
             conda
-      - run: conda env export --no-build | grep -v conda
+      - run: conda env export --no-build
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
@@ -88,7 +88,7 @@ jobs:
             conda
       - if: matrix.extras != ''
         run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
-      - run: conda env export --no-build | grep -v conda
+      - run: conda env export --no-build
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -165,7 +165,7 @@ jobs:
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
-      - run: conda env export --no-build | grep -v conda
+      - run: conda env export --no-build
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -219,7 +219,7 @@ jobs:
             conda
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - run: conda env export --no-build | grep -v conda
+      - run: conda env export --no-build
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -276,7 +276,7 @@ jobs:
             conda
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - run: conda env export --no-build | grep -v conda > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
       - run: |
           sed -i"" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
           sed -i"" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
