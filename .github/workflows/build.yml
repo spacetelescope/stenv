@@ -47,7 +47,8 @@ jobs:
           cache-downloads: true
           extra-specs: |
             python=${{ matrix.python-version }}
-      - run: pip freeze
+            conda
+      - run: conda env export --no-build | grep -v conda
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: run `${{ matrix.package }}` unit tests in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
@@ -84,9 +85,10 @@ jobs:
           cache-downloads: true
           extra-specs: |
             python=${{ matrix.python-version }}
+            conda
       - if: matrix.extras != ''
         run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
-      - run: pip freeze
+      - run: conda env export --no-build | grep -v conda
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -151,6 +153,7 @@ jobs:
           cache-downloads: true
           extra-specs: |
             python=${{ matrix.python-version }}
+            conda
       - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
@@ -162,7 +165,7 @@ jobs:
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
-      - run: pip freeze
+      - run: conda env export --no-build | grep -v conda
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -213,9 +216,10 @@ jobs:
           cache-downloads: true
           extra-specs: |
             python=${{ matrix.python-version }}
+            conda
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - run: pip freeze
+      - run: conda env export --no-build | grep -v conda
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -261,20 +265,18 @@ jobs:
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
       - uses: actions/checkout@v3
-      # TODO: change following to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: mamba-org/provision-with-micromamba@v15
         with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yml
-          activate-environment: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          python-version: ${{ matrix.python-version }}
-          miniforge-version: 'latest'
-          miniforge-variant: 'Mambaforge'
-          use-mamba: true
-          channels: 'conda-forge,defaults'
-          channel-priority: true
-          use-only-tar-bz2: true
-      - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
-      # TODO: change previous to `provision-with-micromamba` after https://github.com/mamba-org/mamba/issues/2008
+          cache-env: true
+          cache-downloads: true
+          extra-specs: |
+            python=${{ matrix.python-version }}
+            conda
+      - if: matrix.extras != ''
+        run: pip install ".[${{ join(matrix.extras, ',') }}]"
+      - run: conda env export --no-build | grep -v conda > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
       - run: |
           sed -i"" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
           sed -i"" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
