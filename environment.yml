@@ -32,6 +32,8 @@ dependencies:
       - nictools
       - pysynphot
       - reftools
+      - stcal<1.3.4
+      - stdatamodels<1.0.0
       - stistools
       - stsynphot
       - stregion>=1.1.7
