@@ -277,9 +277,7 @@ jobs:
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
       - run: conda env export --no-build > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
-      - run: |
-          sed -i"" "/name:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
-          sed -i"" "/prefix:/d" stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml | grep -v "name:" | grep -v "prefix:" > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
       - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
       - uses: actions/upload-artifact@v3
         with:
