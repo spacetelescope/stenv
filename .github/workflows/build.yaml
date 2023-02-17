@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'environment.yml'
-      - '.github/workflows/*.yml'
+      - 'environment.yaml'
+      - '.github/workflows/*.yaml'
   release:
     types:
       - published
@@ -42,7 +42,7 @@ jobs:
       - uses: mamba-org/provision-with-micromamba@v15
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yml
+          environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
           extra-specs: |
@@ -80,7 +80,7 @@ jobs:
       - uses: mamba-org/provision-with-micromamba@v15
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yml
+          environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
           extra-specs: |
@@ -148,7 +148,7 @@ jobs:
       - uses: mamba-org/provision-with-micromamba@v15
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: stenv/environment.yml
+          environment-file: stenv/environment.yaml
           cache-env: true
           cache-downloads: true
           extra-specs: |
@@ -211,7 +211,7 @@ jobs:
       - uses: mamba-org/provision-with-micromamba@v15
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yml
+          environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
           extra-specs: |
@@ -268,7 +268,7 @@ jobs:
       - uses: mamba-org/provision-with-micromamba@v15
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yml
+          environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
           extra-specs: |
@@ -276,16 +276,16 @@ jobs:
             conda
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
-      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
       - uses: actions/upload-artifact@v3
         with:
-          name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
-          path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+          name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+          path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
       - if: (github.event_name == 'release' && github.event.action == 'published')
         uses: svenstaro/upload-release-action@v2
         with:
-          file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yml
+          file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
   update_docs:
     if: (github.event_name == 'release' && github.event.action == 'published')
     name: update version number in documentation
