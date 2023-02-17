@@ -51,7 +51,8 @@ Instructions for installation of each delivery may be found in the respective su
 https://github.com/astroconda/astroconda-releases/tree/master/caldp
 
 .. warning::
-    The repository is located within the Astroconda GitHub organization for legacy reasons. Astroconda was sunset on **February 1st, 2023**.
+    The repository is located within the Astroconda GitHub organization for legacy reasons.
+    Astroconda is no longer supported as of **February 1st, 2023**.
 
 .. code-block:: sh
 
