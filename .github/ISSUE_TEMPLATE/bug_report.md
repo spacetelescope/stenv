@@ -11,7 +11,7 @@ assignees: ''
 When I do **action**, something bad happens and / or I get the error `<error>`.
 
 **Steps that can reproduce the error:**
-1. `conda create -n stenv -f environment.yml`
+1. `conda create -n stenv -f environment.yaml`
 2. `conda activate stenv`
 3. `python`
 4. `import stistools`

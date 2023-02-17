@@ -24,5 +24,5 @@ however, it still might merit the creation of a separate environment focused on 
 **Additional packages / requirements:**
 - `<package_2>`
 
-<!-- To add a new package, the requirement should be added to `environment.yml`. Then, the new package's tests should 
+<!-- To add a new package, the requirement should be added to `environment.yaml`. Then, the new package's tests should 
 pass against the built environment. -->

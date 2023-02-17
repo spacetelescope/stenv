@@ -1,6 +1,6 @@
 # Space Telescope Environment (`stenv`)
 
-[![build](https://github.com/spacetelescope/stenv/actions/workflows/build.yml/badge.svg)](https://github.com/spacetelescope/stenv/actions/workflows/build.yml)
+[![build](https://github.com/spacetelescope/stenv/actions/workflows/build.yaml/badge.svg)](https://github.com/spacetelescope/stenv/actions/workflows/build.yaml)
 [![documentation](https://readthedocs.org/projects/stenv/badge/?version=latest)](https://stenv.readthedocs.io/en/latest/?badge=latest)
 [![release](https://img.shields.io/github/v/release/spacetelescope/stenv)](https://github.com/spacetelescope/stenv/releases)
 [![calver](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](https://calver.org)
