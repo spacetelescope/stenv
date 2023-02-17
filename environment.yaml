@@ -20,23 +20,23 @@ dependencies:
   - sphinx
   - pip:
       - acstools
-      - asdf>=2.12.1
-      - calcos>=3.4.4
+      - asdf
+      - calcos
       - ccdproc
       - ci-watson
       - costools
       - crds
       - drizzlepac
       - ginga
-      - jwst>=1.6.2
+      - jwst
       - nictools
       - pysynphot
       - reftools
-      - stcal<1.3.4
-      - stdatamodels<1.0.0
+      - stcal
+      - stdatamodels
       - stistools
       - stsynphot
-      - stregion>=1.1.7
+      - stregion
       - synphot
       - wfc3tools
       - wfpc2tools
