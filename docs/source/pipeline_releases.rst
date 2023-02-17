@@ -3,11 +3,10 @@
 Pipeline Releases
 #################
 
-.. seealso::
-    :ref:`install_conda`
-        A working ``conda`` installation (Miniconda, Mamba, Anaconda, etc.) is required.
+.. note::
+    A working ``conda`` installation (Miniconda, Mamba, Anaconda, etc.) is required (see :ref:`install_conda`).
 
-.. deprecated::
+.. warning::
     ``stenv`` does not support Python 2 nor 32-bit operating systems.
 
 Pipeline releases differ from the standard software stack and serve a different purpose.
@@ -48,9 +47,8 @@ HST Data Processing (HSTDP)
 Instructions for installation of each delivery may be found in the respective subdirectories of the releases repository:
 https://github.com/astroconda/astroconda-releases/tree/master/caldp
 
-.. deprecated::
-    The repository is located within the Astroconda GitHub organization; this is for legacy reasons.
-    Astroconda was sunset on **February 1st, 2023**.
+.. warning::
+    The repository is located within the Astroconda GitHub organization for legacy reasons. Astroconda was sunset on **February 1st, 2023**.
 
 .. code-block:: sh
 
