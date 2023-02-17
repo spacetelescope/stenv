@@ -291,6 +291,7 @@ jobs:
     name: update version number in documentation
     needs: [ version, export ]
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v3
       - run: python docs/update_version.py ${{ needs.version.outputs.version }} docs/source
