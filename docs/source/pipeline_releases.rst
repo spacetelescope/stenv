@@ -4,14 +4,19 @@ Pipeline Releases
 #################
 
 .. note::
-    A working ``conda`` installation (Miniconda, Mamba, Anaconda, etc.) is required; see :ref:`install_conda`.
-    ``stenv`` does not support Python 2 nor 32-bit operating systems.
+    A working ``conda`` installation (Miniconda, Mamba, Anaconda, etc.) is required (see :ref:`install_conda`).
+
+.. warning::
+    ``stenv`` does not support Python 2.
+
+.. warning::
+    ``stenv`` does not support 32-bit operating systems.
 
 Pipeline releases differ from the standard software stack and serve a different purpose.
 The release files, described below, are immutable snapshots of STScI operational software
 and can be used to replicate the environment used by STScI to perform mission-specific data processing.
-Be aware that upgrading packages with ``conda update [pkg]`` or ``conda update --all`` is not recommended,
-as it will likely introduce unwanted bugs and / or break the environment all together.
+Be aware that upgrading packages with ``conda update`` is not recommended, as it will likely introduce
+unwanted bugs and / or break the environment all together.
 
 If you have any questions, comments, or concerns related to pipeline releases, please feel free to contact
 `help@stsci.edu <mailto:help@stsci.edu>`_
@@ -23,19 +28,10 @@ Pipeline release installations use the following ``conda create`` command format
 
 .. code-block:: sh
 
-    conda create -n [custom_env_name] --file [URL]
-    source activate [custom_env_name]
-
-
-Example
--------
-
-.. code-block:: sh
-
     conda create -n demo_2016.1 --file http://ssb.stsci.edu/releases/hstdp/2016.1/hstdp-2016.1-linux-py35.0.txt
-    source activate demo_2016.1
+    conda activate demo_2016.1
 
-.. note::
+.. warning::
     The URL shown in this example does not reflect the latest iteration available. Please consult the :ref:`file_urls` section to ensure you are installing the correct release.
 
 
@@ -55,9 +51,8 @@ Instructions for installation of each delivery may be found in the respective su
 https://github.com/astroconda/astroconda-releases/tree/master/caldp
 
 .. warning::
-    The repository is located within the Astroconda GitHub organization;
-    this is for legacy reasons, and does not indicate that support for Astroconda will extend beyond its sunset date of
-    **February 1st, 2023**.
+    The repository is located within the Astroconda GitHub organization for legacy reasons.
+    Astroconda is no longer supported as of **February 1st, 2023**.
 
 .. code-block:: sh
 
