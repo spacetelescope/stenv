@@ -27,5 +27,5 @@ Releases
 
 The environment definition files built by the above workflow are attached to `every new release <https://github.com/spacetelescope/stenv/releases>`_.
 
-.. image:: release_example.png
+.. image:: release_example.jpg
   :alt: example of a release page, showing output files
