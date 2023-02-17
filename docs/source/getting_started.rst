@@ -40,7 +40,7 @@ from the ``Assets`` section that corresponds with your platform.
 
     .. code-block:: shell
 
-        curl -L https://github.com/spacetelescope/stenv/releases/download/2022.02.16/stenv-macOS-py3.9-2022.02.16.yml -o stenv-macOS-py3.9-2022.02.16.yml
+        curl -L https://github.com/spacetelescope/stenv/releases/download/2023.02.16/stenv-macOS-py3.9-2023.02.16.yml -o stenv-macOS-py3.9-2023.02.16.yml
 
 .. warning::
     Building and testing environments on supported platforms may take several minutes; **if a release was just made recently, you may need to wait** for its `associated workflow job to finish <https://github.com/spacetelescope/stenv/actions/workflows/build.yml>`_ before environment files are available.
@@ -52,16 +52,16 @@ With an environment definition YAML file, you can build the environment with ``c
 
 .. code-block:: shell
 
-    conda env create --file stenv-macOS-py3.9-2022.02.16.yml --name stenv
+    conda env create --file stenv-macOS-py3.9-2023.02.16.yml --name stenv
 
-This example assumes that you chose an environment file for Mac OSX (``macOS``) with Python 3.9 (``py3.9``) and release ``2022.02.16``.
+This example assumes that you chose an environment file for Mac OSX (``macOS``) with Python 3.9 (``py3.9``) and release ``2023.02.16``.
 
 .. note::
     Instead of downloading a YAML file, you can also pass the url directly to the ``--file`` argument of ``conda env create``:
 
     .. code-block:: shell
 
-        conda env create --file https://github.com/spacetelescope/stenv/releases/download/2022.02.16/stenv-macOS-py3.9-2022.02.16.yml --name stenv-py3.9-2022.02.16
+        conda env create --file https://github.com/spacetelescope/stenv/releases/download/2023.02.16/stenv-macOS-py3.9-2023.02.16.yml --name stenv-py3.9-2023.02.16
 
 Activating an environment
 =========================
