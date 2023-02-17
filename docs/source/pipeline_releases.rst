@@ -7,7 +7,10 @@ Pipeline Releases
     A working ``conda`` installation (Miniconda, Mamba, Anaconda, etc.) is required (see :ref:`install_conda`).
 
 .. warning::
-    ``stenv`` does not support Python 2 nor 32-bit operating systems.
+    ``stenv`` does not support Python 2.
+
+.. warning::
+    ``stenv`` does not support 32-bit operating systems.
 
 Pipeline releases differ from the standard software stack and serve a different purpose.
 The release files, described below, are immutable snapshots of STScI operational software
