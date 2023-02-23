@@ -34,6 +34,7 @@ from the ``Assets`` section that corresponds with your platform.
 
 .. image:: release_example.jpg
     :alt: example of a release page, showing output files
+    :target: https://github.com/spacetelescope/stenv/releases
 
 .. note::
     You can directly download a release file with ``curl``:
