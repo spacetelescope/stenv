@@ -15,7 +15,7 @@ some packages are not supported and / or deprecated, and some are deemed too nic
 
 To install a package in your local environment, you can use ``pip install`` while the environment is activated:
 
-.. code-block::
+.. code-block:: shell
 
     conda activate stenv
     pip install <package_name>
