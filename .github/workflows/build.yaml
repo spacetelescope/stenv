@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-12, macos-11 ]
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
       - if: runner.os == 'MacOS'
@@ -60,7 +60,7 @@ jobs:
       fail-fast: false
       matrix:
         package: [ acstools, asdf, ccdproc, costools, reftools, synphot, wfpc2tools ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-12, macos-11 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
@@ -116,7 +116,7 @@ jobs:
       fail-fast: false
       matrix:
         package: [ calcos, hstcal, jwst, stsynphot ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-12, macos-11 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
@@ -201,7 +201,7 @@ jobs:
       fail-fast: false
       matrix:
         package: [ calcos, drizzlepac ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-12, macos-11 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
@@ -275,7 +275,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-12, macos-11 ]
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
       - if: runner.os == 'MacOS'
