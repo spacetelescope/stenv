@@ -36,10 +36,14 @@ jobs:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
+      - if: runner.os == 'MacOS'
+        run: echo "OS_VERSION=$(sw_vers -productVersion)" >> $GITHUB_ENV
+      - if: runner.os == 'Linux'
+        run: echo "OS_VERSION=$(awk -F= '$1==\"VERSION_ID\" { print $2 ;}' /etc/os-release | sed 's/\"//g')" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-name: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
@@ -74,10 +78,14 @@ jobs:
             extras: [ test ]
           - package: wfpc2tools
     steps:
+      - if: runner.os == 'MacOS'
+        run: echo "OS_VERSION=$(sw_vers -productVersion)" >> $GITHUB_ENV
+      - if: runner.os == 'Linux'
+        run: echo "OS_VERSION=$(awk -F= '$1==\"VERSION_ID\" { print $2 ;}' /etc/os-release | sed 's/\"//g')" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-name: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
@@ -140,12 +148,16 @@ jobs:
             repository: spacetelescope/stsynphot_refactor
             extras: [ test ]
     steps:
+      - if: runner.os == 'MacOS'
+        run: echo "OS_VERSION=$(sw_vers -productVersion)" >> $GITHUB_ENV
+      - if: runner.os == 'Linux'
+        run: echo "OS_VERSION=$(awk -F= '$1==\"VERSION_ID\" { print $2 ;}' /etc/os-release | sed 's/\"//g')" >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           path: stenv
       - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-name: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}
           environment-file: stenv/environment.yaml
           cache-env: true
           cache-downloads: true
@@ -203,12 +215,16 @@ jobs:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
               jref: hst/references/hst/
     steps:
+      - if: runner.os == 'MacOS'
+        run: echo "OS_VERSION=$(sw_vers -productVersion)" >> $GITHUB_ENV
+      - if: runner.os == 'Linux'
+        run: echo "OS_VERSION=$(awk -F= '$1==\"VERSION_ID\" { print $2 ;}' /etc/os-release | sed 's/\"//g')" >> $GITHUB_ENV
       - uses: actions/checkout@v3
         with:
           lfs: true
       - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-name: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
@@ -262,10 +278,14 @@ jobs:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
+      - if: runner.os == 'MacOS'
+        run: echo "OS_VERSION=$(sw_vers -productVersion)" >> $GITHUB_ENV
+      - if: runner.os == 'Linux'
+        run: echo "OS_VERSION=$(awk -F= '$1==\"VERSION_ID\" { print $2 ;}' /etc/os-release | sed 's/\"//g')" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: mamba-org/provision-with-micromamba@v15
         with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-name: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
           cache-env: true
           cache-downloads: true
@@ -275,15 +295,15 @@ jobs:
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
-      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+      - run: cat stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
       - uses: actions/upload-artifact@v3
         with:
-          name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
-          path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+          name: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+          path: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
       - if: (github.event_name == 'release' && github.event.action == 'published')
         uses: svenstaro/upload-release-action@v2
         with:
-          file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+          file: stenv-${{ runner.os }}${{ env.OS_VERSION }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
   update_docs:
     if: (github.event_name == 'release' && github.event.action == 'published')
     name: update version number in documentation
