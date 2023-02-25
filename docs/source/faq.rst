@@ -4,8 +4,23 @@ Frequently Asked Questions
 What if my platform isn't listed in released YAML files, or a released YAML file doesn't build on my system?
 ============================================================================================================
 
-If the YAML files built for a release (see :ref:`choose_release`) do not include your platform, you can use the environment definition YAML file (``environment.yaml``) in the root of the repository (see :ref:`environment_definition`).
+If the YAML files built for a release (see :ref:`choose_release`) do not include your platform, you can use the environment definition YAML file (:ref:`environment_yaml`) in the root of the repository.
 Note, however, that this environment has not been tested for all platforms.
+
+Why isn't _____ package in ``stenv``?
+=====================================
+
+Not all STScI packages are included in the base ``stenv`` environment;
+some packages are not supported and / or deprecated, and some are deemed too niche (or dependent on too many extra packages) to be included for all users.
+
+To install a package in your local environment, you can use ``pip install`` while the environment is activated:
+
+.. code-block:: shell
+
+    conda activate stenv
+    pip install <package_name>
+
+To request that a new package be added to ``stenv``'s base environment (:ref:`environment_yaml`) for all users, or to add a package yourself, see :ref:`adding_a_package_to_stenv`.
 
 What about Astroconda?
 ======================
