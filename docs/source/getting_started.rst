@@ -37,6 +37,9 @@ from the ``Assets`` section that corresponds with your platform.
     :target: https://github.com/spacetelescope/stenv/releases
 
 .. note::
+    Environment files from older releases may have the suffix ``.yml`` instead of ``.yaml``; be sure of which filename you are requesting. 
+
+.. note::
     You can directly download a release file with ``curl``:
 
     .. code-block:: shell
