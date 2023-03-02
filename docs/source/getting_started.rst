@@ -32,7 +32,7 @@ Now that you have a Conda installation, you should choose a release of ``stenv``
 `Releases page <https://github.com/spacetelescope/stenv/releases>`_ and download the environment definition file
 from the ``Assets`` section that corresponds with your platform.
 
-.. image:: release_example.jpg
+.. image:: release_example.png
     :alt: example of a release page, showing output files
     :target: https://github.com/spacetelescope/stenv/releases
 
