@@ -49,6 +49,9 @@ from the ``Assets`` section that corresponds with your platform.
 .. warning::
     Building and testing environments on supported platforms may take several minutes; **if a release was just made recently, you may need to wait** for its `associated workflow job to finish <https://github.com/spacetelescope/stenv/actions/workflows/build.yaml>`_ before environment files are available.
 
+.. warning::
+    ``stenv`` is not currently built or tested on Apple Silicon ARM64 processors (``M1``, ``M1 Max``, ``M1 Ultra``, ``M2``); until infrastructure is set up to test and build on these platforms, users with these processors are encouraged to use the unconstrained environment definition :ref:`environment_yaml` file instead.
+
 Build environment
 -----------------
 
