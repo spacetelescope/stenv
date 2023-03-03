@@ -14,3 +14,5 @@ jobs:
         if: github.event_name == 'pull_request_target' || github.event_name == 'pull_request'
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: .github/labeler.yaml
+          sync-labels: true
