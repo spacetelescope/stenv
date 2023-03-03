@@ -1,0 +1,13 @@
+documentation:
+  - 'docs/**'
+  - any: [ '*.rst', '*.md', '!CHANGES.rst' ]
+  - '.readthedocs.yaml'
+  - 'LICENSE'
+
+environment:
+  - 'environment.yaml'
+
+testing:
+  - '.github/workflows/build.yaml'
+  - 'tests/**'
+
