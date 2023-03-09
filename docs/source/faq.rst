@@ -3,8 +3,8 @@ Frequently Asked Questions
 
 .. _build_fails:
 
-`stenv` doesn't build on my system; what do I do?
-=================================================
+``stenv`` doesn't build on my system; what do I do?
+===================================================
 
 You can use the environment definition YAML file (:ref:`environment_yaml`) in the root of the repository:
 

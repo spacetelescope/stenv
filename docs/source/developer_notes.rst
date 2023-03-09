@@ -15,6 +15,12 @@ Developer Notes
 .. literalinclude:: ../../environment.yaml
    :language: yaml
 
+To build an environment from this unpinned environment definition, you may run the following:
+
+.. code-block:: shell
+
+    conda env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+
 .. _adding_a_package_to_stenv:
 
 Adding a package to ``stenv``
