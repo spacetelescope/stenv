@@ -1,11 +1,19 @@
 Frequently Asked Questions
 ##########################
 
-What if my platform isn't listed in released YAML files, or a released YAML file doesn't build on my system?
-============================================================================================================
+.. _build_fails:
 
-If the YAML files built for a release (see :ref:`choose_release`) do not include your platform, you can use the environment definition YAML file (:ref:`environment_yaml`) in the root of the repository.
-Note, however, that this environment has not been tested for all platforms.
+`stenv` doesn't build on my system; what do I do?
+=================================================
+
+You can use the environment definition YAML file (:ref:`environment_yaml`) in the root of the repository:
+
+.. code-block:: shell
+
+    conda env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+
+This environment is unpinned, meaning it may take some time to resolve dependency versions. 
+Additionally, the resulting package versions may not have been tested for your platform.
 
 Why isn't _____ package in ``stenv``?
 =====================================
