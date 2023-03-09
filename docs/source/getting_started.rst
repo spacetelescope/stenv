@@ -69,7 +69,10 @@ This example assumes that you chose an environment file for Mac OSX (``macOS``) 
 
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
-    ``stenv`` is not currently built or tested on Apple Silicon ARM64 processors (``M1``, ``M1 Max``, ``M1 Ultra``, ``M2``)
+
+.. note::
+    ``stenv`` is not currently pre-built or tested for Apple Silicon ARM64 processors (``M1``, ``M1 Max``, ``M1 Ultra``, ``M2``);
+    in the meantime, you can see `this issue <https://github.com/spacetelescope/stenv/issues/86#issuecomment-1444583090>`_  or resolve the environment yourself with :ref:`environment_yaml`
 
 Activating an environment
 =========================
