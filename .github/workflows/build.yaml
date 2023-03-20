@@ -73,6 +73,11 @@ jobs:
           - package: synphot
             extras: [ test ]
           - package: wfpc2tools
+        exclude:
+          - runs-on: macos-latest
+            python-version: 3.9
+          - runs-on: macos-latest
+            python-version: 3.10
     steps:
       - uses: actions/checkout@v3
       - uses: mamba-org/provision-with-micromamba@v15
@@ -139,6 +144,11 @@ jobs:
           - package: stsynphot
             repository: spacetelescope/stsynphot_refactor
             extras: [ test ]
+        exclude:
+          - runs-on: macos-latest
+            python-version: 3.9
+          - runs-on: macos-latest
+            python-version: 3.10
     steps:
       - uses: actions/checkout@v3
         with:
@@ -202,6 +212,11 @@ jobs:
             env:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
               jref: hst/references/hst/
+        exclude:
+          - runs-on: macos-latest
+            python-version: 3.9
+          - runs-on: macos-latest
+            python-version: 3.10
     steps:
       - uses: actions/checkout@v3
         with:
