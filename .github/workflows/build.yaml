@@ -28,7 +28,7 @@ env:
 
 jobs:
   build:
-    name: build Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
+    name: build (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -49,7 +49,7 @@ jobs:
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
   unit_tests:
-    name: run `${{ matrix.package }}` unit tests in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
     needs: [ build ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
@@ -106,7 +106,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_from_source:
-    name: run `${{ matrix.package }}` unit tests from source in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
     needs: [ build ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
@@ -192,7 +192,7 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
         working-directory: ${{ matrix.package }}
   smoke_tests:
-    name: run `${{ matrix.package }}` smoke tests in Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
     needs: [ build ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
@@ -268,7 +268,7 @@ jobs:
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   export:
-    name: export Python ${{ matrix.python-version }} environment on ${{ matrix.runs-on }}
+    name: export (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
     needs: [ version, unit_tests, unit_tests_from_source, smoke_tests ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
