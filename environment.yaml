@@ -1,3 +1,6 @@
+# this is the base unpinned environment for ``stenv``; to manually resolve an environment from this file, run the following: 
+# conda env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+
 channels:
   - conda-forge
 
