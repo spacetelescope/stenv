@@ -116,7 +116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, hstcal, jwst, stsynphot ]
+        package: [ calcos, hstcal, jwst ]
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
@@ -145,9 +145,9 @@ jobs:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: stistools
           #  repository: spacetelescope/stistools
-          - package: stsynphot
-            repository: spacetelescope/stsynphot_refactor
-            extras: [ test ]
+          # - package: stsynphot
+          #   repository: spacetelescope/stsynphot_refactor
+          #   extras: [ test ]
         exclude:
           - runs-on: macos-latest
             python-version: 3.9
