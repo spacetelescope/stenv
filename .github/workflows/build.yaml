@@ -24,7 +24,6 @@ defaults:
 
 env:
   CRDS_PATH: /tmp/crds_cache
-  PYSYN_CDBS: /tmp/trds
 
 jobs:
   build:
