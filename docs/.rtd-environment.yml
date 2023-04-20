@@ -1,0 +1,16 @@
+name: rtd311
+channels:
+    - defaults
+dependencies:
+    - graphviz
+    - numpy
+    - numpydoc
+    - pip
+    - python
+    - setuptools
+    - scipy
+    - pip:
+        - dunamai
+        - sphinx
+        - sphinx-rtd-theme
+        - stsci-rtd-theme

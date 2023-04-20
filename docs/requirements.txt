@@ -1,4 +1,0 @@
-dunamai
-sphinx
-sphinx-rtd-theme
-stsci-rtd-theme
