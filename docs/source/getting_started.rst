@@ -37,14 +37,14 @@ from the ``Assets`` section that corresponds with your platform.
     :target: https://github.com/spacetelescope/stenv/releases
 
 .. note::
-    Environment files from older releases may have the suffix ``.yml`` instead of ``.yaml``; be sure of which filename you are requesting. 
-
-.. note::
     You can directly download a release file with ``curl``:
 
     .. code-block:: shell
 
         curl -L https://github.com/spacetelescope/stenv/releases/download/2023.02.16/stenv-macOS-py3.9-2023.02.16.yaml -o stenv-macOS-py3.9-2023.02.16.yaml
+
+.. note::
+    Environment files from older releases may have the suffix ``.yml`` instead of ``.yaml``; be sure of which filename you are requesting, if using the command line. 
 
 .. warning::
     Building and testing environments on supported platforms may take several minutes; **if a release was just made recently, you may need to wait** for its `associated workflow job to finish <https://github.com/spacetelescope/stenv/actions/workflows/build.yaml>`_ before environment files are available.
@@ -77,8 +77,23 @@ This example assumes that you chose an environment file for Mac OSX (``macOS``) 
 Activating an environment
 =========================
 
+Activating a Conda environment changes the PATH, environment variables, available binaries, and Python installation.
+
+.. code-block:: shell
+
+    which python
+    
+    /Users/zburnett/mambaforge/bin/python
+
+.. code-block:: shell
+
+    python -c "import jwst"
+
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+    ModuleNotFoundError: No module named 'jwst'
+
 Once you have built an environment, you can activate it with ``conda activate <name>``.
-This will temporarily change your PATH, environment variables, available binaries, and Python installation:
 
 .. code-block:: shell
 
@@ -90,10 +105,13 @@ You can now see that ``python`` points to a different installation:
 
     which python
 
+    /Users/zburnett/mambaforge/envs/stenv/bin/python
+
+and importing the ``jwst`` package is successful:
+
 .. code-block:: shell
 
-    python
-    >>> import jwst
+    python -c "import jwst"
 
 .. note::
     You can show installed packages available within a Conda environment with ``conda env export``.
