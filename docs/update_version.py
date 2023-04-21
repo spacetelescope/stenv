@@ -25,7 +25,7 @@ def update_docs_release_version(version: str, directory: Path):
                         docs_file.write(content)
 
     if len(existing) > 0:
-        print(f'updated version references to {version} (previously {", ".join(existing)})')
+        print(f'updated out-of-date version references to {version} (previously {", ".join(existing)})')
 
 
 if __name__ == '__main__':
