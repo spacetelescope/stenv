@@ -65,7 +65,7 @@ unit-tests:
     - $RUNNER
   script:
     - pip install $PACKAGE$EXTRAS
-    - pytest -n auto --pyargs $PACKAGE
+    - pytest -n auto --pyargs $PACKAGE $pytest_args
 
 unit-tests-from-source:
   stage: test
@@ -100,20 +100,19 @@ unit-tests-from-source:
         REPOSITORY: https://github.com/spacetelescope/hstcal
         pytest_args: '--slow'
         test_directory: tests
-        env:
-          CRDS_SERVER_URL: https://hst-crds.stsci.edu
+        CRDS_SERVER_URL: https://hst-crds.stsci.edu
       - PACKAGE: jwst
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
         REPOSITORY: https://github.com/spacetelescope/jwst
         extras: [ test ]
         pytest_args: '--slow -k "not test_cmdline_status"'
-        env:
-          CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+        CRDS_SERVER_URL: https://jwst-crds.stsci.edu
   tags:
     - $RUNNER
   script:
     - pip install -e .$EXTRAS
+    - pytest -n auto $pytest_args $test_directory
 
 smoke-tests:
   stage: test
@@ -127,13 +126,48 @@ smoke-tests:
     matrix:
       - PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+        COMMAND: ["calcos la8n01qkq_rawtag_a.fits", "pytest -n auto tests/test_drizzlepac.py"]
   tags:
     - $RUNNER
   script:
-    - echo "TODO smoke tests"
+    - $COMMAND
+
+version:
+  stage: deploy
+  cache:
+    - key:
+        files:
+          - environment.yaml
+      paths:
+        - ./conda/
+  script:
+    - pip install dunamai
+    - export VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)")
+  artifacts:
+    reports:
+        #propagates variables into the pipeline level, but never stores the actual file
+        dotenv: deploy.env
 
 export:
   stage: deploy
+  needs: ["version"]
+  cache:
+    - key:
+        files:
+          - environment.yaml
+      paths:
+        - ./conda/
+  parallel:
+    matrix:
+      - PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+        COMMAND: ["calcos la8n01qkq_rawtag_a.fits", "pytest -n auto tests/test_drizzlepac.py"]
+  tags:
+    - $RUNNER
   script:
-    - echo "TODO export yaml files"
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
+    - cat stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
+  artifacts:
+    paths:
+      - stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
   environment: production
