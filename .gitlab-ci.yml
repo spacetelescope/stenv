@@ -1,0 +1,130 @@
+image: mambaorg/micromamba:latest
+
+before_script:
+  - mkdir ./conda/
+  - conda config --add pkgs_dirs ./conda/pkgs/
+  - micromamba env create --prefix ./conda/stenv/ -f environment.yaml
+  - micromamba activate ./conda/stenv/
+
+.default-matrix:
+  - PYTHON: ["3.9", "3.10", "3.11"]
+  - RUNNER: ["test"]
+
+build:
+  stage: build
+  cache:
+    - key:
+        files:
+          - environment.yaml
+      paths:
+        - ./conda/
+  parallel:
+    matrix:
+      - !reference [.default-matrix]
+  tags:
+    - $RUNNER
+  script:
+    - micromamba install python=$PYTHON conda
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - pytest -n auto tests/test_import.py
+
+unit-tests:
+  stage: test
+  cache:
+    - key:
+        files:
+          - environment.yaml
+      paths:
+        - ./conda/
+  parallel:
+    matrix:
+      - PACKAGE: acstools
+        !reference [.default-matrix]          
+        EXTRAS: ["test"]
+      - PACKAGE: asdf
+        !reference [.default-matrix]          
+        EXTRAS: ["tests"]
+      - PACKAGE: ccdproc
+        !reference [.default-matrix]          
+        EXTRAS: ["test"]
+      - PACKAGE: costools
+        !reference [.default-matrix]          
+      - PACKAGE: reftools
+        !reference [.default-matrix]          
+        EXTRAS: ["test"]
+      - PACKAGE: synphot
+        !reference [.default-matrix]          
+        EXTRAS: ["test"]
+      - PACKAGE: wfpc2tools
+        !reference [.default-matrix]      
+  tags:
+    - $RUNNER
+  script:
+    - pip install $PACKAGE$EXTRAS
+    - pytest -n auto --pyargs $PACKAGE
+
+unit-tests-from-source:
+  stage: test
+  cache:
+    - key:
+        files:
+          - environment.yaml
+      paths:
+        - ./conda/
+  parallel:
+    matrix:
+      - PACKAGE: calcos
+        !reference [.default-matrix]
+        REPOSITORY: https://github.com/spacetelescope/calcos
+      #- PACKAGE: crds
+        !reference [.default-matrix]
+      #  REPOSITORY: https://github.com/spacetelescope/crds
+      #  EXTRAS: [ test ]
+      #  env:
+      #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
+      #- PACKAGE: drizzlepac
+        !reference [.default-matrix]
+      #  REPOSITORY: https://github.com/spacetelescope/drizzlepac
+      #  EXTRAS: [ test ]
+      - PACKAGE: hstcal
+        !reference [.default-matrix]
+        REPOSITORY: https://github.com/spacetelescope/hstcal
+        pytest_args: '--slow'
+        test_directory: tests
+        env:
+          CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      - PACKAGE: jwst
+        !reference [.default-matrix]
+        REPOSITORY: https://github.com/spacetelescope/jwst
+        extras: [ test ]
+        pytest_args: '--slow -k "not test_cmdline_status"'
+        env:
+          CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+  tags:
+    - $RUNNER
+  script:
+    - pip install -e .$EXTRAS
+
+smoke-tests:
+  stage: test
+  cache:
+    - key:
+        files:
+          - environment.yaml
+      paths:
+        - ./conda/
+  parallel:
+    matrix:
+      - PYTHON: ["3.9", "3.10", "3.11"]
+      - RUNNER: ["test"]
+  tags:
+    - $RUNNER
+  script:
+    - echo "TODO smoke tests"
+
+export:
+  stage: deploy
+  script:
+    - echo "TODO export yaml files"
+  environment: production
