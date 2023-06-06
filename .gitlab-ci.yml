@@ -2,9 +2,9 @@ image: mambaorg/micromamba:latest
 
 before_script:
   - eval "$(micromamba shell hook --shell=bash)"
-  - micromamba create --root-prefix ./conda/base --prefix ./conda/stenv -c conda-forge -y conda gcc 
-  - micromamba env update --prefix ./conda/stenv -y --file environment.yaml
-  - micromamba activate ./conda/stenv
+  - mkdir -p ./conda/
+  - micromamba config append pkgs_dirs ./conda/pkgs --file .condarc
+  - micromamba config append envs_dirs ./conda/envs --file .condarc
 
 cache:
   key: cache-$CI_RUNNER_EXECUTABLE_ARCH-$CI_COMMIT_REF_SLUG
@@ -20,8 +20,9 @@ build:
   tags:
     - $RUNNER
   script:
+    - micromamba create -y -r ./conda/base -c conda-forge -n stenv python=$PYTHON conda gcc -rc-file .condarc
+    - micromamba activate stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - micromamba install -c conda-forge python=$PYTHON
     - pytest -n auto tests/test_import.py
 
 unit-tests:
@@ -57,6 +58,9 @@ unit-tests:
   tags:
     - $RUNNER
   script:
+    - micromamba create -y -r ./conda/base -c conda-forge -n stenv python=$PYTHON conda gcc -rc-file .condarc
+    - micromamba activate stenv
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - pip install $PACKAGE$EXTRAS
     - pytest -n auto --pyargs $PACKAGE $pytest_args
 
@@ -98,6 +102,9 @@ unit-tests-from-source:
   tags:
     - $RUNNER
   script:
+    - micromamba create -y -r ./conda/base -c conda-forge -n stenv python=$PYTHON conda gcc -rc-file .condarc
+    - micromamba activate stenv
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - pip install -e .$EXTRAS
     - pytest -n auto $pytest_args $test_directory
 
@@ -111,6 +118,9 @@ smoke-tests:
   tags:
     - $RUNNER
   script:
+    - micromamba create -y -r ./conda/base -c conda-forge -n stenv python=$PYTHON conda gcc -rc-file .condarc
+    - micromamba activate stenv
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - $COMMAND
 
 version:
@@ -134,6 +144,8 @@ export:
   tags:
     - $RUNNER
   script:
+    - micromamba create -y -r ./conda/base -c conda-forge -n stenv python=$PYTHON conda gcc -rc-file .condarc
+    - micromamba activate stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
     - cat stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
   artifacts:
