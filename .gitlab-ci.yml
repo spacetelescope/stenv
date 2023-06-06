@@ -3,11 +3,8 @@ image: mambaorg/micromamba:latest
 before_script:
   - eval "$(micromamba shell hook --shell=bash)"
   - micromamba activate
-  - mkdir -p ./conda/
-  - micromamba config append pkgs_dirs ./conda/pkgs/
-  - micromamba config append envs_dirs ./conda/envs/
-  - micromamba install -c conda-forge -y conda gcc
-  - micromamba create --prefix ./conda/stenv -y --file environment.yaml
+  - micromamba install --root-prefix ./conda/base -c conda-forge -y conda gcc
+  - micromamba create --prefix ./conda/stenv --root-prefix ./conda/base -y --file environment.yaml
   - micromamba activate ./conda/stenv
   - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
 
