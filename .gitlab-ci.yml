@@ -3,10 +3,12 @@ image: mambaorg/micromamba:latest
 before_script:
   - eval "$(micromamba shell hook --shell=bash)"
   - micromamba activate
-  - mkdir ./conda/
-  - micromamba config --add pkgs_dirs ./conda/pkgs/
-  - micromamba create --prefix ./conda/stenv/ --file environment.yaml
+  - mkdir -p ./conda/
+  - micromamba config append pkgs_dirs ./conda/pkgs/
+  - micromamba install conda -c conda-forge
+  - micromamba create --prefix ./conda/stenv/ --file environment.yaml -y
   - micromamba activate ./conda/stenv/
+  - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
 
 build:
   stage: build
@@ -24,7 +26,6 @@ build:
     - $RUNNER
   script:
     - micromamba install python=$PYTHON
-    - micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
     - pytest -n auto tests/test_import.py
 
 unit-tests:
@@ -167,7 +168,7 @@ export:
   tags:
     - $RUNNER
   script:
-    - micromamba env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
     - cat stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
   artifacts:
     paths:
