@@ -7,8 +7,8 @@ before_script:
   - micromamba config append pkgs_dirs ./conda/pkgs/
   - micromamba config append envs_dirs ./conda/envs/
   - micromamba install -c conda-forge -y conda gcc
-  - micromamba create --name stenv -y --file environment.yaml
-  - micromamba activate stenv
+  - micromamba create --prefix ./conda/stenv -y --file environment.yaml
+  - micromamba activate ./conda/stenv
   - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
 
 cache:
