@@ -5,19 +5,19 @@ before_script:
   - micromamba activate
   - mkdir -p ./conda/
   - micromamba config append pkgs_dirs ./conda/pkgs/
-  - micromamba install conda -c conda-forge
-  - micromamba create --prefix ./conda/stenv/ --file environment.yaml -y
-  - micromamba activate ./conda/stenv/
+  - micromamba config append envs_dirs ./conda/envs/
+  - micromamba install -c conda-forge -y conda gcc
+  - micromamba create --name stenv -y --file environment.yaml
+  - micromamba activate stenv
   - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+
+cache:
+  key: cache-$CI_RUNNER_EXECUTABLE_ARCH-$CI_COMMIT_REF_SLUG
+  paths:
+    - ./conda/
 
 build:
   stage: build
-  cache:
-    - key:
-        files:
-          - environment.yaml
-      paths:
-        - ./conda/
   parallel:
     matrix:
       - PYTHON: ["3.9", "3.10", "3.11"]
@@ -30,12 +30,6 @@ build:
 
 unit-tests:
   stage: test
-  cache:
-    - key:
-        files:
-          - environment.yaml
-      paths:
-        - ./conda/
   parallel:
     matrix:
       - PACKAGE: acstools
@@ -72,12 +66,6 @@ unit-tests:
 
 unit-tests-from-source:
   stage: test
-  cache:
-    - key:
-        files:
-          - environment.yaml
-      paths:
-        - ./conda/
   parallel:
     matrix:
       - PACKAGE: calcos
@@ -119,12 +107,6 @@ unit-tests-from-source:
 
 smoke-tests:
   stage: test
-  cache:
-    - key:
-        files:
-          - environment.yaml
-      paths:
-        - ./conda/
   parallel:
     matrix:
       - PYTHON: ["3.9", "3.10", "3.11"]
@@ -137,12 +119,6 @@ smoke-tests:
 
 version:
   stage: deploy
-  cache:
-    - key:
-        files:
-          - environment.yaml
-      paths:
-        - ./conda/
   script:
     - pip install dunamai
     - export VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)")
@@ -154,12 +130,6 @@ version:
 export:
   stage: deploy
   needs: ["version"]
-  cache:
-    - key:
-        files:
-          - environment.yaml
-      paths:
-        - ./conda/
   parallel:
     matrix:
       - PYTHON: ["3.9", "3.10", "3.11"]
