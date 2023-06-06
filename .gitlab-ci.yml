@@ -3,8 +3,8 @@ image: mambaorg/micromamba:latest
 before_script:
   - eval "$(micromamba shell hook --shell=bash)"
   - micromamba create --root-prefix ./conda/base --prefix ./conda/stenv -c conda-forge -y conda gcc 
+  - micromamba env update --prefix ./conda/stenv -y --file environment.yaml
   - micromamba activate ./conda/stenv
-  - micromamba update -y --file environment.yaml
 
 cache:
   key: cache-$CI_RUNNER_EXECUTABLE_ARCH-$CI_COMMIT_REF_SLUG
