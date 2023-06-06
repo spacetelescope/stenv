@@ -2,9 +2,9 @@ image: mambaorg/micromamba:latest
 
 before_script:
   - eval "$(micromamba shell hook --shell=bash)"
-  - micromamba install --root-prefix ./conda/base -c conda-forge -y conda gcc
   - micromamba create --root-prefix ./conda/base --prefix ./conda/stenv -y --file environment.yaml
   - micromamba activate ./conda/stenv
+  - micromamba install -c conda-forge -y conda gcc
   - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
 
 cache:
