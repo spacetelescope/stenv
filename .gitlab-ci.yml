@@ -1,9 +1,12 @@
 image: mambaorg/micromamba:latest
 
 before_script:
+  - eval "$(micromamba shell hook --shell=bash)"
+  - micromamba activate
+  - micromamba install conda
   - mkdir ./conda/
   - conda config --add pkgs_dirs ./conda/pkgs/
-  - micromamba env create --prefix ./conda/stenv/ -f environment.yaml
+  - micromamba create --prefix ./conda/stenv/ --file environment.yaml
   - micromamba activate ./conda/stenv/
 
 build:
@@ -21,7 +24,7 @@ build:
   tags:
     - $RUNNER
   script:
-    - micromamba install python=$PYTHON conda
+    - micromamba install python=$PYTHON
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - pytest -n auto tests/test_import.py
 
