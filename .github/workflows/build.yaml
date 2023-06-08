@@ -303,16 +303,18 @@ jobs:
           generate-run-shell: true
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
-      - run: cat stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+      - run: echo "filename=stenv-${{ runner.os }}${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml" >> $GITHUB_OUTPUT
+        id: output
+      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
+      - run: cat ${{ steps.output.outputs.filename }}
       - uses: actions/upload-artifact@v3
         with:
-          name: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
-          path: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+          name: ${{ steps.output.outputs.filename }}
+          path: ${{ steps.output.outputs.filename }}
       - if: (github.event_name == 'release' && github.event.action == 'published')
         uses: svenstaro/upload-release-action@v2
         with:
-          file: stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml
+          file: ${{ steps.output.outputs.filename }}
   update_docs:
     if: (github.event_name == 'release' && github.event.action == 'published')
     name: update version number in documentation
