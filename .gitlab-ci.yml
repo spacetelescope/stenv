@@ -62,7 +62,7 @@ unit-tests:
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - pip install $PACKAGE$EXTRAS
+    - pip install $PACKAGE[$EXTRAS]
     - pytest -n auto --pyargs $PACKAGE $pytest_args
 
 unit-tests-from-source:
@@ -106,7 +106,7 @@ unit-tests-from-source:
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - pip install -e .$EXTRAS
+    - pip install -e .[$EXTRAS]
     - pytest -n auto $pytest_args $test_directory
 
 smoke-tests:
