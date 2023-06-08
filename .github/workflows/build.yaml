@@ -281,7 +281,7 @@ jobs:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   export:
     name: export (${{ matrix.runs-on }}, Python ${{ matrix.python-version }})
-    needs: [ version, unit_tests, unit_tests_from_source, smoke_tests ]
+    needs: [ build, version ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
