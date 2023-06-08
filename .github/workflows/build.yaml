@@ -324,6 +324,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: python docs/update_version.py ${{ needs.version.outputs.version }} docs/source
+        shell: bash
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: updated version number in documentation
