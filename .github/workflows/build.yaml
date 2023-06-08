@@ -49,9 +49,7 @@ jobs:
             python=${{ matrix.python-version }}
             conda
           cache-environment: true
-          cache-environment-key: cache-environment-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yaml') }}
           cache-downloads: true
-          cache-downloads-key: cache-downloads-${{ runner.os}}-${{ runner.arch}}-${{ hashFiles('environment.yaml') }}
           init-shell: none
           generate-run-shell: true
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
@@ -96,9 +94,7 @@ jobs:
             python=${{ matrix.python-version }}
             conda
           cache-environment: true
-          cache-environment-key: cache-environment-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yaml') }}
           cache-downloads: true
-          cache-downloads-key: cache-downloads-${{ runner.os}}-${{ runner.arch}}-${{ hashFiles('environment.yaml') }}
           init-shell: none
           generate-run-shell: true
       - if: matrix.extras != ''
@@ -173,9 +169,7 @@ jobs:
             python=${{ matrix.python-version }}
             conda
           cache-environment: true
-          cache-environment-key: cache-environment-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('stenv/environment.yaml') }}
           cache-downloads: true
-          cache-downloads-key: cache-downloads-${{ runner.os}}-${{ runner.arch}}-${{ hashFiles('stenv/environment.yaml') }}
           init-shell: none
           generate-run-shell: true
       - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
@@ -245,9 +239,7 @@ jobs:
             python=${{ matrix.python-version }}
             conda
           cache-environment: true
-          cache-environment-key: cache-environment-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yaml') }}
           cache-downloads: true
-          cache-downloads-key: cache-downloads-${{ runner.os}}-${{ runner.arch}}-${{ hashFiles('environment.yaml') }}
           init-shell: none
           generate-run-shell: true
       - if: matrix.extras != ''
@@ -306,9 +298,7 @@ jobs:
             python=${{ matrix.python-version }}
             conda
           cache-environment: true
-          cache-environment-key: cache-environment-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('environment.yaml') }}
           cache-downloads: true
-          cache-downloads-key: cache-downloads-${{ runner.os}}-${{ runner.arch}}-${{ hashFiles('environment.yaml') }}
           init-shell: none
           generate-run-shell: true
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml" >> $GITHUB_OUTPUT
