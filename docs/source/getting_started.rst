@@ -41,7 +41,7 @@ from the ``Assets`` section that corresponds with your platform.
 
     .. code-block:: shell
 
-        curl -L https://github.com/spacetelescope/stenv/releases/download/2023.04.14/stenv-macOS-X64-py3.9-2023.04.14.yaml -o stenv-macOS-X64-py3.9-2023.04.14.yaml
+        curl -L https://github.com/spacetelescope/stenv/releases/download/2023.06.08/stenv-macOS-X64-py3.9-2023.06.08.yaml -o stenv-macOS-X64-py3.9-2023.06.08.yaml
 
 .. note::
     Environment files from older releases may have the suffix ``.yml`` instead of ``.yaml``; be sure of which filename you are requesting, if using the command line. 
@@ -56,16 +56,16 @@ With an environment definition YAML file, you can build the environment with ``c
 
 .. code-block:: shell
 
-    conda env create --file stenv-macOS-X64-py3.9-2023.04.14.yaml --name stenv
+    conda env create --file stenv-macOS-X64-py3.9-2023.06.08.yaml --name stenv
 
-This example assumes that you chose an environment file for Mac OSX (``macOS``) with the ``X64`` architecture, running Python 3.9 (``py3.9``) and release ``2023.04.14``.
+This example assumes that you chose an environment file for Mac OSX (``macOS``) with the ``X64`` architecture, running Python 3.9 (``py3.9``) and release ``2023.06.08``.
 
 .. note::
     Instead of downloading a YAML file, you can also pass the url directly to the ``--file`` argument of ``conda env create``:
 
     .. code-block:: shell
 
-        conda env create --file https://github.com/spacetelescope/stenv/releases/download/2023.04.14/stenv-macOS-X64-py3.9-2023.04.14.yaml --name stenv-py3.9-2023.04.14
+        conda env create --file https://github.com/spacetelescope/stenv/releases/download/2023.06.08/stenv-macOS-X64-py3.9-2023.06.08.yaml --name stenv-py3.9-2023.06.08
 
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
