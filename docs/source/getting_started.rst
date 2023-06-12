@@ -77,7 +77,7 @@ This example assumes that you chose an environment file for Mac OSX (``macOS``) 
 Activating an environment
 =========================
 
-Activating a Conda environment changes the PATH, environment variables, available binaries, and Python installation.
+Creating the environment does not install the packages to your system; for instance, if you try to ``import jwst``, it will not find the package:
 
 .. code-block:: shell
 
@@ -85,21 +85,19 @@ Activating a Conda environment changes the PATH, environment variables, availabl
     
     /Users/zburnett/mambaforge/bin/python
 
-.. code-block:: shell
-
     python -c "import jwst"
 
     Traceback (most recent call last):
       File "<string>", line 1, in <module>
     ModuleNotFoundError: No module named 'jwst'
 
-Once you have built an environment, you can activate it with ``conda activate <name>``.
+In order to access the packages in ``stenv``, you must activate the ``stenv`` environment: 
 
 .. code-block:: shell
 
     conda activate stenv
 
-You can now see that ``python`` points to a different installation:
+Activating a Conda environment changes the ``PATH``, environment variables, and available binaries of the current shell:
 
 .. code-block:: shell
 
@@ -107,16 +105,12 @@ You can now see that ``python`` points to a different installation:
 
     /Users/zburnett/mambaforge/envs/stenv/bin/python
 
-and importing the ``jwst`` package is successful:
-
-.. code-block:: shell
-
     python -c "import jwst"
 
 .. note::
     You can show installed packages available within a Conda environment with ``conda env export``.
 
-To deactivate an environment, run ``conda deactivate``.
+To deactivate an environment, run ``conda deactivate``:
 
 .. code-block:: shell
 
