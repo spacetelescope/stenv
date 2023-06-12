@@ -125,7 +125,7 @@ smoke-tests:
     - $COMMAND
 
 version:
-  stage: deploy
+  stage: build
   script:
     - pip install dunamai
     - export VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)")
@@ -136,7 +136,7 @@ version:
 
 export:
   stage: deploy
-  needs: [version]
+  needs: [version, build]
   parallel:
     matrix:
       - PYTHON: ["3.9", "3.10", "3.11"]
