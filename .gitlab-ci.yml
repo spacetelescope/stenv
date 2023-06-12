@@ -127,7 +127,10 @@ smoke-tests:
 version:
   stage: build
   script:
-    - pip install dunamai
+    - micromamba create -y -c conda-forge --prefix ./conda/envs/dunamai python dunamai git --rc-file .condarc
+    - micromamba activate ./conda/envs/dunamai
+    - micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - git config --global --add safe.directory $CI_PROJECT_DIR
     - echo VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)") >> variables.env
   artifacts:
     reports:
