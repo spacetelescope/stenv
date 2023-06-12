@@ -128,11 +128,11 @@ version:
   stage: build
   script:
     - pip install dunamai
-    - export VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)")
+    - echo VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)") >> variables.env
   artifacts:
     reports:
         #propagates variables into the pipeline level, but never stores the actual file
-        dotenv: deploy.env
+        dotenv: variables.env
 
 export:
   stage: deploy
