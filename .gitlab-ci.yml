@@ -70,7 +70,6 @@ unit-tests:
       variables:
         INSTALL: pip install $PACKAGE
   script:
-    - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - $INSTALL
@@ -125,7 +124,6 @@ unit-tests-from-source:
       variables:
         INSTALL: pip install -e .
   script:
-    - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - $INSTALL
@@ -145,7 +143,6 @@ smoke-tests:
   tags:
     - $RUNNER
   script:
-    - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - $COMMAND
@@ -176,7 +173,6 @@ export:
   tags:
     - $RUNNER
   script:
-    - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > $ENVIRONMENT_FILENAME
