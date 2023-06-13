@@ -62,11 +62,18 @@ unit-tests:
         RUNNER: ["test"]
   tags:
     - $RUNNER
+  rules:
+    - if: $EXTRAS == ''
+      variables:
+        INSTALL: pip install $PACKAGE[$EXTRAS]
+    - if: $EXTRAS != ''
+      variables:
+        INSTALL: pip install $PACKAGE
   script:
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - pip install $PACKAGE[$EXTRAS]
+    - $INSTALL
     - pytest -n auto --pyargs $PACKAGE $pytest_args --junitxml result.xml
   artifacts:
     when: always
@@ -110,11 +117,18 @@ unit-tests-from-source:
         CRDS_SERVER_URL: https://jwst-crds.stsci.edu
   tags:
     - $RUNNER
+  rules:
+    - if: $EXTRAS == ''
+      variables:
+        INSTALL: pip install -e .[$EXTRAS]
+    - if: $EXTRAS != ''
+      variables:
+        INSTALL: pip install -e .
   script:
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - pip install -e .[$EXTRAS]
+    - $INSTALL
     - pytest -n auto $pytest_args $test_directory --junitxml result.xml
   artifacts:
     when: always
