@@ -153,9 +153,10 @@ export:
   script:
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
-    - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
-    - cat stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > $ENVIRONMENT_FILENAME
+    - cat $ENVIRONMENT_FILENAME
   artifacts:
     paths:
-      - stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml
+      - stenv-*.yaml
   environment: production
