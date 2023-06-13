@@ -24,7 +24,11 @@ build:
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - pytest -n auto tests/test_import.py
+    - pytest -n auto tests/test_import.py --junitxml result.xml
+  artifacts:
+    when: always
+    reports:
+      junit: result.xml
 
 unit-tests:
   stage: test
@@ -63,7 +67,11 @@ unit-tests:
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - pip install $PACKAGE[$EXTRAS]
-    - pytest -n auto --pyargs $PACKAGE $pytest_args
+    - pytest -n auto --pyargs $PACKAGE $pytest_args --junitxml result.xml
+  artifacts:
+    when: always
+    reports:
+      junit: result.xml
 
 unit-tests-from-source:
   stage: test
@@ -107,7 +115,11 @@ unit-tests-from-source:
     - micromamba activate ./conda/envs/stenv
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - pip install -e .[$EXTRAS]
-    - pytest -n auto $pytest_args $test_directory
+    - pytest -n auto $pytest_args $test_directory --junitxml result.xml
+  artifacts:
+    when: always
+    reports:
+      junit: result.xml
 
 smoke-tests:
   stage: test
@@ -138,7 +150,6 @@ version:
     - echo VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)") >> variables.env
   artifacts:
     reports:
-        #propagates variables into the pipeline level, but never stores the actual file
         dotenv: variables.env
 
 export:
