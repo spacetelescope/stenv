@@ -136,7 +136,8 @@ unit-tests-from-source:
   script:
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - if [ "$EXTRAS" == "" ]; then pip install -e ./$PACKAGE; else pip install -e ./$PACKAGE[$EXTRAS]; fi
+    - git clone $REPOSITORY
+    - if [ "$EXTRAS" == "" ]; then pip install -e ./package; else pip install -e ./$PACKAGE[$EXTRAS]; fi
     - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
