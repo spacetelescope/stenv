@@ -55,9 +55,6 @@ unit-tests:
   parallel:
     matrix:
       - PACKAGE: acstools
-        PYTHON: ["3.9", "3.10", "3.11"]
-        RUNNER: ["test"]
-      - PACKAGE: acstools
         EXTRAS: ["test"]
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
@@ -84,17 +81,10 @@ unit-tests:
         RUNNER: ["test"]
   tags:
     - $RUNNER
-  rules:
-    - if: $EXTRAS == ''
-      variables:
-        INSTALL: pip install $PACKAGE[$EXTRAS]
-    - if: $EXTRAS != ''
-      variables:
-        INSTALL: pip install $PACKAGE
   script:
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - $INSTALL
+    - if [ "$EXTRAS" == "" ]; then pip install $PACKAGE; else pip install $PACKAGE[$EXTRAS]; fi
     - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
@@ -143,17 +133,10 @@ unit-tests-from-source:
         RUNNER: ["test"]
   tags:
     - $RUNNER
-  rules:
-    - if: $EXTRAS == ''
-      variables:
-        INSTALL: pip install -e .[$EXTRAS]
-    - if: $EXTRAS != ''
-      variables:
-        INSTALL: pip install -e .
   script:
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - $INSTALL
+    - if [ "$EXTRAS" == "" ]; then pip install -e ./$PACKAGE; else pip install -e ./$PACKAGE[$EXTRAS]; fi
     - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
