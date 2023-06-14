@@ -55,17 +55,17 @@ unit-tests:
   parallel:
     matrix:
       - PACKAGE: acstools
-        EXTRAS: ["test"]
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+        EXTRAS: ["test"]
       - PACKAGE: asdf
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
         EXTRAS: ["tests"]
-        PYTHON: ["3.9", "3.10", "3.11"]
-        RUNNER: ["test"]
       - PACKAGE: ccdproc
-        EXTRAS: ["test"]
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+        EXTRAS: ["test"]
       - PACKAGE: costools
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
@@ -73,9 +73,9 @@ unit-tests:
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
       - PACKAGE: synphot
-        EXTRAS: ["test"]
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+        EXTRAS: ["test"]
       - PACKAGE: wfpc2tools
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
@@ -101,36 +101,37 @@ unit-tests-from-source:
   parallel:
     matrix:
       - PACKAGE: calcos
-        REPOSITORY: https://github.com/spacetelescope/calcos
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+        REPOSITORY: https://github.com/spacetelescope/calcos
       #- PACKAGE: crds
+      #  PYTHON: ["3.9", "3.10", "3.11"]
+      #  RUNNER: ["test"]
+      #  EXTRAS: [ test ]
       #  REPOSITORY: https://github.com/spacetelescope/crds
-      #  EXTRAS: [ test ]
-      #  env:
-      #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      #  CRDS_SERVER_URL: https://hst-crds.stsci.edu
       #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
-      #  PYTHON: ["3.9", "3.10", "3.11"]
-      #  RUNNER: ["test"]
       #- PACKAGE: drizzlepac
-      #  REPOSITORY: https://github.com/spacetelescope/drizzlepac
-      #  EXTRAS: [ test ]
       #  PYTHON: ["3.9", "3.10", "3.11"]
       #  RUNNER: ["test"]
+      #  EXTRAS: [ test ]
+      #  REPOSITORY: https://github.com/spacetelescope/drizzlepac
       - PACKAGE: hstcal
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
         REPOSITORY: https://github.com/spacetelescope/hstcal
         pytest_args: '--slow'
-        test_directory: tests
+        TEST_DIR: tests
         CRDS_SERVER_URL: https://hst-crds.stsci.edu
+        CRDS_PATH: /tmp/crds_cache
+      - PACKAGE: jwst
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
-      - PACKAGE: jwst
+        EXTRAS: [ test ]
         REPOSITORY: https://github.com/spacetelescope/jwst
-        extras: [ test ]
         pytest_args: '--slow -k "not test_cmdline_status"'
         CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-        PYTHON: ["3.9", "3.10", "3.11"]
-        RUNNER: ["test"]
+        CRDS_PATH: /tmp/crds_cache
   tags:
     - $RUNNER
   script:
@@ -142,7 +143,7 @@ unit-tests-from-source:
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
     - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE unit tests"
-    - pytest -n auto $pytest_args $test_directory --junitxml result.xml
+    - pytest -n auto $pytest_args $TEST_DIR --junitxml result.xml
     - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
   artifacts:
     when: always
