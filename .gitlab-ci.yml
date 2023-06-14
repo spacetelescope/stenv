@@ -8,12 +8,26 @@ before_script:
   - micromamba config append --file .condarc envs_dirs ./conda/envs
 
 cache:
-  key: cache-$CI_RUNNER_EXECUTABLE_ARCH-$CI_COMMIT_REF_SLUG
+  key: 
+    prefix: $CI_RUNNER_EXECUTABLE_ARCH
+    files: 
+      - environment.yaml
   paths:
     - ./conda/
+  policy: pull
+  unprotect: true
 
 build:
   stage: build
+  cache:
+    key: 
+      prefix: $CI_RUNNER_EXECUTABLE_ARCH
+      files:
+        - environment.yaml
+    paths:
+      - ./conda/
+    policy: push
+    unprotect: true
   parallel:
     matrix:
       - PYTHON: ["3.9", "3.10", "3.11"]
@@ -21,10 +35,16 @@ build:
   tags:
     - $RUNNER
   script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
     - micromamba activate ./conda/envs/stenv
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0Ktest environment"
     - pytest -n auto tests/test_import.py --junitxml result.xml
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
   artifacts:
     when: always
     reports:
@@ -37,26 +57,28 @@ unit-tests:
       - PACKAGE: acstools
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+      - PACKAGE: acstools
         EXTRAS: ["test"]
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
       - PACKAGE: asdf
-        PYTHON: ["3.9", "3.10", "3.11"]
-        RUNNER: ["test"]
         EXTRAS: ["tests"]
-      - PACKAGE: ccdproc
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+      - PACKAGE: ccdproc
         EXTRAS: ["test"]
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
       - PACKAGE: costools
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
       - PACKAGE: reftools
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
-        EXTRAS: ["test"]
       - PACKAGE: synphot
+        EXTRAS: ["test"]
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
-        EXTRAS: ["test"]
       - PACKAGE: wfpc2tools
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
@@ -71,9 +93,14 @@ unit-tests:
         INSTALL: pip install $PACKAGE
   script:
     - micromamba activate ./conda/envs/stenv
-    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
     - $INSTALL
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE unit tests"
     - pytest -n auto --pyargs $PACKAGE $pytest_args --junitxml result.xml
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
   artifacts:
     when: always
     reports:
@@ -84,36 +111,36 @@ unit-tests-from-source:
   parallel:
     matrix:
       - PACKAGE: calcos
+        REPOSITORY: https://github.com/spacetelescope/calcos
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
-        REPOSITORY: https://github.com/spacetelescope/calcos
       #- PACKAGE: crds
-      #  PYTHON: ["3.9", "3.10", "3.11"]
-      #  RUNNER: ["test"]
       #  REPOSITORY: https://github.com/spacetelescope/crds
       #  EXTRAS: [ test ]
       #  env:
       #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
       #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
-      #- PACKAGE: drizzlepac
       #  PYTHON: ["3.9", "3.10", "3.11"]
       #  RUNNER: ["test"]
+      #- PACKAGE: drizzlepac
       #  REPOSITORY: https://github.com/spacetelescope/drizzlepac
       #  EXTRAS: [ test ]
+      #  PYTHON: ["3.9", "3.10", "3.11"]
+      #  RUNNER: ["test"]
       - PACKAGE: hstcal
-        PYTHON: ["3.9", "3.10", "3.11"]
-        RUNNER: ["test"]
         REPOSITORY: https://github.com/spacetelescope/hstcal
         pytest_args: '--slow'
         test_directory: tests
         CRDS_SERVER_URL: https://hst-crds.stsci.edu
-      - PACKAGE: jwst
         PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
+      - PACKAGE: jwst
         REPOSITORY: https://github.com/spacetelescope/jwst
         extras: [ test ]
         pytest_args: '--slow -k "not test_cmdline_status"'
         CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
   tags:
     - $RUNNER
   rules:
@@ -125,9 +152,14 @@ unit-tests-from-source:
         INSTALL: pip install -e .
   script:
     - micromamba activate ./conda/envs/stenv
-    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
     - $INSTALL
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE unit tests"
     - pytest -n auto $pytest_args $test_directory --junitxml result.xml
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
   artifacts:
     when: always
     reports:
@@ -137,15 +169,19 @@ smoke-tests:
   stage: test
   parallel:
     matrix:
-      - PYTHON: ["3.9", "3.10", "3.11"]
+      - COMMAND: ["calcos la8n01qkq_rawtag_a.fits", "pytest -n auto tests/test_drizzlepac.py"]
+        PYTHON: ["3.9", "3.10", "3.11"]
         RUNNER: ["test"]
-        COMMAND: ["calcos la8n01qkq_rawtag_a.fits", "pytest -n auto tests/test_drizzlepac.py"]
   tags:
     - $RUNNER
   script:
     - micromamba activate ./conda/envs/stenv
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE smoke tests"
     - $COMMAND
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
 
 version:
   stage: build
@@ -153,10 +189,15 @@ version:
     key: cache-dunamai
     paths:
       - ./conda/
+    unprotect: true
   script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
     - micromamba create -y -c conda-forge --prefix ./conda/envs/dunamai python dunamai git --rc-file .condarc
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
     - micromamba activate ./conda/envs/dunamai
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
     - git config --global --add safe.directory $CI_PROJECT_DIR
     - echo VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)") >> variables.env
   artifacts:
@@ -174,9 +215,13 @@ export:
     - $RUNNER
   script:
     - micromamba activate ./conda/envs/stenv
+    - echo -e "\e[0Ksection_start:`date +%s`:export[collapsed=true]\r\e[0Kexport environment"
     - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > $ENVIRONMENT_FILENAME
+    - echo -e "\e[0Ksection_end:`date +%s`:export\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - cat $ENVIRONMENT_FILENAME
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
   artifacts:
     paths:
       - stenv-*.yaml
