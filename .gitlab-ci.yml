@@ -80,6 +80,7 @@ build:
 
 unit-tests:
   stage: test
+  needs: [build]
   parallel:
     matrix:
       - PACKAGE: acstools
@@ -129,6 +130,7 @@ unit-tests:
 
 unit-tests-from-source:
   stage: test
+  needs: [build]
   parallel:
     matrix:
       - PACKAGE: calcos
@@ -188,6 +190,7 @@ unit-tests-from-source:
 
 smoke-tests:
   stage: test
+  needs: [build]
   parallel:
     matrix:
       - COMMAND: ["calcos la8n01qkq_rawtag_a.fits", "pytest -n auto tests/test_drizzlepac.py"]
