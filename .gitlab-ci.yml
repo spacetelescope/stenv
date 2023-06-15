@@ -7,9 +7,12 @@ before_script:
   - micromamba config append --file .condarc pkgs_dirs ./conda/pkgs
   - micromamba config append --file .condarc envs_dirs ./conda/envs
 
+variables:
+  DATE: $(date +"%D")
+
 cache:
   key: 
-    prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON
+    prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON-$DATE
     files: 
       - environment.yaml
   paths:
@@ -21,7 +24,7 @@ build:
   stage: build
   cache:
     key: 
-      prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON
+      prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON-$DATE
       files:
         - environment.yaml
     paths:
@@ -130,6 +133,7 @@ unit-tests-from-source:
         EXTRAS: [ test ]
         REPOSITORY: https://github.com/spacetelescope/jwst
         pytest_args: '--slow -k "not test_cmdline_status"'
+        TEST_DIR: ""
         CRDS_SERVER_URL: https://jwst-crds.stsci.edu
         CRDS_PATH: /tmp/crds_cache
   tags:
@@ -150,7 +154,7 @@ unit-tests-from-source:
   artifacts:
     when: always
     reports:
-      junit: result.xml
+      junit: $PACKAGE/result.xml
 
 smoke-tests:
   stage: test
