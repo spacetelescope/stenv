@@ -65,7 +65,7 @@ build:
     - pytest -n auto tests/test_import.py --junitxml result.xml
     - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
     - echo -e "\e[0Ksection_start:`date +%s`:export[collapsed=true]\r\e[0Kexport environment"
-    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > $ENVIRONMENT_FILENAME
     - echo -e "\e[0Ksection_end:`date +%s`:export\r\e[0K"
     - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
@@ -112,7 +112,7 @@ unit-tests:
     - $RUNNER
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
     - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
     - micromamba activate ./conda/envs/stenv
     - if [ "$EXTRAS" != "" ]; then pip install $PACKAGE[$EXTRAS]; fi
@@ -169,7 +169,7 @@ unit-tests-from-source:
     - $RUNNER
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
     - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
     - micromamba activate ./conda/envs/stenv
     - micromamba install -y -c conda-forge git
@@ -200,7 +200,7 @@ smoke-tests:
     - $RUNNER
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
     - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
