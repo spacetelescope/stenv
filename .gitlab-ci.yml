@@ -16,19 +16,41 @@ cache:
     files: 
       - environment.yaml
   paths:
-    - ./conda/
+    - ./conda/pkgs/
   policy: pull
   unprotect: true
 
+version:
+  stage: build
+  cache:
+    key: cache-dunamai
+    paths:
+      - ./conda/
+    unprotect: true
+  script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
+    - micromamba create -y -c conda-forge --prefix ./conda/envs/dunamai python dunamai git --rc-file .condarc
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+    - micromamba activate ./conda/envs/dunamai
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - echo VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)") >> variables.env
+  artifacts:
+    reports:
+        dotenv: variables.env
+
 build:
   stage: build
+  needs: [version]
   cache:
     key: 
       prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON-$DATE
       files:
         - environment.yaml
     paths:
-      - ./conda/
+      - ./conda/pkgs
     policy: push
     unprotect: true
   parallel:
@@ -42,16 +64,22 @@ build:
     - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
     - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
     - micromamba activate ./conda/envs/stenv
-    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
-    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
     - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0Ktest environment"
     - pytest -n auto tests/test_import.py --junitxml result.xml
     - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:export[collapsed=true]\r\e[0Kexport environment"
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > $ENVIRONMENT_FILENAME
+    - echo -e "\e[0Ksection_end:`date +%s`:export\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - cat $ENVIRONMENT_FILENAME
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
   artifacts:
     when: always
     reports:
       junit: result.xml
+    paths:
+      - stenv-*.yaml
 
 unit-tests:
   stage: test
@@ -84,7 +112,11 @@ unit-tests:
         RUNNER: ["test"]
   tags:
     - $RUNNER
+  dependencies:
+    - "build: [$PYTHON, $RUNNER]"
   script:
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
     - if [ "$EXTRAS" != "" ]; then pip install $PACKAGE[$EXTRAS]; fi
@@ -133,12 +165,15 @@ unit-tests-from-source:
         EXTRAS: [ test ]
         REPOSITORY: https://github.com/spacetelescope/jwst
         pytest_args: '--slow -k "not test_cmdline_status"'
-        TEST_DIR: ""
         CRDS_SERVER_URL: https://jwst-crds.stsci.edu
         CRDS_PATH: /tmp/crds_cache
   tags:
     - $RUNNER
+  dependencies:
+    - "build: [$PYTHON, $RUNNER]"
   script:
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
     - micromamba install -y -c conda-forge git
@@ -165,7 +200,11 @@ smoke-tests:
         RUNNER: ["test"]
   tags:
     - $RUNNER
+  dependencies:
+    - "build: [$PYTHON, $RUNNER]"
   script:
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
+    - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
@@ -174,46 +213,3 @@ smoke-tests:
     - $COMMAND
     - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
 
-version:
-  stage: build
-  cache:
-    key: cache-dunamai
-    paths:
-      - ./conda/
-    unprotect: true
-  script:
-    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - micromamba create -y -c conda-forge --prefix ./conda/envs/dunamai python dunamai git --rc-file .condarc
-    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
-    - micromamba activate ./conda/envs/dunamai
-    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
-    - micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
-    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
-    - git config --global --add safe.directory $CI_PROJECT_DIR
-    - echo VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)") >> variables.env
-  artifacts:
-    reports:
-        dotenv: variables.env
-
-export:
-  stage: deploy
-  needs: [version, build]
-  parallel:
-    matrix:
-      - PYTHON: ["3.9", "3.10", "3.11"]
-        RUNNER: ["test"]
-  tags:
-    - $RUNNER
-  script:
-    - micromamba activate ./conda/envs/stenv
-    - echo -e "\e[0Ksection_start:`date +%s`:export[collapsed=true]\r\e[0Kexport environment"
-    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
-    - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > $ENVIRONMENT_FILENAME
-    - echo -e "\e[0Ksection_end:`date +%s`:export\r\e[0K"
-    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
-    - cat $ENVIRONMENT_FILENAME
-    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
-  artifacts:
-    paths:
-      - stenv-*.yaml
-  environment: production
