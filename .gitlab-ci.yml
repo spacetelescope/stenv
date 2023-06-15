@@ -7,12 +7,9 @@ before_script:
   - micromamba config append --file .condarc pkgs_dirs ./conda/pkgs
   - micromamba config append --file .condarc envs_dirs ./conda/envs
 
-variables:
-  DATE: $(date +"%D")
-
 cache:
   key: 
-    prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON-$DATE
+    prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON
     files: 
       - environment.yaml
   paths:
@@ -46,7 +43,7 @@ build:
   needs: [version]
   cache:
     key: 
-      prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON-$DATE
+      prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON
       files:
         - environment.yaml
     paths:
