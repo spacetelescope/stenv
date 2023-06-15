@@ -109,8 +109,6 @@ unit-tests:
         RUNNER: ["test"]
   tags:
     - $RUNNER
-  dependencies:
-    - "build: [$PYTHON, $RUNNER]"
   script:
     - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
     - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
@@ -166,8 +164,6 @@ unit-tests-from-source:
         CRDS_PATH: /tmp/crds_cache
   tags:
     - $RUNNER
-  dependencies:
-    - "build: [$PYTHON, $RUNNER]"
   script:
     - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
     - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
@@ -197,8 +193,6 @@ smoke-tests:
         RUNNER: ["test"]
   tags:
     - $RUNNER
-  dependencies:
-    - "build: [$PYTHON, $RUNNER]"
   script:
     - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / _)
     - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
