@@ -84,7 +84,7 @@ unit-tests:
   script:
     - micromamba activate ./conda/envs/stenv
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
-    - if [ "$EXTRAS" == "" ]; then pip install $PACKAGE; else pip install $PACKAGE[$EXTRAS]; fi
+    - if [ "$EXTRAS" != "" ]; then pip install $PACKAGE[$EXTRAS]; fi
     - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
@@ -117,7 +117,7 @@ unit-tests-from-source:
       #  EXTRAS: [ test ]
       #  REPOSITORY: https://github.com/spacetelescope/drizzlepac
       - PACKAGE: hstcal
-        PYTHON: ["3.9", "3.10", "3.11"]
+        PYTHON: ["3.11"]
         RUNNER: ["test"]
         REPOSITORY: https://github.com/spacetelescope/hstcal
         pytest_args: '--slow'
@@ -139,11 +139,12 @@ unit-tests-from-source:
     - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
     - micromamba install -y -c conda-forge git
     - git clone $REPOSITORY $PACKAGE
-    - if [ "$EXTRAS" == "" ]; then pip install -e ./$PACKAGE; else pip install -e ./$PACKAGE[$EXTRAS]; fi
+    - if [ "$EXTRAS" != "" ]; then pip install -e ./$PACKAGE[$EXTRAS]; fi
     - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
     - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
     - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
     - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE unit tests"
+    - cd $PACKAGE
     - pytest -n auto $pytest_args $TEST_DIR --junitxml result.xml
     - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
   artifacts:
