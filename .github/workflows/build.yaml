@@ -31,8 +31,25 @@ env:
   PYSYN_CDBS: /tmp/trds
 
 jobs:
+  version:
+    name: parse version from tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - uses: mtkennerly/dunamai-action@v1
+        id: version
+        with:
+          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   build:
     name: build (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    needs: [ version ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -52,8 +69,34 @@ jobs:
           cache-downloads: true
           init-shell: none
           generate-run-shell: true
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
+      - run: echo exported=stenv-${{ runner.os }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml >> $GITHUB_OUTPUT
+        id: filename
+      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.filename.outputs.exported }}
+      - run: cat ${{ steps.filename.outputs.exported }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.filename.outputs.exported }}
+          path: ${{ steps.filename.outputs.exported }}
+      - if: (github.event_name == 'release' && github.event.action == 'published')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: ${{ steps.filename.outputs.exported }}
+  update_docs:
+    if: (github.event_name == 'release' && github.event.action == 'published')
+    name: update version number in documentation
+    needs: [ version, build ]
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: python docs/update_version.py ${{ needs.version.outputs.version }} docs/source
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: updated version number in documentation
+          file_pattern: docs/source/**
   unit_tests:
     name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
     needs: [ build ]
@@ -263,69 +306,3 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
           jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
-  version:
-    name: parse version from tag
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      - uses: mtkennerly/dunamai-action@v1
-        id: version
-        with:
-          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
-  export:
-    name: export (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build, version ]
-    runs-on: ${{ matrix.runs-on }}
-    strategy:
-      fail-fast: false
-      matrix:
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.9', '3.10', '3.11' ]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-            conda
-          cache-environment: true
-          cache-downloads: true
-          init-shell: none
-          generate-run-shell: true
-      - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml" >> $GITHUB_OUTPUT
-        id: output
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
-      - run: cat ${{ steps.output.outputs.filename }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.output.outputs.filename }}
-          path: ${{ steps.output.outputs.filename }}
-      - if: (github.event_name == 'release' && github.event.action == 'published')
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file: ${{ steps.output.outputs.filename }}
-  update_docs:
-    if: (github.event_name == 'release' && github.event.action == 'published')
-    name: update version number in documentation
-    needs: [ version, export ]
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - run: python docs/update_version.py ${{ needs.version.outputs.version }} docs/source
-        shell: bash
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: updated version number in documentation
-          file_pattern: docs/source/**
