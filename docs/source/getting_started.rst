@@ -32,7 +32,7 @@ Now that you have a Conda installation, you should choose a release of ``stenv``
 `Releases page <https://github.com/spacetelescope/stenv/releases>`_ and download the environment definition file
 from the ``Assets`` section that corresponds with your platform.
 
-.. image:: release_example.png
+.. image:: ./images/release_example.png
     :alt: example of a release page, showing output files
     :target: https://github.com/spacetelescope/stenv/releases
 
@@ -69,10 +69,6 @@ This example assumes that you chose an environment file for Mac OSX (``macOS``) 
 
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
-
-.. note::
-    ``stenv`` is not currently pre-built or tested for Apple Silicon ARM64 processors (``M1``, ``M1 Max``, ``M1 Ultra``, ``M2``);
-    in the meantime, you can see `this issue <https://github.com/spacetelescope/stenv/issues/86#issuecomment-1444583090>`_  or resolve the environment yourself with :ref:`environment_yaml`
 
 Activating an environment
 =========================
