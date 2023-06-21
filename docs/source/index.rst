@@ -10,6 +10,7 @@ Space Telescope Environment (``stenv``)
    faq.rst
    developer_notes.rst
    pipeline_releases.rst
+   windows.rst
 
 If you have issues with ``stenv``, please `create a new GitHub issue <https://github.com/spacetelescope/stenv/issues>`_ or contact one of the following help desks:
 

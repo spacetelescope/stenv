@@ -28,6 +28,6 @@ Adding a package to ``stenv``
 
 To request that a new package be added to ``stenv``, or to add a package yourself, please `create a new issue in the repository <https://github.com/spacetelescope/stenv/issues/new?assignees=&labels=add+package&template=package_addition_request.md&title=add+%60%3Cpackage%3E%60+to+environment>`_.
 
-.. image:: ./add_package_issue_template.png
+.. image:: ./images/add_package_issue_template.png
     :alt: issue template for adding a package
     :target: https://github.com/spacetelescope/stenv/issues/new?assignees=&labels=add+package&template=package_addition_request.md&title=add+%60%3Cpackage%3E%60+to+environment
