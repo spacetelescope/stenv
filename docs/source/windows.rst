@@ -6,6 +6,7 @@ Windows Support
 
 If you would like to run ``stenv`` on Windows, you can use the :ref:`wsl`, 
 an optional Windows feature that provides a functioning Linux terminal with access to the host operating system.
+After installing your Linux system, open the WSL terminal and follow the :doc:`getting_started` instructions.
 	
 .. _wsl:
 
