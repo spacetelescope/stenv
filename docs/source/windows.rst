@@ -1,6 +1,12 @@
 Windows Support
 ###############
 
+``stenv`` does not currently support Windows, as
+``hstcal``, ``fitsverify``, and the ``jwst`` calibration pipeline are not built or tested on Windows platforms. 
+
+If you would like to run ``stenv`` on Windows, you can use the :ref:`wsl`, 
+an optional Windows feature that provides a functioning Linux terminal with access to the host operating system.
+	
 .. _wsl:
 
 Windows Subsystem for Linux (WSL)
@@ -31,18 +37,19 @@ In ``Windows Features``, scroll down to ``Windows Subsystem for Linux`` and chec
 
 Reboot when prompted.
 
-2. Download your choice of Linux distribution to WSL
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2. Download your choice of Linux distribution as an app package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The easiest way to install a Linux distribution to WSL is through the Microsoft Store.
+The easiest way to download a Linux distribution for WSL is via the Microsoft Store:
 
-..image https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png
+.. image:: https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png
 	:alt: Microsoft Store link to Ubuntu WSL
 	:target: http://www.microsoft.com/store/apps/9nblggh4msv6?cid=storebadge&ocid=badge
+	:width: 25%
 
 If you do **not** have access to the Microsoft Store, download the latest Ubuntu distribution from 
 `Microsoft's WSL distribution page <https://docs.microsoft.com/en-us/windows/wsl/install-manual>`_
- and then run the following command in PowerShell to register the app package:
+and then run the following command in PowerShell to register the app package:
 
 .. code-block:: powershell
 
@@ -61,7 +68,9 @@ This will boot the operating system and start the installation within WSL, after
 .. image:: ./images/wsl_terminal.png
 	:alt: terminal window showing a Bash shell
 
-After installation completes, WSL will now provide a functional Linux shell.
-You have access to many Windows utilities fron WSL, and many WSL utilities from the Windows shell.
+After installation completes, you now have a functional Linux operating system.
+
+You have access to many Windows utilities from within the Linux shell, and many WSL utilities from the Windows shell.
 By default, the Windows partition is mounted at ``/mnt/c``.
+
 Microsoft provides `documentation on interoperability between Windows and WSL <https://docs.microsoft.com/en-us/windows/wsl/interop>`_.

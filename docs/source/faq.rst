@@ -22,10 +22,7 @@ Additionally, the resulting package versions may not have been tested for your p
     
 .. warning::
 
-    Please be aware that ``stenv`` does not currently support Windows; 
-    ``hstcal``, ``fitsverify``, and the ``jwst`` calibration pipeline are not built or tested on Windows platforms.
-    If you would like to run ``stenv`` software on Windows, you can use the :ref:`wsl`, 
-    an optional Windows feature that provides a functioning Linux terminal with access to the host operating system.
+    ``stenv`` does not currently support a native Windows installation. To build ``stenv`` on Windows, see :doc:`windows`.
 
 Why isn't _____ package in ``stenv``?
 =====================================
