@@ -1,16 +1,15 @@
 name: rtd311
 channels:
-    - defaults
+    - conda-forge
 dependencies:
+    - dunamai
     - graphviz
     - numpy
     - numpydoc
     - pip
-    - python
-    - setuptools
+    - python=3.11
     - scipy
+    - sphinx
+    - sphinx-rtd-theme
     - pip:
-        - dunamai
-        - sphinx
-        - sphinx-rtd-theme
         - stsci-rtd-theme
