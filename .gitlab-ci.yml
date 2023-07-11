@@ -1,0 +1,213 @@
+image: mambaorg/micromamba:latest
+
+before_script:
+  - eval "$(micromamba shell hook --shell=bash)"
+  - mkdir -p ./conda/
+  - touch .condarc
+  - micromamba config append --file .condarc pkgs_dirs ./conda/pkgs
+  - micromamba config append --file .condarc envs_dirs ./conda/envs
+
+cache:
+  key: 
+    prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON
+    files: 
+      - environment.yaml
+  paths:
+    - ./conda/pkgs/
+  policy: pull
+  unprotect: true
+
+version:
+  stage: build
+  cache:
+    key: cache-dunamai
+    paths:
+      - ./conda/
+    unprotect: true
+  script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
+    - micromamba create -y -c conda-forge --prefix ./conda/envs/dunamai python dunamai git --rc-file .condarc
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+    - micromamba activate ./conda/envs/dunamai
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - echo VERSION=$(dunamai from any --pattern "(?P<base>\d+\.\d+\.\d+)") >> variables.env
+  artifacts:
+    reports:
+        dotenv: variables.env
+
+build:
+  stage: build
+  needs: [version]
+  cache:
+    key: 
+      prefix: $CI_RUNNER_EXECUTABLE_ARCH-$PYTHON
+      files:
+        - environment.yaml
+    paths:
+      - ./conda/pkgs
+    policy: push
+    unprotect: true
+  parallel:
+    matrix:
+      - PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+  tags:
+    - $RUNNER
+  script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
+    - micromamba create -y -c conda-forge --prefix ./conda/envs/stenv --file environment.yaml python=$PYTHON conda gcc gxx_linux-64 --rc-file .condarc
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+    - micromamba activate ./conda/envs/stenv
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0Ktest environment"
+    - pytest -n auto tests/test_import.py --junitxml result.xml
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:export[collapsed=true]\r\e[0Kexport environment"
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:" > $ENVIRONMENT_FILENAME
+    - echo -e "\e[0Ksection_end:`date +%s`:export\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - cat $ENVIRONMENT_FILENAME
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+  artifacts:
+    when: always
+    reports:
+      junit: result.xml
+    paths:
+      - stenv-*.yaml
+
+unit-tests:
+  stage: test
+  needs: [build]
+  parallel:
+    matrix:
+      - PACKAGE: acstools
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+        EXTRAS: ["test"]
+      - PACKAGE: asdf
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+        EXTRAS: ["tests"]
+      - PACKAGE: ccdproc
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+        EXTRAS: ["test"]
+      - PACKAGE: costools
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+      - PACKAGE: reftools
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+      - PACKAGE: synphot
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+        EXTRAS: ["test"]
+      - PACKAGE: wfpc2tools
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+  tags:
+    - $RUNNER
+  script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
+    - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
+    - micromamba activate ./conda/envs/stenv
+    - if [ "$EXTRAS" != "" ]; then pip install $PACKAGE[$EXTRAS]; fi
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE unit tests"
+    - pytest -n auto --pyargs $PACKAGE $pytest_args --junitxml result.xml
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
+  artifacts:
+    when: always
+    reports:
+      junit: result.xml
+
+unit-tests-from-source:
+  stage: test
+  needs: [build]
+  parallel:
+    matrix:
+      - PACKAGE: calcos
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+        REPOSITORY: https://github.com/spacetelescope/calcos
+      #- PACKAGE: crds
+      #  PYTHON: ["3.9", "3.10", "3.11"]
+      #  RUNNER: ["test"]
+      #  EXTRAS: [ test ]
+      #  REPOSITORY: https://github.com/spacetelescope/crds
+      #  CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
+      #- PACKAGE: drizzlepac
+      #  PYTHON: ["3.9", "3.10", "3.11"]
+      #  RUNNER: ["test"]
+      #  EXTRAS: [ test ]
+      #  REPOSITORY: https://github.com/spacetelescope/drizzlepac
+      - PACKAGE: hstcal
+        PYTHON: ["3.11"]
+        RUNNER: ["test"]
+        REPOSITORY: https://github.com/spacetelescope/hstcal
+        pytest_args: '--slow'
+        TEST_DIR: tests
+        CRDS_SERVER_URL: https://hst-crds.stsci.edu
+        CRDS_PATH: /tmp/crds_cache
+      - PACKAGE: jwst
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+        EXTRAS: [ test ]
+        REPOSITORY: https://github.com/spacetelescope/jwst
+        pytest_args: '--slow -k "not test_cmdline_status"'
+        CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+        CRDS_PATH: /tmp/crds_cache
+  tags:
+    - $RUNNER
+  script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
+    - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
+    - micromamba activate ./conda/envs/stenv
+    - micromamba install -y -c conda-forge git
+    - git clone $REPOSITORY $PACKAGE
+    - if [ "$EXTRAS" != "" ]; then pip install -e ./$PACKAGE[$EXTRAS]; fi
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE unit tests"
+    - cd $PACKAGE
+    - pytest -n auto $pytest_args $TEST_DIR --junitxml result.xml
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
+  artifacts:
+    when: always
+    reports:
+      junit: $PACKAGE/result.xml
+
+smoke-tests:
+  stage: test
+  needs: [build]
+  parallel:
+    matrix:
+      - COMMAND: ["calcos la8n01qkq_rawtag_a.fits", "pytest -n auto tests/test_drizzlepac.py"]
+        PYTHON: ["3.9", "3.10", "3.11"]
+        RUNNER: ["test"]
+  tags:
+    - $RUNNER
+  script:
+    - echo -e "\e[0Ksection_start:`date +%s`:build[collapsed=true]\r\e[0Kbuild environment"
+    - export ENVIRONMENT_FILENAME=$(echo "stenv-$CI_RUNNER_EXECUTABLE_ARCH-$PYTHON.yaml" | tr / -)
+    - micromamba create -y --prefix ./conda/envs/stenv --file $ENVIRONMENT_FILENAME
+    - micromamba activate ./conda/envs/stenv
+    - echo -e "\e[0Ksection_end:`date +%s`:build\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:show[collapsed=true]\r\e[0Kshow environment"
+    - conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+    - echo -e "\e[0Ksection_end:`date +%s`:show\r\e[0K"
+    - echo -e "\e[0Ksection_start:`date +%s`:test[collapsed=true]\r\e[0K$PACKAGE smoke tests"
+    - $COMMAND
+    - echo -e "\e[0Ksection_end:`date +%s`:test\r\e[0K"
+
