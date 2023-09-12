@@ -31,8 +31,18 @@ env:
   PYSYN_CDBS: /tmp/trds
 
 jobs:
+  date:
+    name: get current date
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+        id: date        
+        shell: bash
+    outputs:
+      date: ${{ steps.date.outputs.date }}
   build:
     name: build (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    needs: [ date ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -48,13 +58,17 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
             conda
+          cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.date.outputs.date }}
           init-shell: none
           generate-run-shell: true
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
   unit_tests:
     name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build ]
+    needs: [ build, date ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -91,8 +105,10 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
             conda
-          cache-environment: true
           cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.date.outputs.date }}
           init-shell: none
           generate-run-shell: true
       - if: matrix.extras != ''
@@ -113,7 +129,7 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_from_source:
     name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build ]
+    needs: [ build, date ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -166,6 +182,10 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
             conda
+          cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.date.outputs.date }}
           init-shell: none
           generate-run-shell: true
       - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
@@ -199,7 +219,7 @@ jobs:
         working-directory: ${{ matrix.package }}
   smoke_tests:
     name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build ]
+    needs: [ build, date ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -234,8 +254,10 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
             conda
-          cache-environment: true
           cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.date.outputs.date }}
           init-shell: none
           generate-run-shell: true
       - if: matrix.extras != ''
@@ -277,7 +299,7 @@ jobs:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   export:
     name: export (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build, version ]
+    needs: [ build, version, date ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -293,8 +315,10 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
             conda
-          cache-environment: true
           cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.date.outputs.date }}
           init-shell: none
           generate-run-shell: true
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml" >> $GITHUB_OUTPUT
