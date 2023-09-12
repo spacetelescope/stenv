@@ -48,8 +48,6 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
             conda
-          cache-environment: true
-          cache-downloads: true
           init-shell: none
           generate-run-shell: true
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
@@ -168,8 +166,6 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
             conda
-          cache-environment: true
-          cache-downloads: true
           init-shell: none
           generate-run-shell: true
       - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
