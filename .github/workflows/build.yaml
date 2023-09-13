@@ -73,14 +73,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, costools, reftools, synphot, wfpc2tools ]
+        package: [ acstools, ccdproc, costools, reftools, synphot, wfpc2tools ]
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
             extras: [ test ]
-          - package: asdf
-            extras: [ tests ]
           - package: ccdproc
             extras: [ test ]
           - package: costools
@@ -134,10 +132,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ calcos, hstcal, jwst ]
+        package: [ asdf, calcos, hstcal, jwst ]
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
+          - package: asdf
+            repository: asdf-format/asdf
+            extras: [ tests ]
           - package: calcos
             repository: spacetelescope/calcos
           #- package: crds
