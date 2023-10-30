@@ -50,7 +50,7 @@ jobs:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
@@ -97,7 +97,7 @@ jobs:
           - runs-on: macos-latest
             python-version: 3.10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
@@ -172,7 +172,7 @@ jobs:
           - runs-on: macos-latest
             python-version: 3.10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: stenv
       - uses: mamba-org/setup-micromamba@v1
@@ -191,7 +191,7 @@ jobs:
       - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
@@ -244,7 +244,7 @@ jobs:
           - runs-on: macos-latest
             python-version: 3.10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
       - uses: mamba-org/setup-micromamba@v1
@@ -287,7 +287,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v4
@@ -307,7 +307,7 @@ jobs:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
@@ -340,7 +340,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - run: python docs/update_version.py ${{ needs.version.outputs.version }} docs/source
