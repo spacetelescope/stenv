@@ -84,6 +84,7 @@ Activating a Conda environment changes which Python interpreter and packages are
 Every time you open a new terminal window, you will need to activate the environment with ``conda activate <name>`` before you can use stenv software.
 
 .. code-block:: shell
+
     conda activate stenv
 
 .. note::
