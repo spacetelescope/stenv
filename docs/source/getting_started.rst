@@ -75,18 +75,21 @@ In order to access the packages in ``stenv``, you must activate the ``stenv`` en
 
     conda activate stenv
 
-(If you chose another name for the environment, substitute it for ``stenv``.)
+(If you chose another name when creating the environment, use that here instead.)
 
 Activating a Conda environment changes which Python interpreter and packages are in use for that session (i.e. terminal window). Now, if you try to ``import jwst``::
 
     (stenv) $ python -c 'import jwst; print("ok")'
 
-Every time you open a new terminal window, you will need to activate the environment with ``conda activate stenv`` before you can use stenv software.
+Every time you open a new terminal window, you will need to activate the environment with ``conda activate <name>`` before you can use stenv software.
+
+.. code-block:: shell
+    conda activate stenv
 
 .. note::
     You can show installed packages available within a Conda environment with ``conda list``.
 
-To deactivate an environment, run ``conda deactivate``:
+To deactivate an environment and return your shell to normal, run ``conda deactivate``:
 
 .. code-block:: shell
 
