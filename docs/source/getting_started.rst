@@ -40,8 +40,8 @@ well as hundreds of useful tools, libraries, and utilities by default.
     will notice a speedup if they substitute ``mamba`` for ``conda`` where it appears in commands.
 
 .. important::
-    Remember to run ``conda init`` when installing. This is required in order to ``activate`` and 
-    ``deactivate`` environments.
+    Remember to run ``conda init`` when installing. This is required in order to set up your shell to 
+    ``activate`` and ``deactivate`` environments.
 
     .. tab:: conda
 
