@@ -50,6 +50,7 @@ intersphinx_mapping = {
 
 extensions = [
     'sphinx.ext.intersphinx',
+    'sphinx_inline_tabs',
 ]
 
 templates_path = ['_templates']

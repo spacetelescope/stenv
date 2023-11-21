@@ -8,9 +8,17 @@ Frequently Asked Questions
 
 You can use the environment definition YAML file (:ref:`environment_yaml`) in the root of the repository:
 
-.. code-block:: shell
+.. tab:: conda
 
-    conda env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+    .. code-block:: shell
+
+        conda create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+
+.. tab:: mamba
+
+    .. code-block:: shell
+
+        mamba create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
 
 This environment is unpinned, meaning it may take some time to resolve dependency versions. 
 Additionally, the resulting package versions may not have been tested for your platform.
@@ -32,12 +40,21 @@ some packages are not supported and / or deprecated, and some are deemed too nic
 
 To install a package in your local environment, you can use ``pip install`` while the environment is activated:
 
-.. code-block:: shell
+.. tab:: conda
 
-    conda activate stenv
-    pip install <package_name>
+    .. code-block:: shell
 
-To request that a new package be added to ``stenv``'s base environment (:ref:`environment_yaml`) for all users, or to add a package yourself, see :ref:`adding_a_package_to_stenv`.
+        conda activate stenv
+        pip install <package_name>
+
+.. tab:: mamba
+
+    .. code-block:: shell
+
+        mamba activate stenv
+        pip install <package_name>
+
+To request that a new package be added to ``stenv`` (:ref:`environment_yaml`) for all users, see :ref:`adding_a_package_to_stenv`.
 
 What about Astroconda?
 ======================
