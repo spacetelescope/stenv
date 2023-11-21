@@ -13,3 +13,4 @@ dependencies:
     - sphinx-rtd-theme
     - pip:
         - stsci-rtd-theme
+        - sphinx-inline-tabs
