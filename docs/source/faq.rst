@@ -12,13 +12,13 @@ You can use the environment definition YAML file (:ref:`environment_yaml`) in th
 
     .. code-block:: shell
 
-        conda create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+        conda env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
 
 .. tab:: mamba
 
     .. code-block:: shell
 
-        mamba create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+        mamba env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
 
 This environment is unpinned, meaning it may take some time to resolve dependency versions. 
 Additionally, the resulting package versions may not have been tested for your platform.

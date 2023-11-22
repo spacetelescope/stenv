@@ -99,13 +99,13 @@ newest (highest-numbered) Python version available.
 
         .. code-block:: shell
 
-            conda create --name stenv --file <URL>
+            conda env create --name stenv --file <URL>
 
     .. tab:: mamba
 
         .. code-block:: shell
 
-            mamba create --name stenv --file <URL>
+            mamba env create --name stenv --file <URL>
 
 .. tab:: create environment from downloaded file
 
@@ -116,13 +116,13 @@ newest (highest-numbered) Python version available.
 
         .. code-block:: shell
 
-            conda create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
+            conda env create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
 
     .. tab:: mamba
 
         .. code-block:: shell
 
-            mamba create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
+            mamba env create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
 
 
 .. note::
