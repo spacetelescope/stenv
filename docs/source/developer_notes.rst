@@ -21,13 +21,13 @@ To build an environment from this unpinned environment definition, you may run t
 
     .. code-block:: shell
 
-        conda create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+        conda env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
 
 .. tab:: mamba
 
     .. code-block:: shell
 
-        mamba create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+        mamba env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
 
 .. _adding_a_package_to_stenv:
 
