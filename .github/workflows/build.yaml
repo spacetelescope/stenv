@@ -1,15 +1,14 @@
-name: Build and test environment
+name: build
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'environment.yaml'
-      - '.github/workflows/*.yaml'
+  push:
   release:
     types:
       - published
+  workflow_call:
+    outputs:
+      date:
+        value: ${{ jobs.date.outputs.date }}
   workflow_dispatch:
     inputs:
       upload_to_release:
@@ -20,15 +19,10 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 defaults:
   run:
     shell: micromamba-shell {0}
-
-env:
-  CRDS_PATH: /tmp/crds_cache
-  PYSYN_CDBS: /tmp/trds
 
 jobs:
   date:
@@ -66,221 +60,6 @@ jobs:
           generate-run-shell: true
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
-  unit_tests:
-    name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build, date ]
-    runs-on: ${{ matrix.runs-on }}
-    strategy:
-      fail-fast: false
-      matrix:
-        package: [ acstools, asdf, ccdproc, costools, reftools, synphot, wfpc2tools ]
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.9', '3.10', '3.11' ]
-        include:
-          - package: acstools
-            extras: [ test ]
-          - package: asdf
-            extras: [ tests ]
-          - package: ccdproc
-            extras: [ test ]
-          - package: costools
-          #- package: pysynphot
-          #  extras: [ test ]
-          - package: reftools
-            extras: [ test ]
-          - package: synphot
-            extras: [ test ]
-          - package: wfpc2tools
-        exclude:
-          - runs-on: macos-latest
-            python-version: 3.9
-          - runs-on: macos-latest
-            python-version: 3.10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-            conda
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.date.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
-      - if: matrix.extras != ''
-        run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-  unit_tests_from_source:
-    name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build, date ]
-    runs-on: ${{ matrix.runs-on }}
-    strategy:
-      fail-fast: false
-      matrix:
-        package: [ calcos, hstcal, jwst ]
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.9', '3.10', '3.11' ]
-        include:
-          - package: calcos
-            repository: spacetelescope/calcos
-          #- package: crds
-          #  repository: spacetelescope/crds
-          #  extras: [ test ]
-          #  env:
-          #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
-          #- package: drizzlepac
-          #  repository: spacetelescope/drizzlepac
-          #  extras: [ test ]
-          - package: hstcal
-            repository: spacetelescope/hstcal
-            pytest_args: '--slow'
-            test_directory: tests
-            env:
-              CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          - package: jwst
-            repository: spacetelescope/jwst
-            extras: [ test ]
-            pytest_args: '--slow -k "not test_cmdline_status"'
-            env:
-              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-          #- package: stistools
-          #  repository: spacetelescope/stistools
-          # - package: stsynphot
-          #   repository: spacetelescope/stsynphot_refactor
-          #   extras: [ test ]
-        exclude:
-          - runs-on: macos-latest
-            python-version: 3.9
-          - runs-on: macos-latest
-            python-version: 3.10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: stenv
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: stenv/environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-            conda
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.date.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
-      - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
-        id: package_version
-        # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
-      - if: matrix.extras != ''
-        run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
-        working-directory: ${{ matrix.package }}
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - if: matrix.pre_command != ''
-        run: ${{ matrix.pre_command }}
-        working-directory: ${{ matrix.package }}
-      - run: pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-        working-directory: ${{ matrix.package }}
-  smoke_tests:
-    name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    needs: [ build, date ]
-    runs-on: ${{ matrix.runs-on }}
-    strategy:
-      fail-fast: false
-      matrix:
-        package: [ calcos, drizzlepac ]
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.9', '3.10', '3.11' ]
-        include:
-          - package: calcos
-            run: calcos la8n01qkq_rawtag_a.fits
-            env:
-              CRDS_SERVER_URL: https://hst-crds.stsci.edu
-              jref: hst/references/hst/
-          - package: drizzlepac
-            run: pytest -n auto tests/test_drizzlepac.py
-            env:
-              CRDS_SERVER_URL: https://hst-crds.stsci.edu
-              jref: hst/references/hst/
-        exclude:
-          - runs-on: macos-latest
-            python-version: 3.9
-          - runs-on: macos-latest
-            python-version: 3.10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-            conda
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.date.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
-      - if: matrix.extras != ''
-        run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - uses: actions/cache@v3
-        with:
-          path: 'tests/data/'
-          key: data-${{ hashFiles('tests/data/*') }}
-      - run: ${{ matrix.run }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
   version:
     name: parse version from tag
     runs-on: ubuntu-latest
@@ -333,19 +112,3 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           file: ${{ steps.output.outputs.filename }}
-  update_docs:
-    if: (github.event_name == 'release' && github.event.action == 'published')
-    name: update version number in documentation
-    needs: [ version, export ]
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: python docs/update_version.py ${{ needs.version.outputs.version }} docs/source
-        shell: bash
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: updated version number in documentation
-          file_pattern: docs/source/**
