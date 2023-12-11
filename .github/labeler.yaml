@@ -1,13 +1,25 @@
 documentation:
-  - 'docs/**'
-  - any: [ '*.rst', '*.md', '!CHANGES.rst' ]
-  - '.readthedocs.yaml'
-  - 'LICENSE'
+  - any:
+    - changed-files:
+      - any-glob-to-any-file:
+        - 'docs/**'
+        - '*.md'
+        - '.readthedocs.yaml'
+        - 'LICENSE'
+      - all-globs-to-any-file:
+        - '*.rst'
+        - '!CHANGES.rst'
 
 environment:
-  - 'environment.yaml'
+  - any:
+    - changed-files:
+      - any-glob-to-any-file:
+        - 'environment.yaml'
 
 testing:
-  - '.github/workflows/build.yaml'
-  - 'tests/**'
+  - any:
+    - changed-files:
+      - any-glob-to-any-file:
+        - '.github/workflows/build.yaml'
+        - 'tests/**'
 
