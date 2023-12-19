@@ -104,7 +104,7 @@ jobs:
         id: output
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
       - run: cat ${{ steps.output.outputs.filename }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.output.outputs.filename }}
           path: ${{ steps.output.outputs.filename }}
