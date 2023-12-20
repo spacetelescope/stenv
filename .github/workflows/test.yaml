@@ -161,12 +161,6 @@ jobs:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
-          #- package: crds
-          #  repository: spacetelescope/crds
-          #  extras: [ test ]
-          #  env:
-          #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
           #  extras: [ test ]
@@ -235,6 +229,45 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
         working-directory: ${{ matrix.package }}
+  crds_test_cache:
+    uses: spacetelescope/crds/.github/workflows/cache.yml@master
+  crds_tests:
+    name: CRDS (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    needs: [ build, crds_test_cache ]
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.9', '3.10', '3.11' ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: environment.yaml
+          create-args: >-
+            python=${{ matrix.python-version }}
+            conda
+          cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.build.outputs.date }}
+          init-shell: none
+          generate-run-shell: true
+      - run: micromamba install -y filelock parsely requests
+      - run: pip install roman-datamodels git+https://github.com/spacetelescope/jwst
+      - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
+      - id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ needs.cache.outputs.path }}
+            ${{ needs.cache.outputs.testing_cache }}
+          key: ${{ needs.cache.outputs.key }}
+      - run: ./runtests --cover
   smoke_tests:
     needs: [ build ]
     strategy:
