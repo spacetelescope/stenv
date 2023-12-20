@@ -11,6 +11,7 @@ defaults:
 env:
   CRDS_PATH: /tmp/crds_cache
   PYSYN_CDBS: /tmp/trds
+  jref: https://ssb.stsci.edu/trds_open/jref
 
 jobs:
   build:
@@ -28,6 +29,7 @@ jobs:
         include:
           - package: acstools
             extras: [ test ]
+            pytest_args: '--remote-data'
           - package: asdf
             extras: [ tests ]
           - package: ccdproc
