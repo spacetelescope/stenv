@@ -89,7 +89,7 @@ def test_package_install(package_name, specification):
     [
         package_name
         for package_name in DEPENDENCIES
-        if package_name not in ["ci-watson", "ipython", "pytest-xdist"]
+        if package_name not in ["ci_watson", "ipython", "pytest-xdist"]
     ],
 )
 def test_module_import(package_name):
