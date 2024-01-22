@@ -69,7 +69,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
       - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
@@ -155,7 +155,7 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
       - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
@@ -218,11 +218,11 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
       - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: 'tests/data/'
           key: data-${{ hashFiles('tests/data/*') }}
