@@ -19,7 +19,85 @@ env:
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
-  unit_tests:
+  unit_tests_via_tox:
+    needs: [ build ]
+    strategy:
+      matrix:
+        package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
+        python-version: [ '3.9', '3.10', '3.11' ]
+        include:
+          - package: acstools
+            repository: spacetelescope/acstools
+            default_factors: test-alldeps
+            args: --remote-data -v
+          - package: asdf
+            repository: asdf-format/asdf
+            default_factors: parallel
+          - package: calcos
+            repository: spacetelescope/calcos
+            default_factors: xdist
+          - package: ccdproc
+            repository: astropy/ccdproc
+            default_factors: alldeps
+          - package: costools
+            repository: spacetelescope/costools
+            default_factors: xdist
+          - package: reftools
+            repository: spacetelescope/reftools
+            default_factors: test
+            args: --remote-data
+          - package: jwst
+            repository: spacetelescope/jwst
+            default_factors: xdist
+            args: --slow -k "not test_cmdline_status"
+      fail-fast: false
+    runs-on: ubuntu-latest
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }})
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: stenv
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: stenv/environment.yaml
+          create-args: >-
+            python=${{ matrix.python-version }}
+            conda
+          cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.build.outputs.date }}
+          init-shell: none
+          generate-run-shell: true
+      - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - run: micromamba install tox
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.package }}
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
+      - if: matrix.env.CRDS_SERVER_URL != ''
+        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
+        id: crds-context
+        env:
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+      - if: steps.crds-context.outputs.context != ''
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
+      - uses: actions/github-script@v6
+        id: python-factor
+        with:
+          script: |
+            core.setOutput('factor', 'py${{ matrix.python-version }}'.replaceAll(/[/.]/g, ''));
+      - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors == '' || '-' }}${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }}
+        working-directory: ${{ matrix.package }}
+  unit_tests_via_package:
     needs: [ build ]
     strategy:
       fail-fast: false
@@ -150,84 +228,6 @@ jobs:
       - run: pytest -n auto ${{ matrix.args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-        working-directory: ${{ matrix.package }}
-  unit_tests_via_tox:
-    needs: [ build ]
-    strategy:
-      matrix:
-        package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
-        python-version: [ '3.9', '3.10', '3.11' ]
-        include:
-          - package: acstools
-            repository: spacetelescope/acstools
-            default_factors: test-alldeps
-            args: --remote-data -v
-          - package: asdf
-            repository: asdf-format/asdf
-            default_factors: parallel
-          - package: calcos
-            repository: spacetelescope/calcos
-            default_factors: xdist
-          - package: ccdproc
-            repository: astropy/ccdproc
-            default_factors: alldeps
-          - package: costools
-            repository: spacetelescope/costools
-            default_factors: xdist
-          - package: reftools
-            repository: spacetelescope/reftools
-            default_factors: test
-            args: --remote-data
-          - package: jwst
-            repository: spacetelescope/jwst
-            default_factors: xdist
-            args: --slow -k "not test_cmdline_status"
-      fail-fast: false
-    runs-on: ubuntu-latest
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }})
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: stenv
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: stenv/environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-            conda
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
-      - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
-        id: package_version
-        # TODO: figure out a better way to use package version when checking out a Git ref
-      - run: micromamba install tox
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
-      - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - uses: actions/github-script@v6
-        id: python-factor
-        with:
-          script: |
-            core.setOutput('factor', 'py${{ matrix.python-version }}'.replaceAll(/[/.]/g, ''));
-      - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors == '' || '-' }}${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }}
         working-directory: ${{ matrix.package }}
   smoke_tests:
     needs: [ build ]
