@@ -16,9 +16,7 @@ jobs:
   build:
     uses: ./.github/workflows/build.yaml
   unit_tests:
-    name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
     needs: [ build ]
-    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
@@ -31,9 +29,11 @@ jobs:
           - package: wfpc2tools
         exclude:
           - runs-on: macos-latest
-            python-version: 3.9
+            python-version: '3.9'
           - runs-on: macos-latest
-            python-version: 3.10
+            python-version: '3.10'
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
@@ -66,11 +66,8 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_from_source:
-    name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
     needs: [ build ]
-    runs-on: ${{ matrix.runs-on }}
     strategy:
-      fail-fast: false
       matrix:
         package: [ hstcal ]
         runs-on: [ ubuntu-latest, macos-latest ]
@@ -98,9 +95,12 @@ jobs:
           #   extras: [ test ]
         exclude:
           - runs-on: macos-latest
-            python-version: 3.9
+            python-version: '3.9'
           - runs-on: macos-latest
-            python-version: 3.10
+            python-version: '3.10'
+      fail-fast: false
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -148,15 +148,12 @@ jobs:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
         working-directory: ${{ matrix.package }}
   unit_tests_via_tox:
-    name: ${{ matrix.package }} (${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }}, ${{ matrix.runs-on }})
     needs: [ build ]
-    runs-on: ${{ matrix.runs-on }}
     strategy:
-      fail-fast: false
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
         runs-on: [ ubuntu-latest, macos-latest ]
-        python-factor: [ 'py39', 'py310', 'py311' ]
+        python-factor: [ py39, py310, py311 ]
         include:
           - package: acstools
             repository: spacetelescope/acstools
@@ -187,6 +184,9 @@ jobs:
             python-factor: py39
           - runs-on: macos-latest
             python-factor: py310
+      fail-fast: false
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -227,11 +227,8 @@ jobs:
       - run: tox -e ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }}
         working-directory: ${{ matrix.package }}
   smoke_tests:
-    name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
     needs: [ build ]
-    runs-on: ${{ matrix.runs-on }}
     strategy:
-      fail-fast: false
       matrix:
         package: [ calcos, drizzlepac ]
         runs-on: [ ubuntu-latest, macos-latest ]
@@ -252,6 +249,9 @@ jobs:
             python-version: 3.9
           - runs-on: macos-latest
             python-version: 3.10
+      fail-fast: false
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
         with:

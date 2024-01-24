@@ -26,7 +26,6 @@ defaults:
 
 jobs:
   date:
-    name: get current date
     runs-on: ubuntu-latest
     steps:
       - run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
@@ -35,14 +34,14 @@ jobs:
     outputs:
       date: ${{ steps.date.outputs.date }}
   build:
-    name: build (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
     needs: [ date ]
-    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
+    runs-on: ${{ matrix.runs-on }}
+    name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
@@ -61,7 +60,6 @@ jobs:
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
   version:
-    name: parse version from tag
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -77,14 +75,14 @@ jobs:
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   export:
-    name: export (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
     needs: [ build, version, date ]
-    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
+    runs-on: ${{ matrix.runs-on }}
+    name: export (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
