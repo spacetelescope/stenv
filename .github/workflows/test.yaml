@@ -222,7 +222,7 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - run: tox -e ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }}
+      - run: tox -e ${{ matrix.python-factor }}${{ matrix.default_factors == '' || '-' }}${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }}
         working-directory: ${{ matrix.package }}
   smoke_tests:
     needs: [ build ]
