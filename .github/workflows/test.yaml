@@ -156,7 +156,6 @@ jobs:
     strategy:
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
-        runs-on: [ ubuntu-latest, macos-latest ]
         python-factor: [ py39, py310, py311 ]
         include:
           - package: acstools
@@ -183,14 +182,9 @@ jobs:
             repository: spacetelescope/jwst
             default_factors: xdist
             args: --slow -k "not test_cmdline_status"
-        exclude:
-          - runs-on: macos-latest
-            python-factor: py39
-          - runs-on: macos-latest
-            python-factor: py310
       fail-fast: false
-    runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }}, ${{ matrix.runs-on }})
+    runs-on: ubuntu-latest
+    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }})
     steps:
       - uses: actions/checkout@v4
         with:
