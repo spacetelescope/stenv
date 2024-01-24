@@ -190,7 +190,7 @@ jobs:
             python-factor: py310
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}, ${{ matrix.runs-on }})
+    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
         with:
