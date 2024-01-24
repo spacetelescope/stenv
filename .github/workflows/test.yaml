@@ -41,7 +41,7 @@ jobs:
             default_factors: alldeps
           - package: costools
             repository: spacetelescope/costools
-            default_factors: xdist
+            default_factors: test-xdist
           - package: synphot
             repository: spacetelescope/synphot_refactor
             default_factors: test-alldeps
@@ -50,9 +50,11 @@ jobs:
             repository: spacetelescope/jwst
             default_factors: xdist
             args: --slow -k "not test_cmdline_status"
+            env:
+              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
       fail-fast: false
     runs-on: ubuntu-latest
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors != '' && '-' || '' }}${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }})
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -97,6 +99,8 @@ jobs:
             core.setOutput('factor', 'py${{ matrix.python-version }}'.replaceAll(/[/.]/g, ''));
       - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors != '' && '-' || '' }}${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}
         working-directory: ${{ matrix.package }}
+        env:
+          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_via_package:
     needs: [ build ]
     strategy:
