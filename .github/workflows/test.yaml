@@ -42,9 +42,9 @@ jobs:
           - package: costools
             repository: spacetelescope/costools
             default_factors: xdist
-          - package: reftools
-            repository: spacetelescope/reftools
-            default_factors: test
+          - package: synphot
+            repository: spacetelescope/synphot_refactor
+            default_factors: test-alldeps
             args: --remote-data
           - package: jwst
             repository: spacetelescope/jwst
@@ -102,12 +102,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ wfpc2tools ]
+        package: [ reftools, wfpc2tools ]
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           #- package: pysynphot
           #  extras: [ test ]
+          - package: reftools
+            extras: [ test ]
           - package: wfpc2tools
         exclude:
           - runs-on: macos-latest
