@@ -59,6 +59,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: stenv
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.package }}
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
@@ -76,11 +81,6 @@ jobs:
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
       - run: micromamba install tox
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
@@ -193,6 +193,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: stenv
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.package }}
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
@@ -209,11 +214,6 @@ jobs:
       - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
