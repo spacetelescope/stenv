@@ -184,7 +184,7 @@ jobs:
             args: --slow -k "not test_cmdline_status"
       fail-fast: false
     runs-on: ubuntu-latest
-    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }})
+    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}${{ matrix.default_factors == '' || '-' }}${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }})
     steps:
       - uses: actions/checkout@v4
         with:
