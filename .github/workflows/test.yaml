@@ -52,7 +52,7 @@ jobs:
             args: --slow -k "not test_cmdline_status"
       fail-fast: false
     runs-on: ubuntu-latest
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }})
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors != '' && '-' || '' }}${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,7 +95,7 @@ jobs:
         with:
           script: |
             core.setOutput('factor', 'py${{ matrix.python-version }}'.replaceAll(/[/.]/g, ''));
-      - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors == '' && '-' || '' }}${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}
+      - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors != '' && '-' || '' }}${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}
         working-directory: ${{ matrix.package }}
   unit_tests_via_package:
     needs: [ build ]
