@@ -62,7 +62,7 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - run: pytest -n auto ${{ matrix.pytest_args }} --pyargs ${{ matrix.package }}
+      - run: pytest -n auto ${{ matrix.args }} --pyargs ${{ matrix.package }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_from_source:
@@ -87,7 +87,7 @@ jobs:
           #  extras: [ test ]
           - package: hstcal
             repository: spacetelescope/hstcal
-            pytest_args: '--slow'
+            args: --slow
             test_directory: tests
             env:
               CRDS_SERVER_URL: https://hst-crds.stsci.edu
@@ -143,12 +143,12 @@ jobs:
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
         working-directory: ${{ matrix.package }}
-      - run: pytest -n auto ${{ matrix.pytest_args }} ${{ matrix.test_directory }}
+      - run: pytest -n auto ${{ matrix.args }} ${{ matrix.test_directory }}
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
         working-directory: ${{ matrix.package }}
   unit_tests_via_tox:
-    name: ${{ matrix.package }} (py${{ matrix.python-factor }}, ${{ matrix.runs-on }})
+    name: ${{ matrix.package }} (${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }}, ${{ matrix.runs-on }})
     needs: [ build ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
@@ -161,7 +161,7 @@ jobs:
           - package: acstools
             repository: spacetelescope/acstools
             default_factors: test-alldeps
-            pytest_args: --remote-data -v
+            args: --remote-data -v
           - package: asdf
             repository: asdf-format/asdf
             default_factors: parallel
@@ -177,11 +177,11 @@ jobs:
           - package: reftools
             repository: spacetelescope/reftools
             default_factors: test
-            pytest_args: --remote-data
+            args: --remote-data
           - package: jwst
             repository: spacetelescope/jwst
             default_factors: xdist
-            pytest_args: --slow -k "not test_cmdline_status"
+            args: --slow -k "not test_cmdline_status"
         exclude:
           - runs-on: macos-latest
             python-factor: py39
@@ -224,7 +224,7 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - run: tox -e ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.pytest_args != '' || ' -- ' }}${{ matrix.pytest_args }}
+      - run: tox -e ${{ matrix.python-factor }}${{ matrix.default_factors != '' || '-' }}${{ matrix.default_factors }}${{ matrix.args != '' || ' -- ' }}${{ matrix.args }}
         working-directory: ${{ matrix.package }}
   smoke_tests:
     name: ${{ matrix.package }} (py${{ matrix.python-version }}, ${{ matrix.runs-on }})
@@ -284,7 +284,7 @@ jobs:
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
       - uses: actions/cache@v4
         with:
-          path: 'tests/data/'
+          path: tests/data/
           key: data-${{ hashFiles('tests/data/*') }}
       - run: ${{ matrix.run }}
         env:
