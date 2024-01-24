@@ -156,7 +156,7 @@ jobs:
     strategy:
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
-        python-factor: [ py39, py310, py311 ]
+        python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
             repository: spacetelescope/acstools
@@ -184,7 +184,7 @@ jobs:
             args: --slow -k "not test_cmdline_status"
       fail-fast: false
     runs-on: ubuntu-latest
-    name: ${{ matrix.package }} (tox ${{ matrix.python-factor }}${{ matrix.default_factors == '' || '-' }}${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }})
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -222,7 +222,12 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - run: tox -e ${{ matrix.python-factor }}${{ matrix.default_factors == '' || '-' }}${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }}
+      - uses: actions/github-script@v6
+        id: python-factor
+        with:
+          script: |
+            core.setOutput('factor', 'py${{ matrix.python-version }}'.replaceAll(/[/.]/g, ''));
+      - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors == '' || '-' }}${{ matrix.default_factors }}${{ matrix.args == '' || ' -- ' }}${{ matrix.args }}
         working-directory: ${{ matrix.package }}
   smoke_tests:
     needs: [ build ]
