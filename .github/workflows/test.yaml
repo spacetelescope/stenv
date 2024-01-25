@@ -252,11 +252,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true
+          path: stenv
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yaml
+          environment-file: stenv/environment.yaml
           create-args: >-
             python=${{ matrix.python-version }}
             conda
@@ -277,6 +277,7 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
       - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
+        working-directory: ${{ matrix.package }}
       - id: cache
         uses: actions/cache@v3
         with:
@@ -285,6 +286,7 @@ jobs:
             ${{ needs.crds_test_cache.outputs.testing_cache }}
           key: ${{ needs.crds_test_cache.outputs.key }}
       - run: ./runtests --cover
+        working-directory: ${{ matrix.package }}
   smoke_tests:
     needs: [ build ]
     strategy:
