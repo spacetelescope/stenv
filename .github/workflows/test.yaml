@@ -161,12 +161,6 @@ jobs:
         runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
-          #- package: crds
-          #  repository: spacetelescope/crds
-          #  extras: [ test ]
-          #  env:
-          #    CRDS_SERVER_URL: https://hst-crds.stsci.edu
-          #  pre_command: './setup_test_cache $HOME && source envs/hst-crds-ops.sh'
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
           #  extras: [ test ]
@@ -193,11 +187,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: stenv
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
@@ -214,6 +203,11 @@ jobs:
       - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.package }}
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
@@ -235,6 +229,64 @@ jobs:
         env:
           CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
         working-directory: ${{ matrix.package }}
+  crds_test_cache:
+    uses: spacetelescope/crds/.github/workflows/cache.yml@master
+  crds_tests:
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    needs: [ build, crds_test_cache ]
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [ crds ]
+        runs-on: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.9', '3.10', '3.11' ]
+        include:
+          - package: crds
+            repository: spacetelescope/crds
+        exclude:
+          - runs-on: macos-latest
+            python-version: '3.9'
+          - runs-on: macos-latest
+            python-version: '3.10'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: stenv
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: stenv/environment.yaml
+          create-args: >-
+            python=${{ matrix.python-version }}
+            conda
+          cache-downloads: true
+          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
+          cache-environment: true
+          cache-environment-key: environment-${{ needs.build.outputs.date }}
+          init-shell: none
+          generate-run-shell: true
+      - run: micromamba install -y filelock requests
+      - run: pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
+      - run: echo "version=$(conda list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.package }}
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+      - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
+        working-directory: ${{ matrix.package }}
+      - id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ needs.crds_test_cache.outputs.path }}
+            ${{ needs.crds_test_cache.outputs.testing_cache }}
+          key: ${{ needs.crds_test_cache.outputs.key }}
+      - run: ./runtests --cover
+        working-directory: ${{ matrix.package }}
   smoke_tests:
     needs: [ build ]
     strategy:
@@ -255,9 +307,9 @@ jobs:
               jref: hst/references/hst/
         exclude:
           - runs-on: macos-latest
-            python-version: 3.9
+            python-version: '3.9'
           - runs-on: macos-latest
-            python-version: 3.10
+            python-version: '3.10'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
