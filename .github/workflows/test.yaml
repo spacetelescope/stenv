@@ -246,8 +246,8 @@ jobs:
   crds_tests:
     needs: [ build, crds_test_cache ]
     env:
-      CRDS_TEST_ROOT: /tmp
       CRDS_PATH: /tmp/crds-cache-default-test
+      CRDS_TEST_ROOT: /tmp
       CRDS_TESTING_CACHE: /tmp/crds-cache-test
     strategy:
       fail-fast: false
@@ -304,6 +304,8 @@ jobs:
           key: ${{ needs.crds_test_cache.outputs.key }}
       - run: ./runtests --cover
         working-directory: ${{ matrix.package }}
+        env:
+          CRDS_SERVER_URL: https://hst-crds.stsci.edu
   smoke_tests:
     needs: [ build ]
     strategy:
