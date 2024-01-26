@@ -24,6 +24,7 @@ jobs:
     strategy:
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
+        runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
@@ -52,8 +53,13 @@ jobs:
             args: --slow -k "not test_cmdline_status"
             env:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+        exclude:
+          - runs-on: macos-latest
+            python-version: '3.9'
+          - runs-on: macos-latest
+            python-version: '3.10'
       fail-fast: false
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }})
     steps:
       - uses: actions/checkout@v4
@@ -92,7 +98,8 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - uses: actions/github-script@v6
+      - name: parse tox factor
+        uses: actions/github-script@v6
         id: python-factor
         with:
           script: |
