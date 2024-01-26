@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
     runs-on: ${{ matrix.runs-on }}
     name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -86,7 +86,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
     runs-on: ${{ matrix.runs-on }}
     name: export (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
