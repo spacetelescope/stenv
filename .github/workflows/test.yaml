@@ -14,7 +14,10 @@ defaults:
 
 env:
   CRDS_PATH: /tmp/crds_cache
+  CRDS_CLIENT_RETRY_COUNT: 3
+  CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
   PYSYN_CDBS: /tmp/trds
+  LD_LIBRARY_PATH: /usr/local/lib
 
 jobs:
   build:
@@ -241,9 +244,11 @@ jobs:
   crds_test_cache:
     uses: spacetelescope/crds/.github/workflows/cache.yml@master
   crds_tests:
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     needs: [ build, crds_test_cache ]
-    runs-on: ${{ matrix.runs-on }}
+    env:
+      CRDS_PATH: /tmp/crds-cache-default-test
+      CRDS_TEST_ROOT: /tmp
+      CRDS_TESTING_CACHE: /tmp/crds-cache-test
     strategy:
       fail-fast: false
       matrix:
@@ -258,6 +263,8 @@ jobs:
             python-version: '3.9'
           - runs-on: macos-latest
             python-version: '3.10'
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -297,6 +304,8 @@ jobs:
           key: ${{ needs.crds_test_cache.outputs.key }}
       - run: ./runtests --cover
         working-directory: ${{ matrix.package }}
+        env:
+          CRDS_SERVER_URL: https://hst-crds.stsci.edu
   smoke_tests:
     needs: [ build ]
     strategy:
