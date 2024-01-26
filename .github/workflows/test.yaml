@@ -16,7 +16,6 @@ env:
   CRDS_PATH: /tmp/crds_cache
   CRDS_CLIENT_RETRY_COUNT: 3
   CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
-  CRDS_TEST_ROOT: /tmp
   PYSYN_CDBS: /tmp/trds
   LD_LIBRARY_PATH: /usr/local/lib
 
@@ -246,6 +245,10 @@ jobs:
     uses: spacetelescope/crds/.github/workflows/cache.yml@master
   crds_tests:
     needs: [ build, crds_test_cache ]
+    env:
+      CRDS_TEST_ROOT: /tmp
+      CRDS_PATH: /tmp/crds-cache-default-test
+      CRDS_TESTING_CACHE: /tmp/crds-cache-test
     strategy:
       fail-fast: false
       matrix:
