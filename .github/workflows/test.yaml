@@ -70,6 +70,7 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
@@ -215,6 +216,7 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
@@ -283,6 +285,7 @@ jobs:
           path: ${{ matrix.package }}
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
       - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
         working-directory: ${{ matrix.package }}
       - id: cache
