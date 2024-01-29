@@ -103,7 +103,7 @@ jobs:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
       - name: parse tox factor
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         id: python-factor
         with:
           script: |
