@@ -3,6 +3,7 @@
 
 channels:
   - conda-forge
+  - intel
 
 dependencies:
   - astropy
@@ -13,6 +14,7 @@ dependencies:
   - ipython
   - jupyter
   - numpy
+  - opencv-python-headless
   - pip
   - pytables
   - python<3.12
