@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
@@ -118,7 +118,7 @@ jobs:
       fail-fast: false
       matrix:
         package: [ reftools, wfpc2tools ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           #- package: pysynphot
@@ -169,7 +169,7 @@ jobs:
     strategy:
       matrix:
         package: [ hstcal ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           #- package: drizzlepac
@@ -253,7 +253,7 @@ jobs:
       fail-fast: false
       matrix:
         package: [ crds ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: crds
@@ -311,7 +311,7 @@ jobs:
     strategy:
       matrix:
         package: [ calcos, drizzlepac ]
-        runs-on: [ ubuntu-latest, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
