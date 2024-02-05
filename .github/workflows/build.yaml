@@ -38,8 +38,23 @@ jobs:
         shell: bash
     outputs:
       date: ${{ steps.date.outputs.date }}
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: mtkennerly/dunamai-action@v1
+        id: version
+        with:
+          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   build:
-    needs: [ date ]
+    needs: [ date, version ]
     strategy:
       fail-fast: false
       matrix:
@@ -64,46 +79,6 @@ jobs:
           generate-run-shell: true
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
-  version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - uses: mtkennerly/dunamai-action@v1
-        id: version
-        with:
-          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
-  export:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event_name == 'release' || inputs.export == 'true'
-    needs: [ build, version, date ]
-    strategy:
-      fail-fast: false
-      matrix:
-        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
-    runs-on: ${{ matrix.runs-on }}
-    name: export (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
-    steps:
-      - uses: actions/checkout@v4
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-            conda
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.date.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml" >> $GITHUB_OUTPUT
         id: output
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
