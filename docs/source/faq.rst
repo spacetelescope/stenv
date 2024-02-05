@@ -23,11 +23,6 @@ You can use the environment definition YAML file (:ref:`environment_yaml`) in th
 This environment is unpinned, meaning it may take some time to resolve dependency versions. 
 Additionally, the resulting package versions may not have been tested for your platform.
 
-.. note::
-    ``stenv`` does not currently have automated infrastructure for Apple Silicon ARM64 processors (``M1``, ``M1 Max``, ``M1 Ultra``, ``M2``);
-    environments for Apple ARM64 are currently built and tested manually for every release.
-    If there is not an ARM64 build for your desired release, you can see `this issue <https://github.com/spacetelescope/stenv/issues/86#issuecomment-1444583090>`_  or resolve the environment yourself with :ref:`environment_yaml`
-    
 .. warning::
 
     ``stenv`` does not currently support a native Windows installation. To build ``stenv`` on Windows, see :doc:`windows`.
