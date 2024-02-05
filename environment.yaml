@@ -21,6 +21,7 @@ dependencies:
   - scipy
   - scikit-image
   - sphinx
+  - wheel
   - pip:
       - acstools
       - asdf
