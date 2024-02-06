@@ -51,21 +51,16 @@ jobs:
   build:
     needs: [ date, version ]
     strategy:
-      fail-fast: false
       matrix:
-        runs-on: [ ubuntu-latest, macos-latest, macos-14, windows-latest ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
         python-version: [ '3.9', '3.10', '3.11' ]
+      fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     defaults:
       run:
-        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo pipefail {0}' || 'wsl-bash {0}' }}
+        shell: bash -leo pipefail {0}
     steps:
-      - if: matrix.runs-on == 'windows-latest'
-        id: wsl
-        uses: Vampire/setup-wsl@v2
-      - if: matrix.runs-on == 'windows-latest'
-        run: echo ${{ steps.wsl.outputs.wsl-shell-distribution-wrapper-path }}
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
@@ -78,8 +73,7 @@ jobs:
           cache-downloads-key: downloads-${{ needs.date.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.date.outputs.date }}
-          init-shell: >-
-            ${{ matrix.runs-on != 'windows' && 'bash' || 'wsl-bash' }}
+          init-shell: bash
           generate-run-shell: false
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
@@ -95,3 +89,22 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           file: ${{ steps.output.outputs.filename }}
+  build_wsl:
+    needs: [ date, version ]
+    runs-on: windows-latest
+    name: build (WSL)
+    defaults:
+      run:
+        shell: wsl-bash {0}
+    steps:
+      - uses: Vampire/setup-wsl@v2
+        with:
+          additional-packages: curl
+      - name: install micromamba
+        run: |
+          mkdir -p ~/micromamba-bin/
+          curl -o ~/micromamba-bin/micromamba https://github.com/mamba-org/micromamba-releases/releases/latest/download/micromamba-linux-64
+          ~/micromamba-bin/micromamba shell --init
+      - run: micromamba env create --name stenv-wsl --file https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml
+
+    
