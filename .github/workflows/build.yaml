@@ -62,7 +62,10 @@ jobs:
         shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
     steps:
       - if: matrix.runs-on == 'windows-latest'
+        id: wsl
         uses: Vampire/setup-wsl@v2
+      - if: matrix.runs-on == 'windows-latest'
+        run: echo ${{ steps.wsl.outputs.wsl-shell-distribution-wrapper-path }}
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
