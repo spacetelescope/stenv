@@ -8,10 +8,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    shell: micromamba-shell {0}
-
 env:
   CRDS_PATH: /tmp/crds_cache
   CRDS_CLIENT_RETRY_COUNT: 3
@@ -27,7 +23,7 @@ jobs:
     strategy:
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
-        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14, windows-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: acstools
@@ -68,7 +64,12 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}, ${{ matrix.runs-on }})
+    defaults:
+      run:
+        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
     steps:
+      - if: matrix.runs-on == 'windows-latest'
+        uses: Vampire/setup-wsl@v2
       - uses: actions/checkout@v4
         with:
           path: stenv
@@ -119,10 +120,9 @@ jobs:
   unit_tests_via_package:
     needs: [ build ]
     strategy:
-      fail-fast: false
       matrix:
         package: [ reftools, wfpc2tools ]
-        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14, windows-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           #- package: pysynphot
@@ -139,9 +139,15 @@ jobs:
             python-version: '3.9'
           - runs-on: macos-14
             python-version: '3.10'
+      fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    defaults:
+      run:
+        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
     steps:
+      - if: matrix.runs-on == 'windows'
+        uses: Vampire/setup-wsl@v2
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
@@ -177,7 +183,7 @@ jobs:
     strategy:
       matrix:
         package: [ hstcal ]
-        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14, windows-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           #- package: drizzlepac
@@ -206,7 +212,12 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    defaults:
+      run:
+        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
     steps:
+      - if: matrix.runs-on == 'windows-latest'
+        uses: Vampire/setup-wsl@v2
       - uses: actions/checkout@v4
         with:
           path: stenv
@@ -262,10 +273,9 @@ jobs:
       CRDS_TEST_ROOT: /tmp
       CRDS_TESTING_CACHE: /tmp/crds-cache-test
     strategy:
-      fail-fast: false
       matrix:
         package: [ crds ]
-        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14, windows-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: crds
@@ -279,9 +289,15 @@ jobs:
             python-version: '3.9'
           - runs-on: macos-14
             python-version: '3.10'
+      fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    defaults:
+      run:
+        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
     steps:
+      - if: matrix.runs-on == 'windows-latest'
+        uses: Vampire/setup-wsl@v2
       - uses: actions/checkout@v4
         with:
           path: stenv
@@ -327,7 +343,7 @@ jobs:
     strategy:
       matrix:
         package: [ calcos, drizzlepac ]
-        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14, windows-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
         include:
           - package: calcos
@@ -352,7 +368,12 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    defaults:
+      run:
+        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
     steps:
+      - if: matrix.runs-on == 'windows-latest'
+        uses: Vampire/setup-wsl@v2
       - uses: actions/checkout@v4
         with:
           lfs: true

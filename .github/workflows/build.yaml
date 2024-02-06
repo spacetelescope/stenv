@@ -25,23 +25,16 @@ on:
 concurrency:
   group: build-${{ github.ref }}
 
-defaults:
-  run:
-    shell: micromamba-shell {0}
-
 jobs:
   date:
     runs-on: ubuntu-latest
     steps:
       - run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
         id: date        
-        shell: bash
     outputs:
       date: ${{ steps.date.outputs.date }}
   version:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,16 +46,23 @@ jobs:
         id: version
         with:
           args: --pattern "(?P<base>\d+\.\d+\.\d+)"
+    outputs:
+      version: ${{ steps.version.outputs.version }}
   build:
     needs: [ date, version ]
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
+        runs-on: [ ubuntu-latest, macos-latest, macos-14, windows-latest ]
         python-version: [ '3.9', '3.10', '3.11' ]
     runs-on: ${{ matrix.runs-on }}
     name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    defaults:
+      run:
+        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
     steps:
+      - if: matrix.runs-on == 'windows-latest'
+        uses: Vampire/setup-wsl@v2
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
@@ -75,8 +75,9 @@ jobs:
           cache-downloads-key: downloads-${{ needs.date.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.date.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
+          init-shell: >-
+            ${{ matrix.runs-on != 'windows' && 'bash' || 'wsl-bash' }}
+          generate-run-shell: false
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml" >> $GITHUB_OUTPUT
