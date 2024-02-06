@@ -59,7 +59,7 @@ jobs:
     name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     defaults:
       run:
-        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo {0}' || 'wsl-bash {0}' }}
+        shell: ${{ matrix.runs-on != 'windows-latest' && 'bash -leo pipefail {0}' || 'wsl-bash {0}' }}
     steps:
       - if: matrix.runs-on == 'windows-latest'
         id: wsl
