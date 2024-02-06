@@ -102,6 +102,7 @@ jobs:
           additional-packages: wget
       - run: mkdir -p ~/micromamba-bin/
       - run: wget -o ~/micromamba-bin/micromamba https://github.com/mamba-org/micromamba-releases/releases/latest/download/micromamba-linux-64 --no-check-certificate
+      - run: chmod +x ~/micromamba-bin/micromamba
       - run: ~/micromamba-bin/micromamba shell --init
       - run: micromamba env create --name stenv-wsl --file https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml
 
