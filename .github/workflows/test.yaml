@@ -8,16 +8,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    shell: micromamba-shell {0}
-
 env:
   CRDS_PATH: /tmp/crds_cache
   CRDS_CLIENT_RETRY_COUNT: 3
   CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
   PYSYN_CDBS: /tmp/trds
   LD_LIBRARY_PATH: /usr/local/lib
+
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
 
 jobs:
   build:
@@ -119,7 +119,6 @@ jobs:
   unit_tests_via_package:
     needs: [ build ]
     strategy:
-      fail-fast: false
       matrix:
         package: [ reftools, wfpc2tools ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
@@ -139,6 +138,7 @@ jobs:
             python-version: '3.9'
           - runs-on: macos-14
             python-version: '3.10'
+      fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -262,7 +262,6 @@ jobs:
       CRDS_TEST_ROOT: /tmp
       CRDS_TESTING_CACHE: /tmp/crds-cache-test
     strategy:
-      fail-fast: false
       matrix:
         package: [ crds ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
@@ -279,6 +278,7 @@ jobs:
             python-version: '3.9'
           - runs-on: macos-14
             python-version: '3.10'
+      fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
