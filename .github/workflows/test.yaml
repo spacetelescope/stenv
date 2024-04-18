@@ -28,7 +28,7 @@ jobs:
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: acstools
             repository: spacetelescope/acstools
@@ -58,13 +58,13 @@ jobs:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}, ${{ matrix.runs-on }})
@@ -123,7 +123,7 @@ jobs:
       matrix:
         package: [ reftools, wfpc2tools ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           #- package: pysynphot
           #  extras: [ test ]
@@ -132,13 +132,13 @@ jobs:
           - package: wfpc2tools
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -178,7 +178,7 @@ jobs:
       matrix:
         package: [ hstcal ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
@@ -196,13 +196,13 @@ jobs:
           #   extras: [ test ]
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
@@ -266,19 +266,19 @@ jobs:
       matrix:
         package: [ crds ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: crds
             repository: spacetelescope/crds
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -328,7 +328,7 @@ jobs:
       matrix:
         package: [ calcos, drizzlepac ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
@@ -342,13 +342,13 @@ jobs:
               jref: hst/references/hst/
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})

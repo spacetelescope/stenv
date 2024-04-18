@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
     runs-on: ${{ matrix.runs-on }}
     name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -61,7 +61,7 @@ jobs:
         with:
           name: ${{ steps.output.outputs.filename }}
           path: ${{ steps.output.outputs.filename }}
-      - if: (github.event_name == 'release' && github.event.action == 'published')
+      - if: (github.event_name == 'release' && github.event.action == 'released')
         uses: svenstaro/upload-release-action@v2
         with:
           file: ${{ steps.output.outputs.filename }}
