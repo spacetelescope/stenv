@@ -15,7 +15,7 @@ dependencies:
   - numpy
   - pip
   - pytables
-  - python<3.12
+  - python>=3.10
   - pytest
   - pytest-xdist
   - scipy
