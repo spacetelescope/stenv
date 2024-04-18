@@ -38,23 +38,8 @@ jobs:
         shell: bash
     outputs:
       date: ${{ steps.date.outputs.date }}
-  version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - uses: mtkennerly/dunamai-action@v1
-        id: version
-        with:
-          args: --pattern "(?P<base>\d+\.\d+\.\d+)"
   build:
-    needs: [ date, version ]
+    needs: [ date ]
     strategy:
       fail-fast: false
       matrix:
@@ -79,7 +64,7 @@ jobs:
           generate-run-shell: true
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:"
       - run: pytest -n auto tests/test_import.py
-      - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.version.outputs.version }}.yaml" >> $GITHUB_OUTPUT
+      - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.date.outputs.date }}.yaml" >> $GITHUB_OUTPUT
         id: output
       - run: conda env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
       - run: cat ${{ steps.output.outputs.filename }}
