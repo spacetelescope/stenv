@@ -2,11 +2,6 @@ name: build
 
 on:
   workflow_call:
-    inputs:
-      export:
-        type: boolean
-        required: false
-        default: false
     outputs:
       date:
         value: ${{ jobs.date.outputs.date }}
