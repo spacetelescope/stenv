@@ -11,12 +11,6 @@ on:
       date:
         value: ${{ jobs.date.outputs.date }}
   workflow_dispatch:
-    inputs:
-      upload_to_release:
-        description: upload exported files to a release of the current tag
-        required: false
-        type: boolean
-        default: false
   push:
   release:
     types:
