@@ -33,7 +33,7 @@ jobs:
   date:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+      - run: echo "date=$(date +%Y.%m.%d)" >> $GITHUB_OUTPUT
         id: date        
         shell: bash
     outputs:
