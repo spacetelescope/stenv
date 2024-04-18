@@ -58,13 +58,13 @@ jobs:
               CRDS_SERVER_URL: https://jwst-crds.stsci.edu
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}, ${{ matrix.runs-on }})
@@ -132,13 +132,13 @@ jobs:
           - package: wfpc2tools
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -196,13 +196,13 @@ jobs:
           #   extras: [ test ]
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
@@ -272,13 +272,13 @@ jobs:
             repository: spacetelescope/crds
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -342,13 +342,13 @@ jobs:
               jref: hst/references/hst/
         exclude:
           - runs-on: macos-latest
-            python-version: '3.9'
+            python-version: '3.10'
           - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-14
-            python-version: '3.9'
+            python-version: '3.11'
           - runs-on: macos-14
             python-version: '3.10'
+          - runs-on: macos-14
+            python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
