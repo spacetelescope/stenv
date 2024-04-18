@@ -28,7 +28,7 @@ jobs:
       matrix:
         package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: acstools
             repository: spacetelescope/acstools
@@ -123,7 +123,7 @@ jobs:
       matrix:
         package: [ reftools, wfpc2tools ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           #- package: pysynphot
           #  extras: [ test ]
@@ -178,7 +178,7 @@ jobs:
       matrix:
         package: [ hstcal ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
@@ -266,7 +266,7 @@ jobs:
       matrix:
         package: [ crds ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: crds
             repository: spacetelescope/crds
@@ -328,7 +328,7 @@ jobs:
       matrix:
         package: [ calcos, drizzlepac ]
         runs-on: [ ubuntu-latest, macos-latest, macos-14 ]
-        python-version: [ '3.9', '3.10', '3.11' ]
+        python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
