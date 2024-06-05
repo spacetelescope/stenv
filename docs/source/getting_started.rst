@@ -115,28 +115,26 @@ newest (highest-numbered) Python version available.
     Therefore, I recommend using a more descriptive name than ``stenv`` for your environment; for example, 
     use something like ``stenv-py3.11-2023.01.01`` (changed as needed to match the version you chose).
 
-Right-click (or control-click on macOS) on the link to the release file and choose ``Copy Link`` (or 
-``Copy Link Address``). Then, run the following command in a terminal, replacing ``<URL>`` with the URL you copied in the previous 
-step:
+Download the file corresponding to your platform and desired Python version, then run the following command 
+in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.10-2023.02.16.yaml``):
 
 .. tab:: micromamba
 
     .. code-block:: shell
 
-        curl -L <URL> -o ~/Downloads/stenv.yaml
-        micromamba env create --name stenv --file ~/Downloads/stenv.yaml
+        micromamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
 .. tab:: mamba
 
     .. code-block:: shell
 
-        mamba env create --name stenv --file <URL>
+        mamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
 .. tab:: conda
 
     .. code-block:: shell
 
-        conda env create --name stenv --file <URL>
+        conda env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
