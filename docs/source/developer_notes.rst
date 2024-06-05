@@ -15,7 +15,14 @@ Developer Notes
 .. literalinclude:: ../../environment.yaml
    :language: yaml
 
-To build an environment from this unpinned environment definition, you may run the following:
+To build an environment from this unpinned environment definition, run the following:
+
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        curl -L https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml -o ~/Downloads/stenv.yaml
+        micromamba env create --name stenv --file ~/Downloads/stenv.yaml
 
 .. tab:: mamba
 
@@ -28,13 +35,6 @@ To build an environment from this unpinned environment definition, you may run t
     .. code-block:: shell
 
         conda env create --name stenv --file https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
-
-.. tab:: micromamba
-
-    .. code-block:: shell
-
-        curl -L https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml -o ~/Downloads/stenv.yaml
-        micromamba env create --name stenv --file ~/Downloads/stenv.yaml
 
 .. _adding_a_package_to_stenv:
 

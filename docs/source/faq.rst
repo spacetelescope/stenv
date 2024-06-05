@@ -8,6 +8,13 @@ Frequently Asked Questions
 
 You can use the environment definition YAML file (:ref:`environment_yaml`) in the root of the repository:
 
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        curl -L https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml -o ~/Downloads/stenv.yaml
+        micromamba env create --name stenv --file ~/Downloads/stenv.yaml 
+
 .. tab:: mamba
 
     .. code-block:: shell
@@ -19,13 +26,6 @@ You can use the environment definition YAML file (:ref:`environment_yaml`) in th
     .. code-block:: shell
 
         conda env create --name stenv --file https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
-
-.. tab:: micromamba
-
-    .. code-block:: shell
-
-        curl -L https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml -o ~/Downloads/stenv.yaml
-        micromamba env create --name stenv --file ~/Downloads/stenv.yaml 
 
 This environment is unpinned, meaning it may take some time to resolve dependency versions. 
 Additionally, the resulting package versions may not have been tested for your platform.
@@ -42,6 +42,13 @@ some packages are not supported and / or deprecated, and some are deemed too nic
 
 To install a package in your local environment, you can use ``pip install`` while the environment is activated:
 
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        micromamba activate stenv
+        pip install <package_name>
+
 .. tab:: mamba
 
     .. code-block:: shell
@@ -54,13 +61,6 @@ To install a package in your local environment, you can use ``pip install`` whil
     .. code-block:: shell
 
         conda activate stenv
-        pip install <package_name>
-
-.. tab:: micromamba
-
-    .. code-block:: shell
-
-        micromamba activate stenv
         pip install <package_name>
 
 To request that a new package be added to ``stenv`` (:ref:`environment_yaml`) for all users, see :ref:`adding_a_package_to_stenv`.

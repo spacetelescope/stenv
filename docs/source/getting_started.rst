@@ -20,46 +20,66 @@ Installation
 Install Conda
 -------------
 
-A Conda distribution provides the ``conda`` command, which lets you create, manage, and activate new 
-environments. Try running the ``conda`` command in your terminal. If you get ``conda: command not found`` 
-(or similar), you will need to install a conda distribution. If you already have a ``conda`` command in 
-your terminal, you can skip to the next step.
+A Conda distribution provides the ``micromamba`` / ``mamba`` / ``conda`` command, which lets you create, manage, and switch to 
+(activate) environments. Try running ``micromamba``, ``mamba``, or ``conda`` in your terminal. If you get ``command not found`` 
+(or similar), see below to install. 
 
-The easiest option is to install 
-`Miniconda <https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html>`_, which is 
-full-featured but installs a minimal set of default packages initially. We will install more packages later 
-on.
+``mamba`` is a rewrite of ``conda`` that is much faster at resolving dependencies with near-parity of commands. 
+``micromamba`` is ``mamba`` packaged into a single binary, which makes installation and maintenance much easier.
+For these reasons, I recommended you use ``micromamba``.
 
-Alternatives include `Miniforge <https://github.com/conda-forge/miniforge#miniforge3>`_, which includes the 
-``mamba`` command (a much faster drop-in replacement for ``conda`` with all the same functionality) and 
-`Anaconda <https://www.anaconda.com/distribution/>`_ which provides a full-featured base environment as 
-well as hundreds of useful tools, libraries, and utilities by default.
+.. tab:: micromamba
 
-.. note::
-    The below instructions will work for any of the distributions, though users with ``mamba`` installed 
-    will notice a speedup if they substitute ``mamba`` for ``conda`` where it appears in commands.
+    Run the following in your terminal to install ``micromamba``:
 
-.. important::
-    Remember to run ``conda init`` when installing. This is required in order to set up your shell to 
-    ``activate`` and ``deactivate`` environments.
+    .. code-block:: shell
 
-    .. tab:: mamba
+        "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+
+    On macOS, you can alternatively install ``micromamba`` from `Homebrew <https://brew.sh/>`_:
+
+    .. code-block:: shell
+
+        brew install micromamba
+
+    You may also follow `these installation instructions <https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html>`_.
+    
+.. tab:: mamba
+
+    Follow 
+    `these instructions to install Miniforge <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`_, 
+    which includes the ``mamba`` command in its base environment.
+
+    .. important::
+        Remember to run ``mamba init`` after installing. This is required in order to set up your shell to 
+        ``activate`` and ``deactivate`` environments.
 
         .. code-block:: shell
 
             mamba init
 
-    .. tab:: conda
+.. tab:: conda
+
+    .. caution::
+        The Anaconda organization has 
+        `updated their terms of service <https://legal.anaconda.com/policies/en/#:~:text=2.1%20Organizational%20Use.%C2%A0>`_ 
+        to indicate that any usage of their services requires a paid license, if used by an organization of 
+        more than 200 users. This includes pulling packages from the Anaconda ``defaults`` channels, as well as installing 
+        ``conda`` itself.
+
+        We recommend that you use ``mamba`` and pull packages from the ``conda-forge`` channel, instead of using ``conda`` 
+        and the ``defaults`` channels.
+
+    Follow `these instructions to install Miniconda <https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html>`_ 
+    which includes the ``conda`` command in its base environment.
+
+    .. important::
+        Remember to run ``conda init`` after installing. This is required in order to set up your shell to 
+        ``activate`` and ``deactivate`` environments.
 
         .. code-block:: shell
 
             conda init
-
-    .. tab:: micromamba
-
-        .. code-block:: shell
-
-            micromamba init
 
 .. _choose_release:
 
@@ -99,6 +119,13 @@ Right-click (or control-click on macOS) on the link to the release file and choo
 ``Copy Link Address``). Then, run the following command in a terminal, replacing ``<URL>`` with the URL you copied in the previous 
 step:
 
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        curl -L <URL> -o ~/Downloads/stenv.yaml
+        micromamba env create --name stenv --file ~/Downloads/stenv.yaml
+
 .. tab:: mamba
 
     .. code-block:: shell
@@ -110,14 +137,6 @@ step:
     .. code-block:: shell
 
         conda env create --name stenv --file <URL>
-
-.. tab:: micromamba
-
-    .. code-block:: shell
-
-        curl -L <URL> -o ~/Downloads/stenv.yaml
-        micromamba env create --name stenv --file ~/Downloads/stenv.yaml
-
 
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
@@ -140,6 +159,12 @@ In order to access the packages in ``stenv``, you must first ``activate`` the en
 .. important::
     If you chose another name when creating the environment, use that here instead.
 
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        micromamba activate stenv
+
 .. tab:: mamba
 
     .. code-block:: shell
@@ -151,12 +176,6 @@ In order to access the packages in ``stenv``, you must first ``activate`` the en
     .. code-block:: shell
 
         conda activate stenv
-
-.. tab:: micromamba
-
-    .. code-block:: shell
-
-        micromamba activate stenv
 
 Activating a Conda environment changes which Python interpreter and packages are in use for that session 
 (i.e. terminal window). Now, if you try to ``import jwst``:
@@ -171,6 +190,12 @@ Every time you open a new terminal window, you will need to activate the environ
 .. note::
     You can show installed packages available within a Conda environment with ``conda list``:
 
+    .. tab:: micromamba
+
+        .. code-block:: shell
+
+            micromamba list
+
     .. tab:: mamba
 
         .. code-block:: shell
@@ -183,14 +208,14 @@ Every time you open a new terminal window, you will need to activate the environ
 
             conda list
 
-    .. tab:: micromamba
-
-        .. code-block:: shell
-
-            micromamba list
-
 To ``deactivate`` an environment and return your shell to normal, close your terminal window or run 
 ``conda deactivate``:
+
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        micromamba deactivate
 
 .. tab:: mamba
 
@@ -204,12 +229,6 @@ To ``deactivate`` an environment and return your shell to normal, close your ter
 
         conda deactivate
 
-.. tab:: micromamba
-
-    .. code-block:: shell
-
-        micromamba deactivate
-
 Deleting an environment
 =======================
 
@@ -217,6 +236,12 @@ To delete an environment with all of its packages, run ``conda env remove --name
 
 .. important::
     If you chose another name when creating the environment, use that here instead.
+
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        micromamba env remove --name stenv
 
 .. tab:: mamba
 
@@ -229,10 +254,4 @@ To delete an environment with all of its packages, run ``conda env remove --name
     .. code-block:: shell
 
         conda env remove --name stenv
-
-.. tab:: micromamba
-
-    .. code-block:: shell
-
-        micromamba env remove --name stenv
 
