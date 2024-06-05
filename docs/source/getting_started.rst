@@ -181,9 +181,10 @@ Activating a Conda environment changes which Python interpreter and packages are
 .. code-block:: shell
 
     (stenv) $ python -c 'import jwst; print("ok")'
+    ok
 
 Every time you open a new terminal window, you will need to activate the environment before you can use 
-``stenv`` software.
+software included in ``stenv``.
 
 .. note::
     You can show installed packages available within a Conda environment with ``conda list``:
