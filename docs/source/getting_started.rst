@@ -36,7 +36,7 @@ For these reasons, I recommended you use ``micromamba``.
 
         "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 
-    On macOS, you can alternatively install ``micromamba`` from `Homebrew <https://brew.sh/>`_:
+    On macOS, you can alternatively install ``micromamba`` using the `Homebrew package manager <https://brew.sh/>`_, if you have it installed:
 
     .. code-block:: shell
 
