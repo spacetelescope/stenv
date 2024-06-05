@@ -17,17 +17,24 @@ Developer Notes
 
 To build an environment from this unpinned environment definition, you may run the following:
 
-.. tab:: conda
-
-    .. code-block:: shell
-
-        conda env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
-
 .. tab:: mamba
 
     .. code-block:: shell
 
-        mamba env create -n stenv -f https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+        mamba env create --name stenv --file https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+
+.. tab:: conda
+
+    .. code-block:: shell
+
+        conda env create --name stenv --file https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml 
+
+.. tab:: micromamba
+
+    .. code-block:: shell
+
+        curl -L https://raw.githubusercontent.com/spacetelescope/stenv/main/environment.yaml -o ~/Downloads/stenv.yaml
+        micromamba env create --name stenv --file ~/Downloads/stenv.yaml
 
 .. _adding_a_package_to_stenv:
 

@@ -43,17 +43,23 @@ well as hundreds of useful tools, libraries, and utilities by default.
     Remember to run ``conda init`` when installing. This is required in order to set up your shell to 
     ``activate`` and ``deactivate`` environments.
 
+    .. tab:: mamba
+
+        .. code-block:: shell
+
+            mamba init
+
     .. tab:: conda
 
         .. code-block:: shell
 
             conda init
 
-    .. tab:: mamba
+    .. tab:: micromamba
 
         .. code-block:: shell
 
-            mamba init
+            micromamba init
 
 .. _choose_release:
 
@@ -89,40 +95,28 @@ newest (highest-numbered) Python version available.
     Therefore, I recommend using a more descriptive name than ``stenv`` for your environment; for example, 
     use something like ``stenv-py3.11-2023.01.01`` (changed as needed to match the version you chose).
 
-.. tab:: create environment from URL
+Right-click (or control-click on macOS) on the link to the release file and choose ``Copy Link`` (or 
+``Copy Link Address``). Then, run the following command in a terminal, replacing ``<URL>`` with the URL you copied in the previous 
+step:
 
-    Right-click (or control-click on macOS) on the link to the release file and choose ``Copy Link`` (or 
-    ``Copy Link Address``). Then, run the following command in a terminal, replacing ``<URL>`` with the URL you copied in the previous 
-    step:
+.. tab:: mamba
 
-    .. tab:: conda
+    .. code-block:: shell
 
-        .. code-block:: shell
+        mamba env create --name stenv --file <URL>
 
-            conda env create --name stenv --file <URL>
+.. tab:: conda
 
-    .. tab:: mamba
+    .. code-block:: shell
 
-        .. code-block:: shell
+        conda env create --name stenv --file <URL>
 
-            mamba env create --name stenv --file <URL>
+.. tab:: micromamba
 
-.. tab:: create environment from downloaded file
+    .. code-block:: shell
 
-    Download the release file you chose. Then, run the following command in a terminal, replacing 
-    ``~/Downloads/stenv-pyXX-YY.MM.DD.yaml`` with the path to the file you downloaded:
-
-    .. tab:: conda
-
-        .. code-block:: shell
-
-            conda env create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
-
-    .. tab:: mamba
-
-        .. code-block:: shell
-
-            mamba env create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
+        curl -L <URL> -o ~/Downloads/stenv.yaml
+        micromamba env create --name stenv --file ~/Downloads/stenv.yaml
 
 
 .. note::
@@ -146,17 +140,23 @@ In order to access the packages in ``stenv``, you must first ``activate`` the en
 .. important::
     If you chose another name when creating the environment, use that here instead.
 
+.. tab:: mamba
+
+    .. code-block:: shell
+
+        mamba activate stenv
+
 .. tab:: conda
 
     .. code-block:: shell
 
         conda activate stenv
 
-.. tab:: mamba
+.. tab:: micromamba
 
     .. code-block:: shell
 
-        mamba activate stenv
+        micromamba activate stenv
 
 Activating a Conda environment changes which Python interpreter and packages are in use for that session 
 (i.e. terminal window). Now, if you try to ``import jwst``:
@@ -171,20 +171,32 @@ Every time you open a new terminal window, you will need to activate the environ
 .. note::
     You can show installed packages available within a Conda environment with ``conda list``:
 
-    .. tab:: conda
-
-        .. code-block:: shell
-
-            conda list
-
     .. tab:: mamba
 
         .. code-block:: shell
 
             mamba list
 
+    .. tab:: conda
+
+        .. code-block:: shell
+
+            conda list
+
+    .. tab:: micromamba
+
+        .. code-block:: shell
+
+            micromamba list
+
 To ``deactivate`` an environment and return your shell to normal, close your terminal window or run 
 ``conda deactivate``:
+
+.. tab:: mamba
+
+    .. code-block:: shell
+
+        mamba deactivate
 
 .. tab:: conda
 
@@ -192,11 +204,11 @@ To ``deactivate`` an environment and return your shell to normal, close your ter
 
         conda deactivate
 
-.. tab:: mamba
+.. tab:: micromamba
 
     .. code-block:: shell
 
-        mamba deactivate
+        micromamba deactivate
 
 Deleting an environment
 =======================
@@ -206,15 +218,21 @@ To delete an environment with all of its packages, run ``conda env remove --name
 .. important::
     If you chose another name when creating the environment, use that here instead.
 
+.. tab:: mamba
+
+    .. code-block:: shell
+
+        mamba env remove --name stenv
+
 .. tab:: conda
 
     .. code-block:: shell
 
         conda env remove --name stenv
 
-.. tab:: mamba
+.. tab:: micromamba
 
     .. code-block:: shell
 
-        mamba env remove --name stenv
+        micromamba env remove --name stenv
 
