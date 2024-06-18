@@ -16,8 +16,6 @@ dependencies:
   - pip
   - pytables
   - python>=3.10
-  - pytest
-  - pytest-xdist
   - scipy
   - scikit-image
   - pip:
@@ -25,7 +23,6 @@ dependencies:
       - asdf
       - calcos
       - ccdproc
-      - ci_watson
       - costools
       - crds
       - drizzlepac

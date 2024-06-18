@@ -51,7 +51,6 @@ jobs:
           cache-environment-key: environment-${{ needs.date.outputs.date }}
           init-shell: none
           generate-run-shell: true
-      - run: pytest -n auto tests/test_import.py
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.date.outputs.date }}.yaml" >> $GITHUB_OUTPUT
         id: output
       - run: |
@@ -60,6 +59,8 @@ jobs:
           python tools/mamba_export_pip.py ${{ steps.output.outputs.filename }} pip_requirements.txt > mamba_packages.yml
           mv mamba_packages.yml ${{ steps.output.outputs.filename }}
           cat ${{ steps.output.outputs.filename }}
+      - run: pip install pytest pytest-xdist
+      - run: pytest -n auto tests/test_import.py
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.output.outputs.filename }}
