@@ -95,9 +95,7 @@ jobs:
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
       - run: micromamba install tox
-      - run: |
-          micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
-          pip freeze
+      - run: pip list
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -161,9 +159,7 @@ jobs:
       - if: matrix.extras != ''
         run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
       - run: pip install pytest-xdist
-      - run: |
-          micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
-          pip freeze
+      - run: pip list
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -243,9 +239,7 @@ jobs:
         working-directory: ${{ matrix.package }}
       - if: matrix.dependencies != ''
         run: pip install ${{ matrix.dependencies }}
-      - run: |
-          micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
-          pip freeze
+      - run: pip list
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
@@ -310,9 +304,7 @@ jobs:
           generate-run-shell: true
       - run: micromamba install -y filelock requests
       - run: pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
-      - run: |
-          micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
-          pip freeze
+      - run: pip list
       - run: echo "version=$(pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
@@ -385,9 +377,7 @@ jobs:
       - if: matrix.extras != ''
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
       - run: pip install pytest-xdist
-      - run: |
-          micromamba env export --no-build | grep -v "name:" | grep -v "prefix:"
-          pip freeze
+      - run: pip list
       - if: matrix.env.CRDS_SERVER_URL != ''
         run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
         id: crds-context
