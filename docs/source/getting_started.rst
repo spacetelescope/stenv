@@ -41,6 +41,7 @@ For these reasons, I recommended you use ``micromamba``.
     .. code-block:: shell
 
         brew install micromamba
+        micromamba shell init
 
     You may also follow `these installation instructions <https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html>`_.
     
