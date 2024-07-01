@@ -20,40 +20,67 @@ Installation
 Install Conda
 -------------
 
-A Conda distribution provides the ``conda`` command, which lets you create, manage, and activate new 
-environments. Try running the ``conda`` command in your terminal. If you get ``conda: command not found`` 
-(or similar), you will need to install a conda distribution. If you already have a ``conda`` command in 
-your terminal, you can skip to the next step.
+A Conda distribution provides the ``micromamba`` / ``mamba`` / ``conda`` command, which lets you create, manage, and switch to 
+(activate) environments. Try running ``micromamba``, ``mamba``, or ``conda`` in your terminal. If you get ``command not found`` 
+(or similar), see below to install. 
 
-The easiest option is to install 
-`Miniconda <https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html>`_, which is 
-full-featured but installs a minimal set of default packages initially. We will install more packages later 
-on.
+``mamba`` is a rewrite of ``conda`` that is much faster at resolving dependencies with near-parity of commands. 
+``micromamba`` is ``mamba`` packaged into a single binary, which makes installation and maintenance much easier.
+For these reasons, I recommended you use ``micromamba``.
 
-Alternatives include `Miniforge <https://github.com/conda-forge/miniforge#miniforge3>`_, which includes the 
-``mamba`` command (a much faster drop-in replacement for ``conda`` with all the same functionality) and 
-`Anaconda <https://www.anaconda.com/distribution/>`_ which provides a full-featured base environment as 
-well as hundreds of useful tools, libraries, and utilities by default.
+.. tab:: micromamba
 
-.. note::
-    The below instructions will work for any of the distributions, though users with ``mamba`` installed 
-    will notice a speedup if they substitute ``mamba`` for ``conda`` where it appears in commands.
+    Run the following in your terminal to install ``micromamba``:
 
-.. important::
-    Remember to run ``conda init`` when installing. This is required in order to set up your shell to 
-    ``activate`` and ``deactivate`` environments.
+    .. code-block:: shell
 
-    .. tab:: conda
+        "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 
-        .. code-block:: shell
+    On macOS, you can alternatively install ``micromamba`` using the `Homebrew package manager <https://brew.sh/>`_, if you have it installed:
 
-            conda init
+    .. code-block:: shell
 
-    .. tab:: mamba
+        brew install micromamba
+        micromamba shell init
+
+    You may also follow `these installation instructions <https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html>`_.
+    
+.. tab:: mamba
+
+    Follow 
+    `these instructions to install Miniforge <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`_, 
+    which includes the ``mamba`` command in its base environment.
+
+    .. important::
+        Remember to run ``mamba init`` after installing. This is required in order to set up your shell to 
+        ``activate`` and ``deactivate`` environments.
 
         .. code-block:: shell
 
             mamba init
+
+.. tab:: conda
+
+    .. caution::
+        The Anaconda organization has 
+        `updated their terms of service <https://legal.anaconda.com/policies/en/#:~:text=2.1%20Organizational%20Use.%C2%A0>`_ 
+        to indicate that any usage of their services requires a paid license, if used by an organization of 
+        more than 200 users. This includes pulling packages from the Anaconda ``defaults`` channels, as well as installing 
+        ``conda`` itself.
+
+        We recommend that you use ``mamba`` and pull packages from the ``conda-forge`` channel, instead of using ``conda`` 
+        and the ``defaults`` channels.
+
+    Follow `these instructions to install Miniconda <https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html>`_ 
+    which includes the ``conda`` command in its base environment.
+
+    .. important::
+        Remember to run ``conda init`` after installing. This is required in order to set up your shell to 
+        ``activate`` and ``deactivate`` environments.
+
+        .. code-block:: shell
+
+            conda init
 
 .. _choose_release:
 
@@ -89,41 +116,26 @@ newest (highest-numbered) Python version available.
     Therefore, I recommend using a more descriptive name than ``stenv`` for your environment; for example, 
     use something like ``stenv-py3.11-2023.01.01`` (changed as needed to match the version you chose).
 
-.. tab:: create environment from URL
+Download the file corresponding to your platform and desired Python version, then run the following command 
+in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.10-2023.02.16.yaml``):
 
-    Right-click (or control-click on macOS) on the link to the release file and choose ``Copy Link`` (or 
-    ``Copy Link Address``). Then, run the following command in a terminal, replacing ``<URL>`` with the URL you copied in the previous 
-    step:
+.. tab:: micromamba
 
-    .. tab:: conda
+    .. code-block:: shell
 
-        .. code-block:: shell
+        micromamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
-            conda env create --name stenv --file <URL>
+.. tab:: mamba
 
-    .. tab:: mamba
+    .. code-block:: shell
 
-        .. code-block:: shell
+        mamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
-            mamba env create --name stenv --file <URL>
+.. tab:: conda
 
-.. tab:: create environment from downloaded file
+    .. code-block:: shell
 
-    Download the release file you chose. Then, run the following command in a terminal, replacing 
-    ``~/Downloads/stenv-pyXX-YY.MM.DD.yaml`` with the path to the file you downloaded:
-
-    .. tab:: conda
-
-        .. code-block:: shell
-
-            conda env create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
-
-    .. tab:: mamba
-
-        .. code-block:: shell
-
-            mamba env create --name stenv --file ~/Downloads/stenv-pyXX-YY.MM.DD.yaml
-
+        conda env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
@@ -146,11 +158,11 @@ In order to access the packages in ``stenv``, you must first ``activate`` the en
 .. important::
     If you chose another name when creating the environment, use that here instead.
 
-.. tab:: conda
+.. tab:: micromamba
 
     .. code-block:: shell
 
-        conda activate stenv
+        micromamba activate stenv
 
 .. tab:: mamba
 
@@ -158,24 +170,31 @@ In order to access the packages in ``stenv``, you must first ``activate`` the en
 
         mamba activate stenv
 
+.. tab:: conda
+
+    .. code-block:: shell
+
+        conda activate stenv
+
 Activating a Conda environment changes which Python interpreter and packages are in use for that session 
 (i.e. terminal window). Now, if you try to ``import jwst``:
 
 .. code-block:: shell
 
     (stenv) $ python -c 'import jwst; print("ok")'
+    ok
 
 Every time you open a new terminal window, you will need to activate the environment before you can use 
-``stenv`` software.
+software included in ``stenv``.
 
 .. note::
     You can show installed packages available within a Conda environment with ``conda list``:
 
-    .. tab:: conda
+    .. tab:: micromamba
 
         .. code-block:: shell
 
-            conda list
+            micromamba list
 
     .. tab:: mamba
 
@@ -183,20 +202,32 @@ Every time you open a new terminal window, you will need to activate the environ
 
             mamba list
 
+    .. tab:: conda
+
+        .. code-block:: shell
+
+            conda list
+
 To ``deactivate`` an environment and return your shell to normal, close your terminal window or run 
 ``conda deactivate``:
 
-.. tab:: conda
+.. tab:: micromamba
 
     .. code-block:: shell
 
-        conda deactivate
+        micromamba deactivate
 
 .. tab:: mamba
 
     .. code-block:: shell
 
         mamba deactivate
+
+.. tab:: conda
+
+    .. code-block:: shell
+
+        conda deactivate
 
 Deleting an environment
 =======================
@@ -206,15 +237,21 @@ To delete an environment with all of its packages, run ``conda env remove --name
 .. important::
     If you chose another name when creating the environment, use that here instead.
 
-.. tab:: conda
+.. tab:: micromamba
 
     .. code-block:: shell
 
-        conda env remove --name stenv
+        micromamba env remove --name stenv
 
 .. tab:: mamba
 
     .. code-block:: shell
 
         mamba env remove --name stenv
+
+.. tab:: conda
+
+    .. code-block:: shell
+
+        conda env remove --name stenv
 
