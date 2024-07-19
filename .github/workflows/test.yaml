@@ -22,114 +22,38 @@ env:
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
-  unit_tests_via_tox:
-    needs: [ build ]
-    strategy:
-      matrix:
-        package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
-        # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-13, macos-latest ]
-        python-version: [ '3.10', '3.11', '3.12' ]
-        include:
-          - package: acstools
-            repository: spacetelescope/acstools
-            default_factors: test-alldeps
-            args: --remote-data -v
-          - package: asdf
-            repository: asdf-format/asdf
-            default_factors: parallel
-          - package: calcos
-            repository: spacetelescope/calcos
-            default_factors: xdist
-          - package: ccdproc
-            repository: astropy/ccdproc
-            default_factors: alldeps
-          - package: costools
-            repository: spacetelescope/costools
-            default_factors: test-xdist
-          - package: synphot
-            repository: spacetelescope/synphot_refactor
-            default_factors: test-alldeps
-            args: --remote-data
-          - package: jwst
-            repository: spacetelescope/jwst
-            default_factors: xdist
-            args: --slow -k "not test_cmdline_status"
-            env:
-              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-        exclude:
-          - runs-on: macos-13
-            python-version: '3.10'
-          - runs-on: macos-13
-            python-version: '3.11'
-          - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-latest
-            python-version: '3.11'
-      fail-fast: false
-    runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}, ${{ matrix.runs-on }})
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: stenv
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
-          fetch-depth: 0
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: stenv/environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
-      - run: echo "version=$(pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
-        id: package_version
-        # TODO: figure out a better way to use package version when checking out a Git ref
-      - run: micromamba install tox
-      - run: pip list
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - name: parse tox factor
-        uses: actions/github-script@v7
-        id: python-factor
-        with:
-          script: |
-            core.setOutput('factor', 'py${{ matrix.python-version }}'.replaceAll(/[/.]/g, ''));
-      - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors != '' && '-' || '' }}${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}
-        working-directory: ${{ matrix.package }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
   unit_tests_via_package:
     needs: [ build ]
     strategy:
       fail-fast: false
       matrix:
-        package: [ reftools, wfpc2tools ]
+        package: [ acstools, asdf, calcos, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-13, macos-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
         include:
+          - package: acstools
+            extras: [ all, test ]
+            args: --remote-data -v
+          - package: asdf
+            extras: [ all, tests ]
+          - package: calcos
+            extras: [ test ]
+          - package: ccdproc
+            extras: [ test ]
+          - package: costools
+            extras: [ test ]
+          - package: jwst
+            extras: [ test ]
+            env:
+              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
           #- package: pysynphot
           #  extras: [ test ]
           - package: reftools
             extras: [ test ]
+          - package: synphot
+            extras: [ test ]
+            args: --remote-data
           - package: wfpc2tools
         exclude:
           - runs-on: macos-13
@@ -317,7 +241,7 @@ jobs:
       - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
         working-directory: ${{ matrix.package }}
       - id: cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             ${{ needs.crds_test_cache.outputs.path }}
