@@ -34,7 +34,7 @@ jobs:
             pytest-args: --remote-data -v
           - package: asdf
             extras: [ all, tests ]
-            pytest-args: --remote-data --durations=10 --jsonschema
+            pytest-args: --remote-data --durations=10
           - package: calcos
             extras: [ test ]
             pytest-args: --slow
