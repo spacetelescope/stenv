@@ -22,7 +22,7 @@ env:
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
-  unit_tests:
+  test_installed:
     needs: [ build, crds_contexts ]
     strategy:
       fail-fast: false
@@ -99,8 +99,8 @@ jobs:
         run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
       - run: pip install pytest-xdist
       - run: pip list
-      - run: pytest -n auto ${{ matrix.pytest-args }}
-  unit_tests_from_source:
+      - run: pytest -n auto ${{ matrix.pytest-args }} --pyargs ${{ matrix.package }} 
+  test_from_source:
     needs: [ build, crds_contexts ]
     strategy:
       matrix:
@@ -188,7 +188,7 @@ jobs:
     uses: spacetelescope/crds/.github/workflows/contexts.yml@master
   crds_test_cache:
     uses: spacetelescope/crds/.github/workflows/cache.yml@master
-  crds_tests:
+  test_crds:
     needs: [ build, crds_test_cache ]
     strategy:
       fail-fast: false
@@ -254,7 +254,7 @@ jobs:
           key: ${{ needs.crds_test_cache.outputs.key }}
       - run: ./runtests --cover
         working-directory: ${{ matrix.package }}
-  smoke_tests:
+  test_smoke:
     needs: [ build ]
     strategy:
       matrix:
