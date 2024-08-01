@@ -14,12 +14,15 @@ defaults:
 
 env:
   PYSYN_CDBS: /tmp/trds
+  jref: https://ssb.stsci.edu/trds_open/jref
+  CRDS_CLIENT_RETRY_COUNT: 3
+  CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
   LD_LIBRARY_PATH: /usr/local/lib
 
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
-  unit_tests_via_package:
+  unit_tests:
     needs: [ build, crds_contexts ]
     strategy:
       fail-fast: false
@@ -64,15 +67,14 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "`${{ matrix.package }}` (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})"
+    env:
+      CRDS_PATH: /tmp/crds_cache
     steps:
       - if: matrix.crds_observatory != ''
         run: |
-          echo CRDS_PATH=/tmp/crds_cache/ >> $GITHUB_ENV
-          echo CRDS_SERVER_URL=${{ matrix.crds_observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_OBSERVATORY=${{ matrix.crds_observatory }} >> $GITHUB_ENV
-          echo CRDS_CLIENT_RETRY_COUNT=3 >> $GITHUB_ENV
-          echo CRDS_CLIENT_RETRY_DELAY_SECONDS=20 >> $GITHUB_ENV
+          echo CRDS_SERVER_URL=${{ matrix.crds_observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_CONTEXT=${{ matrix.crds_observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds_observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds_observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
@@ -132,15 +134,14 @@ jobs:
             python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "`${{ matrix.package }}` (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})"
+    env:
+      CRDS_PATH: /tmp/crds_cache
     steps:
       - if: matrix.crds_observatory != ''
         run: |
-          echo CRDS_PATH=/tmp/crds_cache/ >> $GITHUB_ENV
-          echo CRDS_SERVER_URL=${{ matrix.crds_observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_OBSERVATORY=${{ matrix.crds_observatory }} >> $GITHUB_ENV
-          echo CRDS_CLIENT_RETRY_COUNT=3 >> $GITHUB_ENV
-          echo CRDS_CLIENT_RETRY_DELAY_SECONDS=20 >> $GITHUB_ENV
+          echo CRDS_SERVER_URL=${{ matrix.crds_observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_CONTEXT=${{ matrix.crds_observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds_observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds_observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
@@ -189,11 +190,6 @@ jobs:
     uses: spacetelescope/crds/.github/workflows/cache.yml@master
   crds_tests:
     needs: [ build, crds_test_cache ]
-    env:
-      CRDS_PATH: /tmp/crds-cache-default-test
-      CRDS_TEST_ROOT: /tmp
-      CRDS_TESTING_CACHE: /tmp/crds-cache-test
-      CRDS_SERVER_URL: https://hst-crds.stsci.edu
     strategy:
       fail-fast: false
       matrix:
@@ -214,7 +210,12 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "`${{ matrix.package }}` (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})"
+    env:
+      CRDS_PATH: /tmp/crds-cache-default-test
+      CRDS_TEST_ROOT: /tmp
+      CRDS_TESTING_CACHE: /tmp/crds-cache-test
+      CRDS_SERVER_URL: https://hst-crds.stsci.edu
     steps:
       - uses: actions/checkout@v4
         with:
@@ -265,11 +266,11 @@ jobs:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
             crds_observatory: hst
-            jref: hst/references/hst/
+            jref: hst/references/hst
           - package: drizzlepac
             run: pytest -n auto tests/test_drizzlepac.py
             crds_observatory: hst
-            jref: hst/references/hst/
+            jref: hst/references/hst
         exclude:
           - runs-on: macos-13
             python-version: '3.10'
@@ -281,15 +282,15 @@ jobs:
             python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "smoke test `${{ matrix.package }}` (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})"
+    env:
+      CRDS_PATH: /tmp/crds_cache
+      jref: /tmp/crds_cache/${{ matrix.jref }}
     steps:
       - if: matrix.crds_observatory != ''
         run: |
-          echo CRDS_PATH=/tmp/crds_cache/ >> $GITHUB_ENV
-          echo CRDS_SERVER_URL=${{ matrix.crds_observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_OBSERVATORY=${{ matrix.crds_observatory }} >> $GITHUB_ENV
-          echo CRDS_CLIENT_RETRY_COUNT=3 >> $GITHUB_ENV
-          echo CRDS_CLIENT_RETRY_DELAY_SECONDS=20 >> $GITHUB_ENV
+          echo CRDS_SERVER_URL=${{ matrix.crds_observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_CONTEXT=${{ matrix.crds_observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds_observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds_observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
@@ -297,9 +298,6 @@ jobs:
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
-      - if: matrix.crds_observatory != ''
-        run: echo jref=${{ env.CRDS_PATH }}/${{ matrix.jref }} >> $GITHUB_ENV
-        shell: bash
       - uses: actions/checkout@v4
         with:
           lfs: true
