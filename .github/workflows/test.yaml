@@ -208,7 +208,7 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: "`crds` `./runtests` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: "`crds` `./runtests --cover` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     env:
       CRDS_PATH: /tmp/crds-cache-default-test
       CRDS_TEST_ROOT: /tmp
@@ -250,7 +250,7 @@ jobs:
             ${{ needs.crds_test_cache.outputs.path }}
             ${{ needs.crds_test_cache.outputs.testing_cache }}
           key: ${{ needs.crds_test_cache.outputs.key }}
-      - run: ./runtests
+      - run: ./runtests --cover
         working-directory: ${{ matrix.package }}
   test_for_smoke:
     needs: [ build ]
