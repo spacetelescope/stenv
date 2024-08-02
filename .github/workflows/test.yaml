@@ -70,7 +70,7 @@ jobs:
       - if: matrix.crds-observatory != ''
         run: |
           echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
-          echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
+          echo CRDS_SERVER_URL=https://${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
