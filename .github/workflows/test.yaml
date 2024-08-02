@@ -174,8 +174,7 @@ jobs:
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
-      - if: matrix.test-dependencies != ''
-        run: pip install ${{ matrix.test-dependencies }} pytest pytest-xdist
+      - run: pip install ${{ matrix.test-dependencies }} pytest pytest-xdist
       - run: pip list
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
