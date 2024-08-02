@@ -13,122 +13,46 @@ defaults:
     shell: micromamba-shell {0}
 
 env:
+  PYSYN_CDBS: /tmp/trds
+  jref: https://ssb.stsci.edu/trds_open/jref
+  lref: https://ssb.stsci.edu/cdbs/lref
   CRDS_PATH: /tmp/crds_cache
   CRDS_CLIENT_RETRY_COUNT: 3
   CRDS_CLIENT_RETRY_DELAY_SECONDS: 20
-  PYSYN_CDBS: /tmp/trds
   LD_LIBRARY_PATH: /usr/local/lib
 
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
-  unit_tests_via_tox:
-    needs: [ build ]
+  test_installed:
+    needs: [ build, crds_contexts ]
     strategy:
+      fail-fast: false
       matrix:
-        package: [ acstools, asdf, calcos, ccdproc, costools, synphot, jwst ]
+        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-13, macos-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: acstools
-            repository: spacetelescope/acstools
-            default_factors: test-alldeps
-            args: --remote-data -v
+            extras: [ all, test ]
+            pytest-args: --remote-data -v
           - package: asdf
-            repository: asdf-format/asdf
-            default_factors: parallel
-          - package: calcos
-            repository: spacetelescope/calcos
-            default_factors: xdist
+            extras: [ all, tests ]
+            pytest-args: --remote-data --durations=10
           - package: ccdproc
-            repository: astropy/ccdproc
-            default_factors: alldeps
+            extras: [ test ]
+            pytest-args: -W ignore
           - package: costools
-            repository: spacetelescope/costools
-            default_factors: test-xdist
-          - package: synphot
-            repository: spacetelescope/synphot_refactor
-            default_factors: test-alldeps
-            args: --remote-data
+            extras: [ test ]
           - package: jwst
-            repository: spacetelescope/jwst
-            default_factors: xdist
-            args: --slow -k "not test_cmdline_status"
-            env:
-              CRDS_SERVER_URL: https://jwst-crds.stsci.edu
-        exclude:
-          - runs-on: macos-13
-            python-version: '3.10'
-          - runs-on: macos-13
-            python-version: '3.11'
-          - runs-on: macos-latest
-            python-version: '3.10'
-          - runs-on: macos-latest
-            python-version: '3.11'
-      fail-fast: false
-    runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, tox ${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}, ${{ matrix.runs-on }})
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: stenv
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
-          fetch-depth: 0
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: stenv/environment.yaml
-          create-args: >-
-            python=${{ matrix.python-version }}
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
-      - run: echo "version=$(pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
-        id: package_version
-        # TODO: figure out a better way to use package version when checking out a Git ref
-      - run: micromamba install tox
-      - run: pip list
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - name: parse tox factor
-        uses: actions/github-script@v7
-        id: python-factor
-        with:
-          script: |
-            core.setOutput('factor', 'py${{ matrix.python-version }}'.replaceAll(/[/.]/g, ''));
-      - run: tox -e ${{ steps.python-factor.outputs.factor }}${{ matrix.default_factors != '' && '-' || '' }}${{ matrix.default_factors }}${{ matrix.args != '' && ' -- ' || '' }}${{ matrix.args }}
-        working-directory: ${{ matrix.package }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-  unit_tests_via_package:
-    needs: [ build ]
-    strategy:
-      fail-fast: false
-      matrix:
-        package: [ reftools, wfpc2tools ]
-        # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-13, macos-latest ]
-        python-version: [ '3.10', '3.11', '3.12' ]
-        include:
+            extras: [ test ]
+            crds-observatory: jwst
           #- package: pysynphot
           #  extras: [ test ]
           - package: reftools
+            extras: [ test ]
+          - package: synphot
             extras: [ test ]
           - package: wfpc2tools
         exclude:
@@ -141,8 +65,19 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "`pytest --pyargs ${{ matrix.package }} -n auto ${{ matrix.pytest-args }}` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
+      - if: matrix.crds-observatory != ''
+        run: |
+          echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
+          echo CRDS_SERVER_URL=https://${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
+          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
+        shell: bash
+      - if: env.CRDS_CONTEXT != ''
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
       - uses: actions/checkout@v4
       - uses: mamba-org/setup-micromamba@v1
         with:
@@ -160,38 +95,29 @@ jobs:
         run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
       - run: pip install pytest-xdist
       - run: pip list
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
-      - run: pytest -n auto ${{ matrix.args }} --pyargs ${{ matrix.package }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-  unit_tests_from_source:
-    needs: [ build ]
+      - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto 
+  test_from_source:
+    needs: [ build, crds_contexts ]
     strategy:
       matrix:
-        package: [ hstcal ]
+        package: [ hstcal, calcos ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-13, macos-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
         include:
+          - package: calcos
+            repository: spacetelescope/calcos
+            extras: [ test ]
+            pytest-args: --slow
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
           #  extras: [ test ]
           - package: hstcal
             repository: spacetelescope/hstcal
-            dependencies: crds ci_watson pytest pytest-xdist
-            args: --slow
-            test_directory: tests
-            env:
-              CRDS_SERVER_URL: https://hst-crds.stsci.edu
+            test-dependencies: crds ci_watson
+            pytest-args: --slow
+            test-directory: tests
+            crds-observatory: hst
           #- package: stistools
           #  repository: spacetelescope/stistools
           # - package: stsynphot
@@ -208,8 +134,19 @@ jobs:
             python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "`pytest ${{ matrix.package }}/${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
+      - if: matrix.crds-observatory != ''
+        run: |
+          echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
+          echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
+          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
+        shell: bash
+      - if: env.CRDS_CONTEXT != ''
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
       - uses: actions/checkout@v4
         with:
           path: stenv
@@ -237,34 +174,19 @@ jobs:
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
-      - if: matrix.dependencies != ''
-        run: pip install ${{ matrix.dependencies }}
+      - run: pip install ${{ matrix.test-dependencies }} pytest pytest-xdist
       - run: pip list
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
         working-directory: ${{ matrix.package }}
-      - run: pytest -n auto ${{ matrix.args }} ${{ matrix.test_directory }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
+      - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto
         working-directory: ${{ matrix.package }}
+  crds_contexts:
+    uses: spacetelescope/crds/.github/workflows/contexts.yml@master
   crds_test_cache:
     uses: spacetelescope/crds/.github/workflows/cache.yml@master
-  crds_tests:
+  test_crds_with_data:
     needs: [ build, crds_test_cache ]
-    env:
-      CRDS_PATH: /tmp/crds-cache-default-test
-      CRDS_TEST_ROOT: /tmp
-      CRDS_TESTING_CACHE: /tmp/crds-cache-test
     strategy:
       fail-fast: false
       matrix:
@@ -285,7 +207,12 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "`crds` `./runtests --cover` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    env:
+      CRDS_PATH: /tmp/crds-cache-default-test
+      CRDS_TEST_ROOT: /tmp
+      CRDS_TESTING_CACHE: /tmp/crds-cache-test
+      CRDS_SERVER_URL: https://hst-crds.stsci.edu
     steps:
       - uses: actions/checkout@v4
         with:
@@ -316,8 +243,7 @@ jobs:
           fetch-depth: 0
       - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
         working-directory: ${{ matrix.package }}
-      - id: cache
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ${{ needs.crds_test_cache.outputs.path }}
@@ -325,9 +251,7 @@ jobs:
           key: ${{ needs.crds_test_cache.outputs.key }}
       - run: ./runtests --cover
         working-directory: ${{ matrix.package }}
-        env:
-          CRDS_SERVER_URL: https://hst-crds.stsci.edu
-  smoke_tests:
+  test_for_smoke:
     needs: [ build ]
     strategy:
       matrix:
@@ -338,14 +262,12 @@ jobs:
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
-            env:
-              CRDS_SERVER_URL: https://hst-crds.stsci.edu
-              jref: hst/references/hst/
+            crds-observatory: hst
+            jref: hst/references/hst
           - package: drizzlepac
             run: pytest -n auto tests/test_drizzlepac.py
-            env:
-              CRDS_SERVER_URL: https://hst-crds.stsci.edu
-              jref: hst/references/hst/
+            crds-observatory: hst
+            jref: hst/references/hst
         exclude:
           - runs-on: macos-13
             python-version: '3.10'
@@ -357,8 +279,21 @@ jobs:
             python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
-    name: ${{ matrix.package }} (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
+    name: "`${{ matrix.run }}` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    env:
+      jref: /tmp/crds_cache/${{ matrix.jref }}
     steps:
+      - if: matrix.crds-observatory != ''
+        run: |
+          echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
+          echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
+          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
+        shell: bash
+      - if: env.CRDS_CONTEXT != ''
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
       - uses: actions/checkout@v4
         with:
           lfs: true
@@ -378,21 +313,8 @@ jobs:
         run: pip install ".[${{ join(matrix.extras, ',') }}]"
       - run: pip install pytest-xdist
       - run: pip list
-      - if: matrix.env.CRDS_SERVER_URL != ''
-        run: echo "context=$(crds list --operational-context)" >> $GITHUB_OUTPUT
-        id: crds-context
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-      - if: steps.crds-context.outputs.context != ''
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ steps.crds-context.outputs.context }}
       - uses: actions/cache@v4
         with:
           path: tests/data/
           key: data-${{ hashFiles('tests/data/*') }}
       - run: ${{ matrix.run }}
-        env:
-          CRDS_SERVER_URL: ${{ matrix.env.CRDS_SERVER_URL }}
-          jref: ${{ env.CRDS_PATH }}/${{ matrix.env.jref }}
