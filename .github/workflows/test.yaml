@@ -55,7 +55,6 @@ jobs:
             extras: [ test ]
           - package: synphot
             extras: [ test ]
-            pytest-args: --remote-data
           - package: wfpc2tools
         exclude:
           - runs-on: macos-13
