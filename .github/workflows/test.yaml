@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, calcos, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-13, macos-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
@@ -40,9 +40,6 @@ jobs:
           - package: asdf
             extras: [ all, tests ]
             pytest-args: --remote-data --durations=10
-          - package: calcos
-            extras: [ test ]
-            pytest-args: --slow
           - package: ccdproc
             extras: [ test ]
             pytest-args: -W ignore
@@ -103,17 +100,21 @@ jobs:
     needs: [ build, crds_contexts ]
     strategy:
       matrix:
-        package: [ hstcal ]
+        package: [ hstcal, calcos ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-13, macos-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
         include:
+          - package: calcos
+            repository: spacetelescope/calcos
+            extras: [ test ]
+            pytest-args: --slow
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
           #  extras: [ test ]
           - package: hstcal
             repository: spacetelescope/hstcal
-            dependencies: crds ci_watson pytest pytest-xdist
+            test-dependencies: crds ci_watson
             pytest-args: --slow
             test_directory: tests
             crds_observatory: hst
@@ -173,8 +174,8 @@ jobs:
       - if: matrix.extras != ''
         run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
         working-directory: ${{ matrix.package }}
-      - if: matrix.dependencies != ''
-        run: pip install ${{ matrix.dependencies }}
+      - if: matrix.test-dependencies != ''
+        run: pip install ${{ matrix.test-dependencies }} pytest pytest-xdist
       - run: pip list
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
