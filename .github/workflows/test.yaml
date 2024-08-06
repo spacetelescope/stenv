@@ -127,7 +127,11 @@ jobs:
           generate-run-shell: true
       - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
-      - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto 
+      - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} --junitxml=${{ runner.temp }}/results.xml -n auto 
+      - uses: test-summary/action@v2
+        with:
+          paths: ${{ runner.temp }}/results.xml
+          show: "fail"
   test_from_source:
     needs: [ build, crds_contexts ]
     strategy:
@@ -219,8 +223,12 @@ jobs:
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
         working-directory: ${{ matrix.package }}
-      - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto
+      - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} --junitxml=${{ runner.temp }}/results.xml -n auto
         working-directory: ${{ matrix.package }}
+      - uses: test-summary/action@v2
+        with:
+          paths: ${{ runner.temp }}/regtest/results.xml
+          show: "fail"
   crds_contexts:
     uses: spacetelescope/crds/.github/workflows/contexts.yml@master
   crds_test_cache:
