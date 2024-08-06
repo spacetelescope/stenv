@@ -99,7 +99,7 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: "`pytest --pyargs ${{ matrix.package }} -n auto ${{ matrix.pytest-args }}` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: "`pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
       - if: matrix.crds-observatory != ''
         run: |
@@ -305,7 +305,7 @@ jobs:
             crds-observatory: hst
             jref: hst/references/hst
           - package: drizzlepac
-            run: pytest -n auto tests/test_drizzlepac.py
+            run: pytest tests/test_drizzlepac.py -n auto
             crds-observatory: hst
             jref: hst/references/hst
         exclude:
