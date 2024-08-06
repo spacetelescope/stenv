@@ -35,25 +35,59 @@ jobs:
         python-version: [ '3.10', '3.11', '3.12' ]
         include:
           - package: acstools
-            extras: [ all, test ]
+            test-dependencies: >-
+              matplotlib
+              scipy
+              scikit-image
+              stsci.tools
+              stsci.imagestats
+              photutils
+              dask
+              pytest
+              pytest-astropy-header
+              pytest-remotedata
+              ci-watson 
             pytest-args: --remote-data -v
           - package: asdf
-            extras: [ all, tests ]
+            test-dependencies: >-
+              "lz4>=0.10"
+              "fsspec[http]>=2022.8.2"
+              "lz4>=0.10"
+              psutil
+              "pytest>=8"
+              pytest-remotedata
             pytest-args: --remote-data --durations=10
           - package: ccdproc
-            extras: [ test ]
+            test-dependencies: >-
+              pytest-astropy>=0.10.0
+              memory_profiler
             pytest-args: -W ignore
           - package: costools
-            extras: [ test ]
+            test-dependencies: >-
+              pytest
+              pytest-cov
           - package: jwst
-            extras: [ test ]
+            test-dependencies: >-
+              "ci-watson>=0.5.0"
+              "colorama>=0.4.1"
+              "readchar>=3.0"
+              ruff
+              "pytest>=6.0.0"
+              "pytest-cov>=2.9.0"
+              "pytest-doctestplus>=0.10.0"
+              "requests_mock>=1.0"
             crds-observatory: jwst
-          #- package: pysynphot
-          #  extras: [ test ]
+          # - package: pysynphot
+          #   test-dependencies: >-
+          #     pytest
+          #     pytest-remotedata
           - package: reftools
-            extras: [ test ]
+            test-dependencies: >-
+              pytest-remotedata
+              pytest-astropy-header
           - package: synphot
-            extras: [ test ]
+            test-dependencies: >-
+              pytest-astropy
           - package: wfpc2tools
         exclude:
           - runs-on: macos-13
@@ -65,7 +99,7 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: "`pytest --pyargs ${{ matrix.package }} -n auto ${{ matrix.pytest-args }}` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: "`pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
       - if: matrix.crds-observatory != ''
         run: |
@@ -91,9 +125,7 @@ jobs:
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: none
           generate-run-shell: true
-      - if: matrix.extras != ''
-        run: pip install "${{ matrix.package }}[${{ join(matrix.extras, ',') }}]"
-      - run: pip install pytest-xdist
+      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
       - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto 
   test_from_source:
@@ -107,22 +139,33 @@ jobs:
         include:
           - package: calcos
             repository: spacetelescope/calcos
-            extras: [ test ]
+            test-dependencies: >-
+              ci-watson
+              pytest
+              pytest-cov
             pytest-args: --slow
           #- package: drizzlepac
           #  repository: spacetelescope/drizzlepac
-          #  extras: [ test ]
+          #  test-dependencies: >-
+          #      ci_watson
+          #      crds
+          #      pytest
+          #      pytest-remotedata
           - package: hstcal
             repository: spacetelescope/hstcal
-            test-dependencies: crds ci_watson
+            test-dependencies: >-
+              crds
+              ci_watson
             pytest-args: --slow
             test-directory: tests
             crds-observatory: hst
           #- package: stistools
           #  repository: spacetelescope/stistools
-          # - package: stsynphot
-          #   repository: spacetelescope/stsynphot_refactor
-          #   extras: [ test ]
+          #- package: stsynphot
+          #  repository: spacetelescope/stsynphot_refactor
+          #  test-dependencies: >-
+          #    pytest-astropy
+          #    ci-watson
         exclude:
           - runs-on: macos-13
             python-version: '3.10'
@@ -171,10 +214,7 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
-      - if: matrix.extras != ''
-        run: pip install -e ".[${{ join(matrix.extras, ',') }}]"
-        working-directory: ${{ matrix.package }}
-      - run: pip install ${{ matrix.test-dependencies }} pytest pytest-xdist
+      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
@@ -265,7 +305,7 @@ jobs:
             crds-observatory: hst
             jref: hst/references/hst
           - package: drizzlepac
-            run: pytest -n auto tests/test_drizzlepac.py
+            run: pytest tests/test_drizzlepac.py -n auto
             crds-observatory: hst
             jref: hst/references/hst
         exclude:
@@ -309,9 +349,7 @@ jobs:
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: none
           generate-run-shell: true
-      - if: matrix.extras != ''
-        run: pip install ".[${{ join(matrix.extras, ',') }}]"
-      - run: pip install pytest-xdist
+      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
       - uses: actions/cache@v4
         with:
