@@ -215,6 +215,9 @@ jobs:
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
       - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
+      - if: matrix.package != 'hstcal'
+        run: pip install -e .
+        working-directory: ${{ matrix.package }}
       - run: pip list
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
