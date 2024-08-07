@@ -132,7 +132,7 @@ jobs:
     needs: [ build, crds_contexts ]
     strategy:
       matrix:
-        package: [ hstcal, calcos ]
+        package: [ calcos, drizzlepac, hstcal, stistools, stsynphot ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-13, macos-latest ]
         python-version: [ '3.10', '3.11', '3.12' ]
@@ -144,13 +144,13 @@ jobs:
               pytest
               pytest-cov
             pytest-args: --slow
-          #- package: drizzlepac
-          #  repository: spacetelescope/drizzlepac
-          #  test-dependencies: >-
-          #      ci_watson
-          #      crds
-          #      pytest
-          #      pytest-remotedata
+          - package: drizzlepac
+            repository: spacetelescope/drizzlepac
+            test-dependencies: >-
+                ci_watson
+                crds
+                pytest
+                pytest-remotedata
           - package: hstcal
             repository: spacetelescope/hstcal
             test-dependencies: >-
@@ -159,13 +159,13 @@ jobs:
             pytest-args: --slow
             test-directory: tests
             crds-observatory: hst
-          #- package: stistools
-          #  repository: spacetelescope/stistools
-          #- package: stsynphot
-          #  repository: spacetelescope/stsynphot_refactor
-          #  test-dependencies: >-
-          #    pytest-astropy
-          #    ci-watson
+          - package: stistools
+            repository: spacetelescope/stistools
+          - package: stsynphot
+            repository: spacetelescope/stsynphot_refactor
+            test-dependencies: >-
+              pytest-astropy
+              ci-watson
         exclude:
           - runs-on: macos-13
             python-version: '3.10'
@@ -215,6 +215,9 @@ jobs:
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
       - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
+      - if: matrix.package != 'hstcal'
+        run: pip install -e .
+        working-directory: ${{ matrix.package }}
       - run: pip list
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
