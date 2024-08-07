@@ -12,7 +12,7 @@ dependencies:
   - h5py
   - ipython
   - jupyter
-  - numpy<2.0
+  - numpy>=2.0
   - pip
   - python>=3.10
   - scipy
@@ -29,6 +29,7 @@ dependencies:
       - nictools
       - "photutils>1.5.0,<1.13.0" # remove after drizzlepac release
       - pysynphot
+      - "photutils>1.5.0,<1.13.0"
       - reftools
       - stcal
       - stdatamodels
