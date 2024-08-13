@@ -27,7 +27,6 @@ dependencies:
       - ginga
       - jwst
       - nictools
-      - "photutils>1.5.0,<1.13.0" # remove after drizzlepac release
       - pysynphot
       - reftools
       - stcal
