@@ -50,10 +50,6 @@ jobs:
           - package: jwst
             test-extras: test
             crds-observatory: jwst
-          # - package: pysynphot
-          #   test-dependencies: >-
-          #     pytest
-          #     pytest-remotedata
           - package: reftools
             test-dependencies: test
           - package: synphot
