@@ -99,7 +99,7 @@ jobs:
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
-    name: "`pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: "`pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
       - if: matrix.crds-observatory != ''
         run: |
@@ -127,7 +127,7 @@ jobs:
           generate-run-shell: true
       - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
-      - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto 
+      - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope 
   test_from_source:
     needs: [ build, crds_contexts ]
     strategy:
@@ -177,7 +177,7 @@ jobs:
             python-version: '3.11'
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
-    name: "`pytest ${{ matrix.package }}/${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: "`pytest ${{ matrix.package }}/${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
       - if: matrix.crds-observatory != ''
         run: |
@@ -222,7 +222,7 @@ jobs:
       - if: matrix.pre_command != ''
         run: ${{ matrix.pre_command }}
         working-directory: ${{ matrix.package }}
-      - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto
+      - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope
         working-directory: ${{ matrix.package }}
   crds_contexts:
     uses: spacetelescope/crds/.github/workflows/contexts.yml@master
@@ -308,7 +308,7 @@ jobs:
             crds-observatory: hst
             jref: hst/references/hst
           - package: drizzlepac
-            run: pytest tests/test_drizzlepac.py -n auto
+            run: pytest tests/test_drizzlepac.py -n auto --dist=loadscope
             crds-observatory: hst
             jref: hst/references/hst
         exclude:
