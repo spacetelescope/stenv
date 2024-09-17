@@ -27,7 +27,6 @@ dependencies:
       - ginga
       - jwst
       - nictools
-      - pysynphot
       - reftools
       - stcal
       - stdatamodels
