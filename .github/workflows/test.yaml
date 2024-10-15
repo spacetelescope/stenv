@@ -76,7 +76,7 @@ jobs:
           echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
-        uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2  # v4.1.0
+        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8  # v4.1.1
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
@@ -148,7 +148,7 @@ jobs:
           echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
-        uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2  # v4.1.0
+        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8  # v4.1.1
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
@@ -252,7 +252,7 @@ jobs:
           fetch-depth: 0
       - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
         working-directory: ${{ matrix.package }}
-      - uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2  # v4.1.0
+      - uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8  # v4.1.1
         with:
           path: |
             ${{ needs.crds_test_cache.outputs.path }}
@@ -299,7 +299,7 @@ jobs:
           echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
-        uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2  # v4.1.0
+        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8  # v4.1.1
         with:
           path: ${{ env.CRDS_PATH }}
           key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
@@ -320,7 +320,7 @@ jobs:
           generate-run-shell: true
       - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
-      - uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2  # v4.1.0
+      - uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8  # v4.1.1
         with:
           path: tests/data/
           key: data-${{ hashFiles('tests/data/*') }}
