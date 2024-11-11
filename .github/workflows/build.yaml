@@ -39,7 +39,7 @@ jobs:
     name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-      - uses: mamba-org/setup-micromamba@617811f69075e3fd3ae68ca64220ad065877f246  # v2.0.0
+      - uses: mamba-org/setup-micromamba@ab6bf8bf7403e8023a094abeec19d6753bdc143e  # v2.0.1
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
