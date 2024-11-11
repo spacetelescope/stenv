@@ -191,9 +191,9 @@ jobs:
       - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope
         working-directory: ${{ matrix.package }}
   crds_contexts:
-    uses: spacetelescope/crds/.github/workflows/contexts.yml@f97590b4faf17cfa54ef99576a0e9547486dc607  # 12.0.4
+    uses: spacetelescope/crds/.github/workflows/contexts.yml@4c82b705635e6bab73a577bfe89e6fc71f40b62d  # 12.0.5
   crds_test_cache:
-    uses: spacetelescope/crds/.github/workflows/cache.yml@f97590b4faf17cfa54ef99576a0e9547486dc607  # 12.0.4
+    uses: spacetelescope/crds/.github/workflows/cache.yml@4c82b705635e6bab73a577bfe89e6fc71f40b62d  # 12.0.5
   test_crds_with_data:
     needs: [ build, crds_test_cache ]
     strategy:
