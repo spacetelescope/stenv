@@ -10,7 +10,7 @@ concurrency:
 
 defaults:
   run:
-    shell: micromamba-shell {0}
+    shell: bash -leo pipefail {0}
 
 env:
   PYSYN_CDBS: /tmp/trds
@@ -72,11 +72,11 @@ jobs:
     name: "`pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
       - if: matrix.crds-observatory != ''
-        run: |
-          echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
-          echo CRDS_SERVER_URL=https://${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
-        shell: bash
+        run: echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
+      - if: matrix.crds-observatory != ''
+        run: echo CRDS_SERVER_URL=https://${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
+      - if: matrix.crds-observatory != ''
+        run: echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
         with:
@@ -93,8 +93,8 @@ jobs:
           cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
+          init-shell: bash
+          generate-run-shell: false
       - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - if: matrix.test-extras != ''
         run: pip install ${{ matrix.package }}[${{ matrix.test-extras }}]
@@ -148,7 +148,6 @@ jobs:
           echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
           echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '' }} >> $GITHUB_ENV
-        shell: bash
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
         with:
@@ -167,8 +166,8 @@ jobs:
           cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
+          init-shell: bash
+          generate-run-shell: false
       - run: echo "version=$(pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
@@ -233,8 +232,8 @@ jobs:
           cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
+          init-shell: bash
+          generate-run-shell: false
       - run: micromamba install -y filelock requests
       - run: pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
       - run: pip list
@@ -294,7 +293,6 @@ jobs:
           echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
           echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
           echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
-        shell: bash
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
         with:
@@ -313,8 +311,8 @@ jobs:
           cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
+          init-shell: bash
+          generate-run-shell: false
       - run: pip install pytest pytest-xdist
       - run: pip list
       - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2

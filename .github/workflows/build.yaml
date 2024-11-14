@@ -16,15 +16,14 @@ concurrency:
 
 defaults:
   run:
-    shell: micromamba-shell {0}
+    shell: bash -leo pipefail {0}
 
 jobs:
   date:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "date=$(date +%Y.%m.%d)" >> $GITHUB_OUTPUT
+      - run: "echo date=$(date +%Y.%m.%d) >> $GITHUB_OUTPUT"
         id: date        
-        shell: bash
     outputs:
       date: ${{ steps.date.outputs.date }}
   build:
@@ -49,8 +48,8 @@ jobs:
           cache-downloads-key: downloads-${{ needs.date.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.date.outputs.date }}
-          init-shell: none
-          generate-run-shell: true
+          init-shell: bash
+          generate-run-shell: false
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.date.outputs.date }}.yaml" >> $GITHUB_OUTPUT
         id: output
       - run: |
