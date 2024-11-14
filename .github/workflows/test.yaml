@@ -144,10 +144,11 @@ jobs:
     name: "`pytest ${{ matrix.package }}/${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
     steps:
       - if: matrix.crds-observatory != ''
-        run: |
-          echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
-          echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '' }} >> $GITHUB_ENV
+        run: echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
+      - if: matrix.crds-observatory != ''
+        run: echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
+      - if: matrix.crds-observatory != ''
+        run: echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '' }} >> $GITHUB_ENV
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
         with:
@@ -289,10 +290,11 @@ jobs:
       jref: /tmp/crds_cache/${{ matrix.jref }}
     steps:
       - if: matrix.crds-observatory != ''
-        run: |
-          echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
-          echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
+        run: echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
+      - if: matrix.crds-observatory != ''
+        run: echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
+      - if: matrix.crds-observatory != ''
+        run: echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
         with:
