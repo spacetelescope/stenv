@@ -24,8 +24,10 @@ env:
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
+  crds-contexts:
+    uses: spacetelescope/crds/.github/workflows/contexts.yml@4c82b705635e6bab73a577bfe89e6fc71f40b62d  # 12.0.5
   test_installed:
-    needs: [ build, crds_contexts ]
+    needs: [ build, crds-contexts ]
     strategy:
       fail-fast: false
       matrix:
@@ -73,7 +75,7 @@ jobs:
         run: |
           echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
           echo CRDS_SERVER_URL=https://${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
+          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
@@ -100,7 +102,7 @@ jobs:
       - run: pip list
       - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope 
   test_from_source:
-    needs: [ build, crds_contexts ]
+    needs: [ build, crds-contexts ]
     strategy:
       matrix:
         package: [ calcos, drizzlepac, hstcal, stistools, stsynphot ]
@@ -145,7 +147,7 @@ jobs:
         run: |
           echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
           echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
+          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '' }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
@@ -185,13 +187,8 @@ jobs:
         working-directory: ${{ matrix.package }}
       - run: micromamba update -f stenv/environment.yaml
       - run: pip list
-      - if: matrix.pre_command != ''
-        run: ${{ matrix.pre_command }}
-        working-directory: ${{ matrix.package }}
       - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope
         working-directory: ${{ matrix.package }}
-  crds_contexts:
-    uses: spacetelescope/crds/.github/workflows/contexts.yml@4c82b705635e6bab73a577bfe89e6fc71f40b62d  # 12.0.5
   crds_test_cache:
     uses: spacetelescope/crds/.github/workflows/cache.yml@4c82b705635e6bab73a577bfe89e6fc71f40b62d  # 12.0.5
   test_crds_with_data:
@@ -296,7 +293,7 @@ jobs:
         run: |
           echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
           echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds_contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds_contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds_contexts.outputs.roman || '' }} >> $GITHUB_ENV
+          echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
         shell: bash
       - if: env.CRDS_CONTEXT != ''
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
@@ -318,7 +315,7 @@ jobs:
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: none
           generate-run-shell: true
-      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
+      - run: pip install pytest pytest-xdist
       - run: pip list
       - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
         with:
