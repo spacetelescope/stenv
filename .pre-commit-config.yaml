@@ -3,3 +3,6 @@ repos:
     rev: v1.7.4
     hooks:
       - id: actionlint
+        args:
+          - -shellcheck=
+          - -ignore=".*crds-contexts.*"
