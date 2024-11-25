@@ -190,8 +190,9 @@ jobs:
       - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope
         working-directory: ${{ matrix.package }}
   crds_test_cache:
+    name: retrieve CRDS test cache
     uses: spacetelescope/crds/.github/workflows/cache.yml@79766e965b9053632fb82d0c86c1d6988b5b934b  # 12.0.6
-  test_crds_with_data:
+  test_crds:
     needs: [ build, crds_test_cache ]
     strategy:
       fail-fast: false
