@@ -48,15 +48,13 @@ jobs:
           cache-downloads-key: downloads-${{ needs.date.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.date.outputs.date }}
+          micromamba-version: '2.0.4-0'
           init-shell: bash
           generate-run-shell: false
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.date.outputs.date }}.yaml" >> $GITHUB_OUTPUT
         id: output
       - run: |
           micromamba env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
-          pip freeze > pip_requirements.txt
-          python tools/mamba_export_pip.py ${{ steps.output.outputs.filename }} pip_requirements.txt > mamba_packages.yml
-          mv mamba_packages.yml ${{ steps.output.outputs.filename }}
           cat ${{ steps.output.outputs.filename }}
       - run: pip install pytest
       - run: pytest tests/test_import.py
