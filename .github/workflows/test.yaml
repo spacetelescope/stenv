@@ -93,6 +93,7 @@ jobs:
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
           generate-run-shell: false
+          post-cleanup: none
       - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - if: matrix.test-extras != ''
         run: pip install ${{ matrix.package }}[${{ matrix.test-extras }}]
@@ -165,6 +166,7 @@ jobs:
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
           generate-run-shell: false
+          post-cleanup: none
       - run: echo "version=$(pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
@@ -229,6 +231,7 @@ jobs:
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
           generate-run-shell: false
+          post-cleanup: none
       - run: micromamba install -y filelock requests
       - run: pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
       - run: pip list
@@ -307,6 +310,7 @@ jobs:
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
           generate-run-shell: false
+          post-cleanup: none
       - run: pip install pytest pytest-xdist
       - run: pip list
       - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2

@@ -49,6 +49,7 @@ jobs:
           micromamba-version: '2.0.4-0'
           init-shell: bash
           generate-run-shell: false
+          post-cleanup: none
       - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.date.outputs.date }}.yaml" >> $GITHUB_OUTPUT
         id: output
       - run: |
