@@ -44,8 +44,6 @@ jobs:
           environment-file: environment.yaml
           create-args: >-
             python=${{ matrix.python-version }}
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.date.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.date.outputs.date }}
           micromamba-version: '2.0.4-0'

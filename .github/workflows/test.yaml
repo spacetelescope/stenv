@@ -89,8 +89,6 @@ jobs:
           environment-file: environment.yaml
           create-args: >-
             python=${{ matrix.python-version }}
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
@@ -163,8 +161,6 @@ jobs:
           environment-file: stenv/environment.yaml
           create-args: >-
             python=${{ matrix.python-version }}
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
@@ -229,8 +225,6 @@ jobs:
           environment-file: stenv/environment.yaml
           create-args: >-
             python=${{ matrix.python-version }}
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
@@ -309,8 +303,6 @@ jobs:
           environment-file: environment.yaml
           create-args: >-
             python=${{ matrix.python-version }}
-          cache-downloads: true
-          cache-downloads-key: downloads-${{ needs.build.outputs.date }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.build.outputs.date }}
           init-shell: bash
