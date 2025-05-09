@@ -86,10 +86,9 @@ jobs:
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
-      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - if: matrix.test-extras != ''
         run: pip install ${{ matrix.package }}[${{ matrix.test-extras }}]
-      - run: micromamba update -f environment.yaml
+      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
       - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope 
   test_from_source:
@@ -164,14 +163,13 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
-      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - if: matrix.test-extras != ''
         run: pip install .[${{ matrix.test-extras }}]
         working-directory: ${{ matrix.package }}
       - if: matrix.package != 'hstcal'
         run: pip install -e .
         working-directory: ${{ matrix.package }}
-      - run: micromamba update -f stenv/environment.yaml
+      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
       - run: pip list
       - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope
         working-directory: ${{ matrix.package }}
