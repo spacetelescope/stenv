@@ -33,7 +33,7 @@ jobs:
       matrix:
         package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
         # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-13, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: acstools
