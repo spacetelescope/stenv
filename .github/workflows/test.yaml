@@ -56,8 +56,6 @@ jobs:
             test-dependencies: test
           - package: wfpc2tools
         exclude:
-          - runs-on: macos-13
-            python-version: '3.11'
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
@@ -97,7 +95,7 @@ jobs:
       matrix:
         package: [ calcos, drizzlepac, hstcal, stistools, stsynphot ]
         # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-13, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: calcos
@@ -121,8 +119,6 @@ jobs:
             repository: spacetelescope/stsynphot_refactor
             test-extras: test
         exclude:
-          - runs-on: macos-13
-            python-version: '3.11'
           - runs-on: macos-latest
             python-version: '3.11'
       fail-fast: false
@@ -182,14 +178,12 @@ jobs:
       matrix:
         package: [ crds ]
         # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-13, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: crds
             repository: spacetelescope/crds
         exclude:
-          - runs-on: macos-13
-            python-version: '3.11'
           - runs-on: macos-latest
             python-version: '3.11'
     runs-on: ${{ matrix.runs-on }}
@@ -242,7 +236,7 @@ jobs:
       matrix:
         package: [ calcos, drizzlepac ]
         # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-13, macos-latest ]
+        runs-on: [ ubuntu-latest, macos-latest ]
         python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: calcos
@@ -254,8 +248,6 @@ jobs:
             crds-observatory: hst
             jref: hst/references/hst
         exclude:
-          - runs-on: macos-13
-            python-version: '3.11'
           - runs-on: macos-latest
             python-version: '3.11'
       fail-fast: false
