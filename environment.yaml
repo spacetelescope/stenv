@@ -5,29 +5,29 @@ channels:
   - conda-forge
 
 dependencies:
-  - astropy
-  - dask
   - fitsverify
   - hstcal>=3.0.3
-  - h5py
-  - ipython
-  - jupyter
-  - numpy
-  - pip
   - python>=3.10
-  - scipy
+  - uv
   - pip:
+      - astropy
       - acstools
       - asdf
       - calcos
       - ccdproc
       - costools
       - crds
+      - dask
       - drizzlepac
       - ginga
+      - h5py
+      - ipython
+      - jupyter
       - jwst
       - nictools
+      - numpy
       - reftools
+      - scipy
       - stcal
       - stdatamodels
       - stistools
