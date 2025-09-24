@@ -77,6 +77,8 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
+          condarc: |
+            use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
@@ -143,6 +145,8 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: stenv/environment.yaml
+          condarc: |
+            use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
@@ -201,6 +205,8 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: stenv/environment.yaml
+          condarc: |
+            use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
@@ -274,6 +280,8 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
+          condarc: |
+            use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true

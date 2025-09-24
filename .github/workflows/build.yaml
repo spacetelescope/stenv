@@ -42,11 +42,12 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
+          condarc: |
+            use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
           cache-environment-key: environment-${{ needs.date.outputs.date }}
-          micromamba-version: '2.0.4-0'
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
