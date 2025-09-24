@@ -123,13 +123,13 @@ in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.1
 
     .. code-block:: shell
 
-        micromamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
+        micromamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml --use-uv
 
 .. tab:: mamba
 
     .. code-block:: shell
 
-        mamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
+        mamba env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml --use-uv
 
 .. tab:: conda
 
