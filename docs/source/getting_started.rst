@@ -137,6 +137,10 @@ in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.1
 
         conda env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
+    .. note::
+        If you run into issues with building an environment with ``conda`` from a local file,
+        you can also try using the direct URL that you chose above.
+
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
 
