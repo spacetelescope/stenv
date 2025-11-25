@@ -18,9 +18,6 @@ and can be used to replicate the environment used by STScI to perform mission-sp
 Be aware that upgrading packages with ``conda update`` is not recommended, as it will likely introduce
 unwanted bugs and / or break the environment all together.
 
-If you have any questions, comments, or concerns related to pipeline releases, please feel free to contact
-`help@stsci.edu <mailto:help@stsci.edu>`_
-
 Installation
 ============
 
