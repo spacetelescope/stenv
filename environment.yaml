@@ -27,6 +27,7 @@ dependencies:
       - nictools
       - numpy
       - reftools
+      - romancal
       - scipy
       - stcal
       - stdatamodels

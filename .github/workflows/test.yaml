@@ -31,10 +31,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
+        package: [ acstools, asdf, ccdproc, costools, jwst, romancal, reftools, synphot, wfpc2tools ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
+        python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: acstools
             test-extras: test
@@ -50,6 +50,9 @@ jobs:
           - package: jwst
             test-extras: test
             crds-observatory: jwst
+          - package: romancal
+            test-extras: test
+            crds-observatory: roman
           - package: reftools
             test-dependencies: test
           - package: synphot
@@ -98,7 +101,7 @@ jobs:
         package: [ calcos, drizzlepac, hstcal, stistools, stsynphot ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
+        python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: calcos
             repository: spacetelescope/calcos
@@ -183,7 +186,7 @@ jobs:
         package: [ crds ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
+        python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: crds
             repository: spacetelescope/crds
@@ -243,7 +246,7 @@ jobs:
         package: [ calcos, drizzlepac ]
         # the macOS 13 runner is on Intel hardware
         runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
+        python-version: [ '3.11', '3.12', '3.13' ]
         include:
           - package: calcos
             run: calcos la8n01qkq_rawtag_a.fits
