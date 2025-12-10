@@ -80,8 +80,9 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
+          # TODO set this true after release of mamba 2.4.1
           condarc: |
-            use_uv: true
+            use_uv: false 
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
@@ -148,8 +149,9 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: stenv/environment.yaml
+          # TODO set this true after release of mamba 2.4.1
           condarc: |
-            use_uv: true
+            use_uv: false 
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
@@ -206,10 +208,12 @@ jobs:
           path: stenv
       - uses: mamba-org/setup-micromamba@add3a49764cedee8ee24e82dfde87f5bc2914462  # v2.0.7
         with:
+          micromamba-url: https://github.com/mamba-org/mamba/actions/runs/19866584748/artifacts/4740560065 # TODO remove this after release of mamba 2.4.1
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: stenv/environment.yaml
+          # TODO set this true after release of mamba 2.4.1
           condarc: |
-            use_uv: true
+            use_uv: false 
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
@@ -281,10 +285,12 @@ jobs:
           lfs: true
       - uses: mamba-org/setup-micromamba@add3a49764cedee8ee24e82dfde87f5bc2914462  # v2.0.7
         with:
+          micromamba-url: https://github.com/mamba-org/mamba/actions/runs/19866584748/artifacts/4740560065 # TODO remove this after release of mamba 2.4.1
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
+          # TODO set this true after release of mamba 2.4.1
           condarc: |
-            use_uv: true
+            use_uv: false 
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
