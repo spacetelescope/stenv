@@ -42,9 +42,8 @@ jobs:
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: environment.yaml
-          # TODO set this true after release of mamba 2.4.1
           condarc: |
-            use_uv: false 
+            use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
