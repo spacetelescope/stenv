@@ -1,4 +1,3 @@
-name: rtd313
 channels:
     - conda-forge
 dependencies:
