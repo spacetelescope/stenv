@@ -1,4 +1,4 @@
-name: rtd311
+name: rtd313
 channels:
     - conda-forge
 dependencies:
@@ -7,7 +7,7 @@ dependencies:
     - numpy
     - numpydoc
     - pip
-    - python=3.11
+    - python=3.13
     - scipy
     - sphinx
     - sphinx-rtd-theme
