@@ -8,14 +8,6 @@ from datetime import datetime
 import dunamai
 import packaging.version
 import sphinx
-import stsci_rtd_theme
-
-
-def setup(app):
-    try:
-        app.add_css_file("stsci.css")
-    except AttributeError:
-        app.add_stylesheet("stsci.css")
 
 
 # -- Project information -----------------------------------------------------
@@ -63,7 +55,7 @@ nitpick_ignore = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'stsci_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = []
 
 html_theme_options = {
@@ -74,8 +66,6 @@ html_theme_options = {
     # "sidebarlinkcolor": "black",
     # "headbgcolor": "white",
 }
-
-html_theme_path = [stsci_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents. If None, it defaults to "<project> v<release> documentation".
 html_title = f'{project} v{release} documentation'

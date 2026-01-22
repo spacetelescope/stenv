@@ -1,15 +1,14 @@
 channels:
     - conda-forge
 dependencies:
-    - dunamai
     - graphviz
-    - numpy
-    - numpydoc
     - pip
     - python=3.13
-    - scipy
-    - sphinx
-    - sphinx-rtd-theme
     - pip:
-        - stsci-rtd-theme
+        - dunamai
+        - numpy
+        - numpydoc
+        - scipy
+        - sphinx
+        - sphinx-rtd-theme
         - sphinx-inline-tabs

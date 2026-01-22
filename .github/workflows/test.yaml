@@ -2,6 +2,10 @@ name: tests
 
 on:
   pull_request:
+    paths:
+      - .github/workflows/*
+      - environment.yaml
+      - tests/*
   workflow_dispatch:
 
 concurrency:
