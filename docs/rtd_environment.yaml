@@ -10,5 +10,5 @@ dependencies:
         - numpydoc
         - scipy
         - sphinx
-        - sphinx-inline-tabs
         - sphinx-rtd-theme
+        - sphinx-inline-tabs
