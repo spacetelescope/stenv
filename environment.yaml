@@ -8,8 +8,7 @@ dependencies:
   - fitsverify
   - hstcal>=3.0.3
   - python>=3.10
-  # TODO uncomment this after next release of Mamba (2.4.1)
-  # - uv
+  - uv
   - pip:
       - astropy
       - acstools

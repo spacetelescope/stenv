@@ -1,8 +1,29 @@
-Space Telescope Environment (``stenv``)
-#######################################
+.. image:: ../assets/stsci_logo.png
+   :width: 15%
+   :target: https://stsci.edu
+
+.. image:: ../assets/stsci_name.png
+   :width: 68%
+   :target: https://stsci.edu
+
+Space Telescope Calibration Pipeline Environment (``stenv``)
+############################################################
 
 ``stenv`` is an installable Conda environment maintained by the `Space Telescope Science Institute (STScI) <http://www.stsci.edu/>`_ in Baltimore, Maryland.
-This environment provides tools and utilities required to process and analyze science imagery and spectroscopy from the Hubble Space Telescope (HST), James Webb Space Telescope (JWST), and Nancy Grace Roman Space Telescope (Roman).
+This environment provides tools and utilities required to process uncalibrated imagery and spectroscopy from 
+the `Hubble Space Telescope (HST) <https://science.nasa.gov/mission/hubble/>`_,
+the `James Webb Space Telescope (JWST) <https://science.nasa.gov/mission/webb/>`_,
+and the `Nancy Grace Roman Space Telescope (Roman) <https://science.nasa.gov/mission/roman-space-telescope/>`_.
+
+.. note::
+
+   If you have issues with ``stenv`` please contact one the help desks:
+   
+   - `HST Help Desk <https://jwsthelp.stsci.edu>`_
+   - `JWST Help Desk <https://jwsthelp.stsci.edu>`_
+   - `Roman Help Desk <https://romanhelp.stsci.edu>`_
+
+   Additionally, you can `open an issue on the GitHub repository <https://github.com/spacetelescope/stenv/issues>`_ to report bugs or request new features.
 
 .. toctree::
    :maxdepth: 1
@@ -12,9 +33,3 @@ This environment provides tools and utilities required to process and analyze sc
    developer_notes.rst
    pipeline_releases.rst
    windows.rst
-
-If you have issues with ``stenv``, please `create a new GitHub issue <https://github.com/spacetelescope/stenv/issues>`_ or contact one of the following help desks:
-
-* **HST Help Desk:** https://stsci.service-now.com/hst
-
-* **JWST Help Desk:** https://stsci.service-now.com/jwst
