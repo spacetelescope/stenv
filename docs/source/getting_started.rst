@@ -5,12 +5,9 @@ Conda Basics
 ============
 
 ``stenv`` defines a Conda environment, which is a set of packages installed together at specific versions.
-A Conda environment is designed to be isolated from system packages, and can be **activated** to switch the 
-current context (PATH, environment variables, available binaries, Python installation, etc.) to an isolated 
-instance that is separate from the system. (This is similar to using ``source bin/activate``, if you are 
-familiar with Python virtualenvs). This has the advantage of allowing several separate installations of 
-Python packages and other tools without cluttering the system installation, allowing switching between use 
-cases or package contexts at will.
+A Conda environment is designed to be isolated from system packages, and can be **activated** to switch the current context (PATH, environment variables, available binaries, Python installation, etc.) to an isolated instance that is separate from the system.
+(This is similar to using ``source bin/activate``, if you are familiar with Python ``virtualenv``).
+This has the advantage of allowing several separate installations of Python packages and other tools without cluttering the system installation, allowing switching between use cases or package contexts at will.
 
 Installation
 ============
@@ -20,13 +17,9 @@ Installation
 Install Conda
 -------------
 
-A Conda distribution provides the ``micromamba`` / ``mamba`` / ``conda`` command, which lets you create, manage, and switch to 
-(activate) environments. Try running ``micromamba``, ``mamba``, or ``conda`` in your terminal. If you get ``command not found`` 
-(or similar), see below to install. 
-
-``mamba`` is a rewrite of ``conda`` that is much faster at resolving dependencies with near-parity of commands. 
-``micromamba`` is ``mamba`` packaged into a single binary, which makes installation and maintenance much easier.
-For these reasons, I recommended you use ``micromamba``.
+A Conda distribution provides the ``micromamba`` / ``mamba`` / ``conda`` command, which lets you create, manage, and switch to (activate) environments.
+Try running ``micromamba``, ``mamba``, or ``conda`` in your terminal.
+If you get ``command not found`` (or similar), see below to install. 
 
 .. tab:: micromamba
 
@@ -36,24 +29,21 @@ For these reasons, I recommended you use ``micromamba``.
 
         "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
 
-    On macOS, you can alternatively install ``micromamba`` using the `Homebrew package manager <https://brew.sh/>`_, if you have it installed:
+    Alternatively, macOS users can use the `Homebrew package manager <https://brew.sh/>`_:
 
     .. code-block:: shell
 
         brew install micromamba
         micromamba shell init
 
-    You may also follow `these installation instructions <https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html>`_.
-    
 .. tab:: mamba
 
-    Follow 
-    `these instructions to install Miniforge <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`_, 
+    Follow `these instructions to install Miniforge <https://github.com/conda-forge/miniforge/blob/main/README.md>`_, 
     which includes the ``mamba`` command in its base environment.
 
     .. important::
-        Remember to run ``mamba init`` after installing. This is required in order to set up your shell to 
-        ``activate`` and ``deactivate`` environments.
+        Remember to run ``mamba init`` after installing.
+        You need to do this before attempting to ``activate`` / ``deactivate`` environments.
 
         .. code-block:: shell
 
@@ -62,21 +52,18 @@ For these reasons, I recommended you use ``micromamba``.
 .. tab:: conda
 
     .. caution::
-        The Anaconda organization has 
-        `updated their terms of service <https://legal.anaconda.com/policies/en/#:~:text=2.1%20Organizational%20Use.%C2%A0>`_ 
-        to indicate that any usage of their services requires a paid license, if used by an organization of 
-        more than 200 users. This includes pulling packages from the Anaconda ``defaults`` channels, as well as installing 
-        ``conda`` itself.
+        The Anaconda organization has `updated their terms of service <https://legal.anaconda.com/policies/en/#:~:text=2.1%20Organizational%20Use.%C2%A0>`_
+        to indicate that any usage of their services requires a paid license, if used by an organization of more than 200 users. This includes pulling packages from the Anaconda ``defaults`` channels, as well as installing ``conda`` itself.
 
-        We recommend that you use ``mamba`` and pull packages from the ``conda-forge`` channel, instead of using ``conda`` 
-        and the ``defaults`` channels.
+        ``mamba`` is the recommended drop-in replacement for ``conda``. 
+        We recommend that you use ``mamba`` and pull packages from the ``conda-forge`` channel, instead of using ``conda`` and the ``defaults`` channels.
 
-    Follow `these instructions to install Miniconda <https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html>`_ 
+    Follow `these instructions to install Miniforge <https://github.com/conda-forge/miniforge/blob/main/README.md>`_, 
     which includes the ``conda`` command in its base environment.
 
     .. important::
-        Remember to run ``conda init`` after installing. This is required in order to set up your shell to 
-        ``activate`` and ``deactivate`` environments.
+        Remember to run ``conda init`` after installing.
+        You need to do this before attempting to ``activate`` / ``deactivate`` environments.
 
         .. code-block:: shell
 
@@ -88,36 +75,33 @@ Choose an ``stenv`` release
 ---------------------------
 
 Now that you have a Conda installation, you should choose a release of ``stenv`` from the
-`Releases page <https://github.com/spacetelescope/stenv/releases>`_ and choose the environment definition 
-file from the ``Assets`` section that corresponds with your platform.
+`Releases page <https://github.com/spacetelescope/stenv/releases>`_
+and choose the environment definition file from the ``Assets`` section that corresponds with your platform.
 
 .. image:: ./images/release_example.png
     :alt: example of a release page, showing output files
     :target: https://github.com/spacetelescope/stenv/releases
 
 Every release is available for several combinations of operating system and Python version. 
-The name of the release file indicates which is which. For example, a release of stenv for Python ``3.11`` 
-on Linux will be named something like ``stenv-Linux-X64-py3.11-YYYY.MM.DD.yaml`` (where ``YYYY.MM.DD`` 
-is the date of the release). Unless you have particular requirements, you should choose the 
+The name of the release file indicates which is which.
+For example, a release of stenv for Python ``3.11`` on Linux will be named something like ``stenv-Linux-X64-py3.11-YYYY.MM.DD.yaml`` (where ``YYYY.MM.DD`` is the date of the release).
+Unless you have particular requirements, you should choose the 
 newest (highest-numbered) Python version available. 
 
 .. note::
     Version numbers aren't real numbers; a hypothetical Python ``3.20`` would be newer than Python ``3.2``.
 
 .. warning::
-    **Can't find the release you need?** Building and testing environments on supported platforms may take 
-    several minutes; for new releases, you may need to wait for the 
-    `associated workflow job <https://github.com/spacetelescope/stenv/actions/workflows/build.yaml>`_ to
-    finish before environment files are available.
+    **Can't find the release you need?** Building and testing environments on supported platforms may take several minutes; for new releases, you may need to wait for the 
+    `associated workflow job <https://github.com/spacetelescope/stenv/actions/workflows/build.yaml>`_
+    to finish before environment files are available.
 
 .. note::
-    Every Conda environment has a name, specified by the ``--name`` or ``-n`` option. If you include the 
-    version numbers in the name, it will be easier to keep track of which version of ``stenv`` you have. 
-    Therefore, I recommend using a more descriptive name than ``stenv`` for your environment; for example, 
-    use something like ``stenv-py3.11-2023.01.01`` (changed as needed to match the version you chose).
+    Every Conda environment has a name, specified by the ``--name`` or ``-n`` option.
+    Include the version numbers in the name to make it easier to keep track of which version of ``stenv`` you have;
+    for example, ``stenv-py3.11-2023.01.01``.
 
-Download the file corresponding to your platform and desired Python version, then run the following command 
-in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.10-2023.02.16.yaml``):
+Download the file corresponding to your platform and desired Python version, then run the following command in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.10-2023.02.16.yaml``):
 
 .. tab:: micromamba
 
@@ -138,8 +122,7 @@ in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.1
         conda env create --name stenv --file ~/Downloads/stenv-Linux-py3.10-2023.02.16.yaml
 
     .. note::
-        If you run into issues with building an environment with ``conda`` from a local file,
-        you can also try using the direct URL that you chose above.
+        If you run into issues with building an environment with ``conda`` from a local file, you can also try using the direct URL that you chose above.
 
 .. note::
     If the build does not succeed on your system, please refer to :ref:`build_fails`
@@ -147,8 +130,8 @@ in a terminal using the file you downloaded (in this example ``stenv-Linux-py3.1
 Activating an environment
 =========================
 
-Environments let you install packages while isolating them from the rest of your system, and even each 
-other. Even though we just created an environment, we will not be able to import the new packages yet:
+Environments let you install packages while isolating them from the rest of your system, and even each other.
+Even though we just created an environment, we will not be able to import the new packages yet:
 
 .. code-block:: shell
 
@@ -180,16 +163,15 @@ In order to access the packages in ``stenv``, you must first ``activate`` the en
 
         conda activate stenv
 
-Activating a Conda environment changes which Python interpreter and packages are in use for that session 
-(i.e. terminal window). Now, if you try to ``import jwst``:
+Activating a Conda environment changes which Python interpreter and packages are in use for that session (i.e. terminal window).
+Now, if you try to ``import jwst``:
 
 .. code-block:: shell
 
     (stenv) $ python -c 'import jwst; print("ok")'
     ok
 
-Every time you open a new terminal window, you will need to activate the environment before you can use 
-software included in ``stenv``.
+Every time you open a new terminal window, you will need to activate the environment before you can use software included in ``stenv``.
 
 .. note::
     You can show installed packages available within a Conda environment with ``conda list``:
@@ -212,8 +194,7 @@ software included in ``stenv``.
 
             conda list
 
-To ``deactivate`` an environment and return your shell to normal, close your terminal window or run 
-``conda deactivate``:
+To ``deactivate`` an environment and return your shell to normal, close your terminal window or run ``conda deactivate``:
 
 .. tab:: micromamba
 

@@ -13,10 +13,8 @@ Pipeline Releases
     ``stenv`` does not support 32-bit operating systems.
 
 Pipeline releases differ from the standard software stack and serve a different purpose.
-The release files, described below, are immutable snapshots of STScI operational software
-and can be used to replicate the environment used by STScI to perform mission-specific data processing.
-Be aware that upgrading packages with ``conda update`` is not recommended, as it will likely introduce
-unwanted bugs and / or break the environment all together.
+The release files, described below, are immutable snapshots of STScI operational software and can be used to replicate the environment used by STScI to perform mission-specific data processing.
+Be aware that upgrading packages with ``conda update`` is not recommended, as it will likely introduce unwanted bugs and / or break the environment all together.
 
 Installation
 ============
@@ -102,8 +100,8 @@ https://github.com/astroconda/astroconda-releases/tree/master/hstdp
 Continuous Integration
 ======================
 
-This example BASH function provides a starting point for users intending to execute pipeline software from within a
-continuous integration environment. This installation method is unsupported and your mileage may vary.
+This example BASH function provides a starting point for users intending to execute pipeline software from within a continuous integration environment.
+This installation method is unsupported and your mileage may vary.
 Use at your own risk.
 
 .. code-block:: sh

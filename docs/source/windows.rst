@@ -1,13 +1,10 @@
 Windows Support
 ###############
 
-``stenv`` does not currently support Windows, as
-``hstcal``, ``fitsverify``, and the ``jwst`` calibration pipeline are not built or tested on Windows platforms. 
+``hstcal``, ``fitsverify``, and the ``jwst`` calibration pipeline are neither built for nor tested on Windows.
 
-If you would like to run ``stenv`` on Windows, you can use the :ref:`wsl`, 
+If you would like to install and run calibration pipelines on Windows, use the :ref:`wsl`, 
 an optional Windows feature that provides a functioning Linux terminal with access to the host operating system.
-
-After installing your Linux system, install ``stenv`` by following the :doc:`getting_started` instructions.
 
 .. _wsl:
 
