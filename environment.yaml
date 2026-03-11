@@ -24,7 +24,6 @@ dependencies:
       - ipython
       - jupyter
       - jwst
-      - nictools
       - numpy
       - reftools
       - romancal
