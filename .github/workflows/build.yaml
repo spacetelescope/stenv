@@ -64,6 +64,6 @@ jobs:
           path: ${{ steps.output.outputs.filename }}
           archive: false
       - if: (github.event_name == 'release' && github.event.action == 'published')
-        uses: svenstaro/upload-release-action@b98a3b12e86552593f3e4e577ca8a62aa2f3f22b  # 2.11.4
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de  # 2.11.5
         with:
           file: ${{ steps.output.outputs.filename }}
