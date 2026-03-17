@@ -1,0 +1,7 @@
+dunamai
+numpy
+numpydoc
+scipy
+sphinx
+sphinx-inline-tabs
+sphinx-rtd-theme
