@@ -17,7 +17,7 @@ import sphinx
 project = 'Space Telescope Environment (`stenv`)'
 author = 'Space Telescope Science Institute'
 copyright = f'{datetime.today().year}, {author}'
-release = dunamai.Version.from_any_vcs('(?P<base>\d+\.\d+\.\d+)').serialize()
+release = dunamai.Version.from_any_vcs(r'(?P<base>\d+\.\d+\.\d+)').serialize()
 version = release.split('-', 1)[0]
 
 # -- General configuration ---------------------------------------------------

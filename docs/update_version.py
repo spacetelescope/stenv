@@ -4,7 +4,7 @@ from pathlib import Path
 
 DOCS_DIRECTORY = Path(__file__).parent / 'source'
 VERSION_REGEX_PATTERN = re.compile('[0-9]{4}\.[0-9]{2}\.[0-9]{2}')
-VERSION_DUNAMAI_PATTERN = "(?P<base>\d+\.\d+\.\d+)"
+VERSION_DUNAMAI_PATTERN = r"(?P<base>\d+\.\d+\.\d+)"
 
 
 def update_docs_release_version(version: str, directory: Path):
