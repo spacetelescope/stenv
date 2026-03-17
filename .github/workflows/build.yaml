@@ -56,7 +56,7 @@ jobs:
       - run: |
           micromamba env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
           cat ${{ steps.output.outputs.filename }}
-      - run: pip install pytest
+      - run: uv pip install pytest
       - run: pytest tests/test_import.py
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
         with:
