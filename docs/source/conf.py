@@ -56,7 +56,7 @@ nitpick_ignore = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-html_logo = '../assets/stsci_logo_with_name.png'
+html_logo = '../assets/stsci_logo.png'
 html_static_path = []
 
 html_theme_options = {
