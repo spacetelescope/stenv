@@ -94,9 +94,9 @@ jobs:
           generate-run-shell: false
           post-cleanup: none
       - if: matrix.test-extras != ''
-        run: pip install ${{ matrix.package }}[${{ matrix.test-extras }}]
-      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
-      - run: pip list
+        run: uv pip install ${{ matrix.package }}[${{ matrix.test-extras }}]
+      - run: uv pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
+      - run: uv pip list
       - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope 
   test_from_source:
     needs: [ build, crds-contexts ]
@@ -161,7 +161,7 @@ jobs:
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
-      - run: echo "version=$(pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -171,13 +171,13 @@ jobs:
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
       - if: matrix.test-extras != ''
-        run: pip install .[${{ matrix.test-extras }}]
+        run: uv pip install .[${{ matrix.test-extras }}]
         working-directory: ${{ matrix.package }}
       - if: matrix.package != 'hstcal'
-        run: pip install -e .
+        run: uv pip install -e .
         working-directory: ${{ matrix.package }}
-      - run: pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
-      - run: pip list
+      - run: uv pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
+      - run: uv pip list
       - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope
         working-directory: ${{ matrix.package }}
   crds_test_cache:
@@ -222,9 +222,9 @@ jobs:
           generate-run-shell: false
           post-cleanup: none
       - run: micromamba install -y filelock requests
-      - run: pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
-      - run: pip list
-      - run: echo "version=$(pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+      - run: uv pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
+      - run: uv pip list
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -233,7 +233,7 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
-      - run: pip uninstall --yes crds && ./install && pip install .[submission,test,docs,synphot]
+      - run: uv pip uninstall --yes crds && ./install && uv pip install .[submission,test,docs,synphot]
         working-directory: ${{ matrix.package }}
       - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
         with:
@@ -296,8 +296,8 @@ jobs:
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
-      - run: pip install pytest pytest-xdist
-      - run: pip list
+      - run: uv pip install pytest pytest-xdist
+      - run: uv pip list
       - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
         with:
           path: tests/data/
