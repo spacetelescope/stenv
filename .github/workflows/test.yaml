@@ -233,7 +233,7 @@ jobs:
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
-      - run: uv pip uninstall --yes crds && ./install && uv pip install .[submission,test,docs,synphot]
+      - run: uv pip uninstall crds && ./install && uv pip install .[submission,test,docs,synphot]
         working-directory: ${{ matrix.package }}
       - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
         with:
