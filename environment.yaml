@@ -7,6 +7,7 @@ channels:
 dependencies:
   - fitsverify
   - hstcal>=3.0.3
+  - numpy
   - python>=3.10
   - uv
   - pip:
@@ -24,7 +25,6 @@ dependencies:
       - ipython
       - jupyter
       - jwst
-      - numpy
       - reftools
       - romancal
       - scipy
