@@ -1,8 +1,26 @@
 version: 2
+
 updates:
   - package-ecosystem: "github-actions"
+    directory: ".github/workflows"
+    target-branch: "main"
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - "*"
+  - package-ecosystem: "pre-commit"
     directory: "/"
     target-branch: "main"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - "*"
 
