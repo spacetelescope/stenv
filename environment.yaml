@@ -8,7 +8,7 @@ dependencies:
   - fitsverify
   - hstcal>=3.0.3
   - numpy
-  - python>=3.10
+  - python>=3.12
   - uv
   - pip:
       - astropy

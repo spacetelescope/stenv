@@ -17,7 +17,7 @@ defaults:
     shell: bash -leo pipefail {0}
 
 env:
-  PYSYN_CDBS: /tmp/trds
+  PYSYN_CDBS: https://ssb.stsci.edu/trds
   jref: https://ssb.stsci.edu/trds_open/jref
   lref: https://ssb.stsci.edu/cdbs/lref
   CRDS_PATH: /tmp/crds_cache
@@ -30,261 +30,555 @@ jobs:
     uses: ./.github/workflows/build.yaml
   crds-contexts:
     uses: spacetelescope/crds/.github/workflows/contexts.yml@main
-  test_installed:
-    needs: [ build, crds-contexts ]
+  test_acstools:
+    needs: [build]
     strategy:
-      fail-fast: false
       matrix:
-        package: [ acstools, asdf, ccdproc, costools, jwst, reftools, synphot, wfpc2tools ]
-        # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.12', '3.13', '3.14' ]
-        include:
-          - package: acstools
-            test-extras: test
-            pytest-args: --remote-data -v
-          - package: asdf
-            test-extras: tests
-            pytest-args: --remote-data --durations=10
-          - package: ccdproc
-            test-extras: test
-            pytest-args: -W ignore
-          - package: costools
-            test-extras: test
-          - package: jwst
-            test-extras: test
-            crds-observatory: jwst
-          - package: reftools
-            test-dependencies: test
-          - package: synphot
-            test-dependencies: test
-          - package: wfpc2tools
+        package: [acstools]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/acstools]
     runs-on: ${{ matrix.runs-on }}
-    name: "`pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_SERVER_URL=https://${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
-      - if: env.CRDS_CONTEXT != ''
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yaml
+          environment-file: ./stenv/environment.yaml
           condarc: |
             use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
-          cache-environment-key: environment-${{ needs.build.outputs.date }}
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
-      - if: matrix.test-extras != ''
-        run: uv pip install ${{ matrix.package }}[${{ matrix.test-extras }}]
-      - run: uv pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
-      - run: uv pip list
-      - run: pytest --pyargs ${{ matrix.package }} ${{ matrix.pytest-args }} -n auto --dist=loadscope 
-  test_from_source:
-    needs: [ build, crds-contexts ]
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} --slow -n auto
+  test_asdf:
+    needs: [build]
     strategy:
       matrix:
-        package: [ calcos, drizzlepac, hstcal, stistools, stsynphot ]
-        # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.12', '3.13', '3.14' ]
-        include:
-          - package: calcos
-            repository: spacetelescope/calcos
-            test-extras: test
-            pytest-args: --slow
-          - package: drizzlepac
-            repository: spacetelescope/drizzlepac
-            test-extras: test
-          - package: hstcal
-            repository: spacetelescope/hstcal
-            test-dependencies: >-
-              crds
-              ci_watson
-            pytest-args: --slow
-            test-directory: tests
-            crds-observatory: hst
-          - package: stistools
-            repository: spacetelescope/stistools
-          - package: stsynphot
-            repository: spacetelescope/stsynphot_refactor
-            test-extras: test
-      fail-fast: false
+        package: [asdf]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [asdf-format/asdf]
     runs-on: ${{ matrix.runs-on }}
-    name: "`pytest ${{ matrix.package }}/${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '' }} >> $GITHUB_ENV
-      - if: env.CRDS_CONTEXT != ''
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          path: stenv
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: stenv/environment.yaml
+          environment-file: ./stenv/environment.yaml
           condarc: |
             use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
-          cache-environment-key: environment-${{ needs.build.outputs.date }}
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} "stdatamodels>=5" pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} --durations=10 -n auto
+  test_calcos:
+    needs: [build, crds-contexts]
+    env:
+      CRDS_OBSERVATORY: hst
+      CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      CRDS_CONTEXT: ${{ needs.crds-contexts.outputs.hst }}
+    strategy:
+      matrix:
+        package: [calcos]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/calcos]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
+          restore-keys: |
+            crds-${{ env.CRDS_OBSERVATORY }}-
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
       - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: ${{ matrix.package }}
+          path: ./${{ matrix.package }}/
           repository: ${{ matrix.repository }}
           ref: ${{ steps.package_version.outputs.version }}
           fetch-depth: 0
-      - if: matrix.test-extras != ''
-        run: uv pip install .[${{ matrix.test-extras }}]
-        working-directory: ${{ matrix.package }}
-      - if: matrix.package != 'hstcal'
-        run: uv pip install -e .
-        working-directory: ${{ matrix.package }}
-      - run: uv pip install pytest pytest-xdist ${{ matrix.test-dependencies }}
-      - run: uv pip list
-      - run: pytest ${{ matrix.test-directory }} ${{ matrix.pytest-args }} -n auto --dist=loadscope
-        working-directory: ${{ matrix.package }}
-  crds_test_cache:
-    uses: spacetelescope/crds/.github/workflows/cache.yml@main
-  test_crds_with_data:
-    needs: [ build, crds_test_cache ]
+      - run: uv pip install .[test] pytest-xdist
+        working-directory: ./${{ matrix.package }}/
+      - run: calcos la8n01qkq_rawtag_a.fits
+        working-directory: ./${{ matrix.package }}/
+      - run: pytest --slow -n auto
+        working-directory: ./${{ matrix.package }}/
+  test_ccdproc:
+    needs: [build]
+    env:
+      SETUP_XVFB: True
     strategy:
-      fail-fast: false
       matrix:
-        package: [ crds ]
-        # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.12', '3.13', '3.14' ]
-        include:
-          - package: crds
-            repository: spacetelescope/crds
+        package: [ccdproc]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [astropy/ccdproc]
     runs-on: ${{ matrix.runs-on }}
-    name: "`crds` `./runtests --cover` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} -W ignore -n auto
+  test_costools:
+    needs: [build]
+    strategy:
+      matrix:
+        package: [costools]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/costools]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} -n auto
+  crds_test_cache:
+    needs: [build]
+    uses: spacetelescope/crds/.github/workflows/cache.yml@main
+  test_crds:
+    needs: [build, crds_test_cache]
     env:
       CRDS_PATH: /tmp/crds-cache-default-test
       CRDS_TEST_ROOT: /tmp
       CRDS_TESTING_CACHE: /tmp/crds-cache-test
       CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      CRDS_MODE: local
+    strategy:
+      matrix:
+        package: [crds]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/crds]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          path: stenv
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
-        with:
-          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: stenv/environment.yaml
-          condarc: |
-            use_uv: true
-          create-args: >-
-            python=${{ matrix.python-version }}
-          cache-environment: true
-          cache-environment-key: environment-${{ needs.build.outputs.date }}
-          init-shell: bash
-          generate-run-shell: false
-          post-cleanup: none
-      - run: micromamba install -y filelock requests
-      - run: uv pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
-      - run: uv pip list
-      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
-        id: package_version
-        # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          path: ${{ matrix.package }}
-          repository: ${{ matrix.repository }}
-          ref: ${{ steps.package_version.outputs.version }}
-          fetch-depth: 0
-      - run: uv pip uninstall crds && ./install && uv pip install .[submission,test,docs,synphot]
-        working-directory: ${{ matrix.package }}
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             ${{ needs.crds_test_cache.outputs.path }}
             ${{ needs.crds_test_cache.outputs.testing_cache }}
           key: ${{ needs.crds_test_cache.outputs.key }}
-      - run: ./runtests --cover
-        working-directory: ${{ matrix.package }}
-  test_for_smoke:
-    needs: [ build ]
-    strategy:
-      matrix:
-        package: [ calcos, drizzlepac ]
-        # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.12', '3.13', '3.14' ]
-        include:
-          - package: calcos
-            run: calcos la8n01qkq_rawtag_a.fits
-            crds-observatory: hst
-            jref: hst/references/hst
-          - package: drizzlepac
-            run: pytest tests/test_drizzlepac.py -n auto --dist=loadscope
-            crds-observatory: hst
-            jref: hst/references/hst
-      fail-fast: false
-    runs-on: ${{ matrix.runs-on }}
-    name: "`${{ matrix.run }}` (${{ matrix.runs-on }}, py${{ matrix.python-version }})"
-    env:
-      jref: /tmp/crds_cache/${{ matrix.jref }}
-    steps:
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_OBSERVATORY=${{ matrix.crds-observatory }} >> $GITHUB_ENV
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_SERVER_URL=${{ matrix.crds-observatory }}-crds.stsci.edu >> $GITHUB_ENV
-      - if: matrix.crds-observatory != ''
-        run: echo CRDS_CONTEXT=${{ matrix.crds-observatory == 'hst' && needs.crds-contexts.outputs.hst || (matrix.crds-observatory == 'jwst' && needs.crds-contexts.outputs.jwst || (matrix.crds-observatory == 'roman' && needs.crds-contexts.outputs.roman || '')) }} >> $GITHUB_ENV
-      - if: env.CRDS_CONTEXT != ''
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+          restore-keys: |
+            test-cache-
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: ${{ env.CRDS_PATH }}
-          key: crds-${{ matrix.package }}-${{ env.CRDS_CONTEXT }}
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-        with:
-          lfs: true
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476  # v3.0.0
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
-          environment-file: environment.yaml
+          environment-file: ./stenv/environment.yaml
           condarc: |
             use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
-          cache-environment-key: environment-${{ needs.build.outputs.date }}
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
-      - run: uv pip install pytest pytest-xdist
-      - run: uv pip list
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  # v5.0.5
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: tests/data/
-          key: data-${{ hashFiles('tests/data/*') }}
-      - run: ${{ matrix.run }}
+          path: ./${{ matrix.package }}/
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
+      - run: micromamba install -y filelock requests
+      - run: uv pip install parsely roman-datamodels git+https://github.com/spacetelescope/jwst
+      - run: uv pip uninstall crds && ./install && uv pip install .[submission,test,docs,synphot]
+        working-directory: ./${{ matrix.package }}/
+      - run: ./runtests
+        working-directory: ./${{ matrix.package }}/
+  test_drizzlepac:
+    needs: [build, crds-contexts]
+    env:
+      CRDS_OBSERVATORY: hst
+      CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      CRDS_CONTEXT: ${{ needs.crds-contexts.outputs.hst }}
+    strategy:
+      matrix:
+        package: [drizzlepac]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/drizzlepac]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
+          restore-keys: |
+            crds-${{ env.CRDS_OBSERVATORY }}-
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./${{ matrix.package }}/
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
+      - run: uv pip install -e .[test] pytest-xdist
+        working-directory: ./${{ matrix.package }}/
+      - run: pytest -n auto
+        working-directory: ./${{ matrix.package }}/
+  test_hstcal:
+    needs: [build, crds-contexts]
+    env:
+      CRDS_OBSERVATORY: hst
+      CRDS_SERVER_URL: https://hst-crds.stsci.edu
+      CRDS_CONTEXT: ${{ needs.crds-contexts.outputs.hst }}
+    strategy:
+      matrix:
+        package: [hstcal]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/hstcal]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
+          restore-keys: |
+            crds-${{ env.CRDS_OBSERVATORY }}-
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./${{ matrix.package }}/
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
+      - run: uv pip install pytest crds ci-watson pytest-xdist
+      - run: pytest ./tests/ --slow -n auto
+        working-directory: ./${{ matrix.package }}/
+  test_jwst:
+    needs: [build, crds-contexts]
+    env:
+      CRDS_OBSERVATORY: jwst
+      CRDS_SERVER_URL: https://jwst-crds.stsci.edu
+      CRDS_CONTEXT: ${{ needs.crds-contexts.outputs.jwst }}
+    strategy:
+      matrix:
+        package: [jwst]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/jwst]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ env.CRDS_PATH }}
+          key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
+          restore-keys: |
+            crds-${{ env.CRDS_OBSERVATORY }}-
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} -n auto
+  test_reftools:
+    needs: [build]
+    strategy:
+      matrix:
+        package: [reftools]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/reftools]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} -n auto
+  test_stistools:
+    needs: [build]
+    strategy:
+      matrix:
+        package: [stistools]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/stistools]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./${{ matrix.package }}/
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
+      - run: uv pip install .[test] pytest-xdist
+        working-directory: ./${{ matrix.package }}/
+      - run: pytest -n auto
+        working-directory: ./${{ matrix.package }}/
+  test_stsynphot:
+    needs: [build]
+    env:
+      PYSYN_CDBS: https://ssb.stsci.edu/trds
+    strategy:
+      matrix:
+        package: [stsynphot]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/stsynphot_refactor]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./${{ matrix.package }}/
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
+      - run: uv pip install .[test] pytest-xdist
+        working-directory: ./${{ matrix.package }}/
+      - run: pytest --remote-data -n auto
+        working-directory: ./${{ matrix.package }}/
+  test_synphot:
+    needs: [build]
+    strategy:
+      matrix:
+        package: [synphot]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/synphot_refactor]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} --remote-data -n auto
+  test_wfpc2tools:
+    needs: [build]
+    strategy:
+      matrix:
+        package: [wfpc2tools]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/wfpc2tools]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+      - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
+      - run: pytest --pyargs ${{ matrix.package }} -n auto
