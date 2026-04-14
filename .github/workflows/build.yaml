@@ -4,7 +4,11 @@ on:
   workflow_call:
     outputs:
       date:
-        value: ${{ jobs.date.outputs.date }}
+        value: ${{ jobs.variables.outputs.date }}
+      runs-on:
+        value: ${{ jobs.variables.outputs.runs-on }}
+      python-version:
+        value: ${{ jobs.variables.outputs.python-version }}
   workflow_dispatch:
   push:
   release:
@@ -19,21 +23,26 @@ defaults:
     shell: bash -leo pipefail {0}
 
 jobs:
-  date:
+  variables:
     runs-on: ubuntu-latest
     steps:
-      - run: echo date="$(date +%Y.%m.%d)" >> $GITHUB_OUTPUT
-        id: date        
+      - id: runs-on
+        run: echo 'runs-on=["ubuntu-latest", "macos-latest"]' >> $GITHUB_OUTPUT
+      - id: python-version
+        run: echo 'python-version=["3.12", "3.13", "3.14"]' >> $GITHUB_OUTPUT
+      - id: date
+        run: echo "date=$(date +%Y.%m.%d)" >> $GITHUB_OUTPUT
     outputs:
       date: ${{ steps.date.outputs.date }}
+      runs-on: ${{ steps.runs-on.outputs.runs-on }}
+      python-version: ${{ steps.python-version.outputs.python-version }}
   build:
-    needs: [ date ]
+    needs: [ variables ]
     strategy:
       fail-fast: false
       matrix:
-        # the macOS 13 runner is on Intel hardware
-        runs-on: [ ubuntu-latest, macos-latest ]
-        python-version: [ '3.12', '3.13', '3.14' ]
+        runs-on: ${{ fromJSON(needs.variables.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.variables.outputs.python-version) }}
     runs-on: ${{ matrix.runs-on }}
     name: build (Python ${{ matrix.python-version }}, ${{ matrix.runs-on }})
     steps:
@@ -47,11 +56,11 @@ jobs:
           create-args: >-
             python=${{ matrix.python-version }}
           cache-environment: true
-          cache-environment-key: environment-${{ needs.date.outputs.date }}
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.variables.outputs.date }}
           init-shell: bash
           generate-run-shell: false
           post-cleanup: none
-      - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.date.outputs.date }}.yaml" >> $GITHUB_OUTPUT
+      - run: echo "filename=stenv-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}-${{ needs.variables.outputs.date }}.yaml" >> $GITHUB_OUTPUT
         id: output
       - run: |
           micromamba env export --no-build | grep -v "name:" | grep -v "prefix:" > ${{ steps.output.outputs.filename }}
