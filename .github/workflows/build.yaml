@@ -55,6 +55,7 @@ jobs:
             use_uv: true
           create-args: >-
             python=${{ matrix.python-version }}
+            ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.13') && 'numpy' || '' }}
           cache-environment: true
           cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.variables.outputs.date }}
           init-shell: bash
