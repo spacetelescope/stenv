@@ -448,6 +448,47 @@ jobs:
         id: package_version
       - run: uv pip install ${{ matrix.package }}[test]==${{ steps.package_version.outputs.version }} pytest-xdist
       - run: pytest --pyargs ${{ matrix.package }} -n auto
+  test_romancal:
+    needs: [build]
+    strategy:
+      matrix:
+        package: [romancal]
+        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        repository: [spacetelescope/romancal]
+    runs-on: ${{ matrix.runs-on }}
+    name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: ./stenv/
+      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+        with:
+          environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
+          environment-file: ./stenv/environment.yaml
+          condarc: |
+            use_uv: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+            ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.13') && 'numpy' || '' }}
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.python-version }}-${{ needs.build.outputs.date }}
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+      - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
+        id: package_version
+        # TODO: figure out a better way to use package version when checking out a Git ref
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: ./${{ matrix.package }}/
+          repository: ${{ matrix.repository }}
+          ref: ${{ steps.package_version.outputs.version }}
+          fetch-depth: 0
+      - run: uv pip install .[test] pytest-xdist
+        working-directory: ./${{ matrix.package }}/
+      - run: pytest -n auto
+        working-directory: ./${{ matrix.package }}/
   test_stistools:
     needs: [build]
     strategy:
