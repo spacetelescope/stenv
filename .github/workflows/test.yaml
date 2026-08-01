@@ -41,10 +41,10 @@ jobs:
   #   runs-on: ${{ matrix.runs-on }}
   #   name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
   #   steps:
-  #     - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+  #     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
   #       with:
   #         path: ./stenv/
-  #     - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+  #     - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
   #       with:
   #         environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
   #         environment-file: ./stenv/environment.yaml
@@ -73,10 +73,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -115,10 +115,10 @@ jobs:
           key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
           restore-keys: |
             crds-${{ env.CRDS_OBSERVATORY }}-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -135,7 +135,7 @@ jobs:
       - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./${{ matrix.package }}/
           repository: ${{ matrix.repository }}
@@ -160,10 +160,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -192,10 +192,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -241,10 +241,10 @@ jobs:
           key: ${{ needs.crds_test_cache.outputs.key }}
           restore-keys: |
             test-cache-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -261,7 +261,7 @@ jobs:
       - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./${{ matrix.package }}/
           repository: ${{ matrix.repository }}
@@ -294,10 +294,10 @@ jobs:
           key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
           restore-keys: |
             crds-${{ env.CRDS_OBSERVATORY }}-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -314,7 +314,7 @@ jobs:
       - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./${{ matrix.package }}/
           repository: ${{ matrix.repository }}
@@ -345,10 +345,10 @@ jobs:
           key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
           restore-keys: |
             crds-${{ env.CRDS_OBSERVATORY }}-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -365,7 +365,7 @@ jobs:
       - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./${{ matrix.package }}/
           repository: ${{ matrix.repository }}
@@ -395,10 +395,10 @@ jobs:
           key: crds-${{ env.CRDS_OBSERVATORY }}-${{ env.CRDS_CONTEXT }}
           restore-keys: |
             crds-${{ env.CRDS_OBSERVATORY }}-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -427,10 +427,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -459,10 +459,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -479,7 +479,7 @@ jobs:
       - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./${{ matrix.package }}/
           repository: ${{ matrix.repository }}
@@ -502,10 +502,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -522,7 +522,7 @@ jobs:
       - run: echo "version=$(uv pip list | awk '$1 == "${{ matrix.package }}" {print $2}')" >> $GITHUB_OUTPUT
         id: package_version
         # TODO: figure out a better way to use package version when checking out a Git ref
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./${{ matrix.package }}/
           repository: ${{ matrix.repository }}
@@ -543,10 +543,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
@@ -575,10 +575,10 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ./stenv/
-      - uses: mamba-org/setup-micromamba@d7c9bd84e824b79d2af72a2d4196c7f4300d3476 # v3.0.0
+      - uses: mamba-org/setup-micromamba@ce51e99f4bb8a82ab7158c4dc59ef4634c59c4f9 # v3.1.0
         with:
           environment-name: stenv-${{ runner.os }}-py${{ matrix.python-version }}
           environment-file: ./stenv/environment.yaml
