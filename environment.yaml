@@ -17,7 +17,7 @@ dependencies:
       - calcos
       - ccdproc
       - costools
-      - crds
+      - crds<14
       - dask
       - drizzlepac
       - ginga
@@ -26,7 +26,7 @@ dependencies:
       - jupyter
       - jwst
       - reftools
-      # - romancal
+      - romancal
       - scipy
       - stcal
       - stdatamodels
