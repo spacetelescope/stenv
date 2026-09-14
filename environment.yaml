@@ -17,7 +17,7 @@ dependencies:
       - calcos
       - ccdproc
       - costools
-      - crds
+      - crds<14
       - dask
       - drizzlepac
       - ginga
