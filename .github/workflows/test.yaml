@@ -35,8 +35,8 @@ jobs:
   #   strategy:
   #     matrix:
   #       package: [acstools]
-  #       runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-  #       python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+  #       runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+  #       python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
   #       repository: [spacetelescope/acstools]
   #   runs-on: ${{ matrix.runs-on }}
   #   name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -66,8 +66,8 @@ jobs:
     strategy:
       matrix:
         package: [asdf]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [asdf-format/asdf]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -101,8 +101,8 @@ jobs:
     strategy:
       matrix:
         package: [calcos]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/calcos]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -151,8 +151,8 @@ jobs:
     strategy:
       matrix:
         package: [ccdproc]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [astropy/ccdproc]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -182,8 +182,8 @@ jobs:
     strategy:
       matrix:
         package: [costools]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/costools]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -222,8 +222,8 @@ jobs:
     strategy:
       matrix:
         package: [crds]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/crds]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -276,8 +276,8 @@ jobs:
     strategy:
       matrix:
         package: [drizzlepac]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/drizzlepac]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -326,8 +326,8 @@ jobs:
     strategy:
       matrix:
         package: [hstcal]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/hstcal]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -375,8 +375,8 @@ jobs:
     strategy:
       matrix:
         package: [jwst]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/jwst]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -412,8 +412,8 @@ jobs:
     strategy:
       matrix:
         package: [reftools]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/reftools]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -443,8 +443,8 @@ jobs:
     strategy:
       matrix:
         package: [stistools]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/stistools]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -485,8 +485,8 @@ jobs:
     strategy:
       matrix:
         package: [stsynphot]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/stsynphot_refactor]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -525,8 +525,8 @@ jobs:
     strategy:
       matrix:
         package: [synphot]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/synphot_refactor]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
@@ -556,8 +556,8 @@ jobs:
     strategy:
       matrix:
         package: [wfpc2tools]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/wfpc2tools]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
