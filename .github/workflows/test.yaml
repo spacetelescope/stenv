@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/*
       - environment.yaml
+      - platforms.json
       - tests/*
   workflow_dispatch:
 
