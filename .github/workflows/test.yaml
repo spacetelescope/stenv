@@ -443,8 +443,8 @@ jobs:
     strategy:
       matrix:
         package: [romancal]
-        runs-on: ${{ fromJSON(needs.build.outputs.runs-on) }}
-        python-version: ${{ fromJSON(needs.build.outputs.python-version) }}
+        runs-on: ${{ fromJSON(needs.build.outputs.docker-images) }}
+        python-version: ${{ fromJSON(needs.build.outputs.python-versions) }}
         repository: [spacetelescope/romancal]
     runs-on: ${{ matrix.runs-on }}
     name: ${{ matrix.package }} (${{ matrix.runs-on }}, py${{ matrix.python-version }})
